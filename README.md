@@ -1,6 +1,6 @@
-# Simple 3D Engine
+# Simple Vulkan Engine
 
-This is a simple 3D engine built using Vulkan, C++, CMake, and Visual Studio Code. The engine aims to provide a foundation for creating real-time 3D applications.
+This is a simple 3D engine built using Vulkan, C++, CMake and Visual Studio Code. The engine aims to provide a foundation for creating real-time 3D applications.
 
 ## Features
 
