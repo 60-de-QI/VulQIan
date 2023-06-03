@@ -67,7 +67,7 @@ For more detailed instructions on building and running the engine, please refer 
 Ensure you have the `VULKAN_SDK` environment variable set or compilation will not be able to find the SDK.
 The engine uses this path to load both the Lib and the Includes.
 
-[![My Skills](https://skillicons.dev/icons?i=cpp,cmake,git,vscode,v&perline=5)](https://skillicons.dev)
+[![Requirements](https://skillicons.dev/icons?i=cpp,cmake,git,vscode,v&perline=5)](https://github.com/60-de-QI/VulQIan)
 
 ## Contributing
 
