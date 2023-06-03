@@ -1,4 +1,4 @@
-# Simple Vulkan Engine
+# VulQIan: The Epic Intelligence Engine
 
 This is a simple 3D engine built using Vulkan, C++, CMake and Visual Studio Code. The engine aims to provide a foundation for creating real-time 3D applications.
 
@@ -63,6 +63,9 @@ To get started with the engine, follow these steps:
 For more detailed instructions on building and running the engine, please refer to the documentation or the individual source files.
 
 ## Requirements
+
+Ensure you have the `VK_SDK_PATH` environment variable set or compilation will not be able to find the SDK.
+The engine uses this path to load both the Lib and the Includes.
 
 [![My Skills](https://skillicons.dev/icons?i=cpp,cmake,git,vscode,v&perline=5)](https://skillicons.dev)
 
