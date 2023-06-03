@@ -64,7 +64,7 @@ For more detailed instructions on building and running the engine, please refer 
 
 ## Requirements
 
-Ensure you have the `VK_SDK_PATH` environment variable set or compilation will not be able to find the SDK.
+Ensure you have the `VULKAN_SDK` environment variable set or compilation will not be able to find the SDK.
 The engine uses this path to load both the Lib and the Includes.
 
 [![My Skills](https://skillicons.dev/icons?i=cpp,cmake,git,vscode,v&perline=5)](https://skillicons.dev)
