@@ -8,7 +8,7 @@ else()
     message(FATAL_ERROR " VULKAN SDK NOT FOUND")
 endif()
 
-find_package(glfw3 3.3.8 REQUIRED)
+find_package(glfw3 REQUIRED)
 if(NOT glfw3_FOUND)
     message(FATAL_ERROR "GLFW NOT FOUND")
 endif()
