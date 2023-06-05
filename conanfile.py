@@ -5,6 +5,9 @@ class CompressorRecipe(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "CMakeToolchain", "CMakeDeps"
 
+    def configure(self):
+        del self.settings.compiler.libcxx
+
     def requirements(self):
         self.requires("glfw/3.3.8")
         self.requires("glm/0.9.5.4")
