@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.26)
 project(vulqian_example)
 
 # Set C++ standard to C++17
@@ -12,9 +12,6 @@ find_package(Vulkan REQUIRED)
 # Add the example executable
 add_executable(vulqian_example main.cpp)
 
-# Link against the Vulquian library
-target_link_libraries(vulqian_example vulqian glfw glm::glm)
-target_link_libraries(vulqian_example ${Vulkan_LIBRARIES})
-
 # Add additional libraries or dependencies as needed
-target_include_directories(vulqian_example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${VULKAN_SDK_PATH}/Include)
+target_include_directories(vulqian_example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_link_libraries(vulqian_example PRIVATE VulQIan)
