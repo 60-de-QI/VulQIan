@@ -1,7 +1,15 @@
 
-#include "VulQian/Engine.hpp"
+#include "App.hpp"
 
 int main() {
-    Vulqian::Engine::Window myWindow(640, 360, "Test");
-    return 0;
+    App myApp{};
+
+    try {
+        myApp.run();
+    } catch (const std::exception& e) {
+        std::cout << "ERROR ON RUN: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }

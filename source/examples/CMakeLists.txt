@@ -10,7 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Vulkan REQUIRED)
 
 # Add the example executable
-add_executable(vulqian_example main.cpp)
+add_executable(vulqian_example App.cpp main.cpp)
 
 # Add additional libraries or dependencies as needed
 target_include_directories(vulqian_example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)

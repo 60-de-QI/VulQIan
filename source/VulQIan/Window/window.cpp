@@ -11,12 +11,8 @@ namespace Vulqian::Engine {
     }
 
     Window::~Window() {
-        this->window.reset();
+        glfwDestroyWindow(this->window);
         glfwTerminate();
-    }
-
-    void    Window::destroy_ptr() {
-        glfwDestroyWindow(this->window.get());
     }
 
     void Window::init() {
@@ -24,6 +20,6 @@ namespace Vulqian::Engine {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        // this->window = std::make_shared<GLFWwindow>(glfwCreateWindow(this->width, this->height, this->name.c_str(), nullptr, nullptr), this->destroy_ptr{});
+        this->window = glfwCreateWindow(this->width, this->height, this->name.c_str(), nullptr, nullptr);
     }
 }

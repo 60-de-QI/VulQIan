@@ -17,7 +17,13 @@ namespace Vulqian::Engine {
             Window(unsigned short int w, unsigned short int h, std::string_view n);
             ~Window();
 
-            void destroy_ptr();
+            bool should_close() const noexcept { return glfwWindowShouldClose(this->window); }
+
+            // in order to respect RAII, we delete copy operations
+            // That way we avoid copy for shared destructor
+            Window(const Window&) = delete;
+            Window &operator=(const Window&) = delete;
+
 
         private:
 
@@ -26,7 +32,7 @@ namespace Vulqian::Engine {
             const unsigned short int width{640};
             const unsigned short int height{360};
 
-            std::string                 name{"My Window"};
-            std::shared_ptr<GLFWwindow> window;
+            std::string                 name{"Window"};
+            GLFWwindow*                 window;
     };
 }
