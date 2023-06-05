@@ -12,27 +12,31 @@
 #include <memory>
 
 namespace Vulqian::Engine {
+
+    struct glfwDeleter {
+        void operator()(GLFWwindow* ptr){
+            glfwDestroyWindow(ptr);
+        }
+    };
+
     class Window {
         public:
             Window(unsigned short int w, unsigned short int h, std::string_view n);
             ~Window();
 
-            bool should_close() const noexcept { return glfwWindowShouldClose(this->window); }
+            inline bool should_close() const noexcept  { return glfwWindowShouldClose(this->window.get()); }
 
             // in order to respect RAII, we delete copy operations
             // That way we avoid copy for shared destructor
             Window(const Window&) = delete;
             Window &operator=(const Window&) = delete;
 
-
         private:
-
-            void init();
 
             const unsigned short int width{640};
             const unsigned short int height{360};
 
-            std::string                 name{"Window"};
-            GLFWwindow*                 window;
+            std::string name{"Window"};
+            std::unique_ptr<GLFWwindow, glfwDeleter> window;
     };
 }

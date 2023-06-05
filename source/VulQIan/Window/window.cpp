@@ -7,19 +7,15 @@
 
 namespace Vulqian::Engine {
     Window::Window(unsigned short int w, unsigned short int h, std::string_view n) : width(w), height(h), name(n) {
-        this->init();
-    }
-
-    Window::~Window() {
-        glfwDestroyWindow(this->window);
-        glfwTerminate();
-    }
-
-    void Window::init() {
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        this->window = glfwCreateWindow(this->width, this->height, this->name.c_str(), nullptr, nullptr);
+        this->window.reset(glfwCreateWindow(this->width, this->height, this->name.c_str(), nullptr, nullptr));
+    }
+
+    Window::~Window() {
+        this->window.release();
+        glfwTerminate();
     }
 }
