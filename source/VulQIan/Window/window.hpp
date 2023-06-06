@@ -8,35 +8,37 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-#include <string>
+
 #include <memory>
+#include <string>
 
 namespace Vulqian::Engine {
 
-    struct glfwDeleter {
-        void operator()(GLFWwindow* ptr){
-            glfwDestroyWindow(ptr);
-        }
-    };
+struct glfwDeleter {
+    void operator()(GLFWwindow* ptr) {
+        glfwDestroyWindow(ptr);
+    }
+};
 
-    class Window {
-        public:
-            Window(unsigned short int w, unsigned short int h, std::string_view n);
-            ~Window();
+class Window {
+   public:
+    Window(unsigned short int w, unsigned short int h, std::string_view n);
+    ~Window();
 
-            inline bool should_close() const noexcept  { return glfwWindowShouldClose(this->window.get()); }
+    // in order to respect RAII, we delete copy operations
+    // That way we avoid copy for shared destructor
+    Window(const Window&) = delete;
+    Window& operator=(const Window&) = delete;
 
-            // in order to respect RAII, we delete copy operations
-            // That way we avoid copy for shared destructor
-            Window(const Window&) = delete;
-            Window &operator=(const Window&) = delete;
+    inline bool should_close() const noexcept { return glfwWindowShouldClose(this->window.get()); }
 
-        private:
+    void create_window_surface(VkInstance instance, VkSurfaceKHR* surface);
 
-            const unsigned short int width{640};
-            const unsigned short int height{360};
+   private:
+    const unsigned short int width{640};
+    const unsigned short int height{360};
 
-            std::string name{"Window"};
-            std::unique_ptr<GLFWwindow, glfwDeleter> window;
-    };
-}
+    std::string name{"Window"};
+    std::unique_ptr<GLFWwindow, glfwDeleter> window;
+};
+}  // namespace Vulqian::Engine

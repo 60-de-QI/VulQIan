@@ -5,19 +5,21 @@
 
 #pragma once
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 #include <stdexcept>
 
+#include "VulQIan/Graphics/Pipeline/Pipeline.hpp"
 #include "VulQian/Engine.hpp"
 
 class App {
-    public:
-        static constexpr int WIDTH = 800;
-        static constexpr int HEIGHT = 600;
+   public:
+    static constexpr int WIDTH = 800;
+    static constexpr int HEIGHT = 600;
 
-        void run(void);
+    void run(void);
 
-    private:
-        Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
+   private:
+    Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
+    Vulqian::Engine::Graphics::Pipeline pipeline{"D:\\DEV\\VulQIan\\source\\VulQIan\\Graphics\\Shaders\\simple_shader.vert.spv", "D:\\DEV\\VulQIan\\source\\VulQIan\\Graphics\\Shaders\\simple_shader.frag.spv"};
 };
