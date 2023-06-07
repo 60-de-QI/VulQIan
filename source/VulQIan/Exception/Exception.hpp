@@ -5,55 +5,78 @@
 
 #pragma on
 
+#include <source_location>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace Vulqian::Exception {
+
+template <typename Derived>
 class general_exception : public std::exception {
    private:
     std::string error;
+    std::source_location location;
 
-   protected:
-    explicit general_exception(std::string const& e) : error{"A general exception has occured: " + e} {}
-};
-
-class unavailable : public general_exception {
    public:
-    explicit unavailable(std::string const& what) : general_exception("Resource requested, but unavailable : " + what) {}
+    explicit general_exception(std::string const& what, std::source_location loc = std::source_location::current())
+        : error{get_prefix() + what + "\nFile: " + loc.file_name() + "\nLine: " + std::to_string(loc.line()) + "\nFunction: " + loc.function_name()}, location(loc) {}
+
+    const char* what() const noexcept override {
+        return this->error.c_str();
+    }
+
+    // Get the prefix for the derived class
+    static std::string get_prefix() {
+        return Derived::get_prefix();
+    }
 };
 
-class failed_to_find : public general_exception {
-    public:
-        explicit failed_to_find(std::string const& what) : general_exception("failed to find : " + what) {}
+class unavailable : public Vulqian::Exception::general_exception<unavailable> {
+   public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "requested resource is unavailable : "; }
 };
 
-class failed_to_create : public general_exception {
-    public:
-        explicit failed_to_create(std::string const& what) : general_exception("failed to create : " + what) {}
+class failed_to_find : public Vulqian::Exception::general_exception<failed_to_find> {
+   public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "failed to find : "; }
 };
 
-class failed_to_open : public general_exception {
-    public:
-        explicit failed_to_open(std::string const& what) : general_exception("failed to open : " + what) {}
+class failed_to_create : public Vulqian::Exception::general_exception<failed_to_create> {
+   public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "failed to create : "; }
 };
 
-class failed_to_setup : public general_exception {
-    public:
-        explicit failed_to_setup(std::string const& what) : general_exception("failed to setup : " + what) {}
+class failed_to_open : public Vulqian::Exception::general_exception<failed_to_open> {
+   public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "failed to open :"; }
 };
 
-class failed_to_allocate : public general_exception {
-    public:
-        explicit failed_to_allocate(std::string const& what) : general_exception("failed to allocate : " + what) {}
+class failed_to_setup : public Vulqian::Exception::general_exception<failed_to_setup> {
+   public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "failed to setup : "; }
 };
 
-class failed_to_bind : public general_exception {
-    public:
-        explicit failed_to_bind(std::string const& what) : general_exception("failed to bind : " + what) {}
+class failed_to_allocate : public Vulqian::Exception::general_exception<failed_to_allocate> {
+   public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "failed to allocate : "; }
 };
 
-class missing_requirements : public general_exception {
-    public:
-        explicit missing_requirements(std::string const& what) : general_exception("missing requirements : " + what) {}
+class failed_to_bind : public Vulqian::Exception::general_exception<failed_to_bind> {
+   public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "failed to bind : "; }
+};
+
+class missing_requirements : public Vulqian::Exception::general_exception<missing_requirements> {
+   public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "missing requirements : "; }
 };
 
 }  // namespace Vulqian::Exception
