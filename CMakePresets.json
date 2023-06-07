@@ -100,10 +100,16 @@
     ],
     "testPresets": [
         {
-          "name": "default",
-          "configurePreset": "default",
-          "output": {"outputOnFailure": true, "verbosity": "verbose"},
-          "execution": {"noTestsAction": "error", "stopOnFailure": true}
+            "name": "default",
+            "configurePreset": "default",
+            "output": {
+                "outputOnFailure": true,
+                "verbosity": "verbose"
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true
+            }
         }
-      ]
+    ]
 }

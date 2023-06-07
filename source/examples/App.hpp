@@ -9,8 +9,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "VulQIan/Graphics/Pipeline/Pipeline.hpp"
-#include "VulQian/Engine.hpp"
+#include "../VulQIan/Engine.hpp"
+#include "../VulQIan/Graphics/Pipeline/Pipeline.hpp"
 
 class App {
    public:

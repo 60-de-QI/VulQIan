@@ -14,11 +14,11 @@
 
 namespace Vulqian::Engine {
 
-struct glfwDeleter {
-    void operator()(GLFWwindow* ptr) {
-        glfwDestroyWindow(ptr);
-    }
-};
+    struct glfwDeleter {
+        void operator()(GLFWwindow* ptr) const {
+            glfwDestroyWindow(ptr);
+        }
+    };
 
 class Window {
    public:
