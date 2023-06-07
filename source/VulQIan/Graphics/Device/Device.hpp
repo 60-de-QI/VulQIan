@@ -23,7 +23,7 @@ struct QueueFamilyIndices {
     uint32_t presentFamily;
     bool graphicsFamilyHasValue = false;
     bool presentFamilyHasValue = false;
-    bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
+    bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
 };
 
 class Device {
@@ -34,7 +34,7 @@ class Device {
     const bool enableValidationLayers = true;
 #endif
 
-    Device(Vulqian::Engine::Window &window);
+    explicit Device(Vulqian::Engine::Window &window);
     ~Device();
 
     // Not copyable or movable
@@ -89,7 +89,7 @@ class Device {
     std::vector<const char *> getRequiredExtensions();
     bool checkValidationLayerSupport();
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
+    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const;
     void hasGflwRequiredInstanceExtensions();
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);

@@ -5,7 +5,7 @@
 
 #include "App.hpp"
 
-void App::run() {
+void App::run() const {
     while (!this->window.should_close()) {
         glfwPollEvents();
     }

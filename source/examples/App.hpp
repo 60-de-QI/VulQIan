@@ -17,9 +17,9 @@ class App {
     static constexpr int WIDTH = 800;
     static constexpr int HEIGHT = 600;
 
-    void run(void);
+    void run(void) const;
 
    private:
     Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
-    Vulqian::Engine::Graphics::Pipeline pipeline{"D:\\DEV\\VulQIan\\source\\VulQIan\\Graphics\\Shaders\\simple_shader.vert.spv", "D:\\DEV\\VulQIan\\source\\VulQIan\\Graphics\\Shaders\\simple_shader.frag.spv"};
+    Vulqian::Engine::Graphics::Pipeline pipeline{"~/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.vert.spv", "~/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.frag.spv"};
 };

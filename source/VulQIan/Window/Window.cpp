@@ -3,8 +3,9 @@
 // This software is provided 'as is' and without any warranty, express or implied.
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
-#include "window.hpp"
-#include "stdexcept"
+#include "Window.hpp"
+
+#include <stdexcept>
 
 namespace Vulqian::Engine {
 Window::Window(unsigned short int w, unsigned short int h, std::string_view n) : width(w), height(h), name(n) {
@@ -20,7 +21,7 @@ Window::~Window() {
     glfwTerminate();
 }
 
-void Window::create_window_surface(VkInstance instance, VkSurfaceKHR* surface) {
+void Window::create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const {
     if (glfwCreateWindowSurface(instance, this->window.get(), nullptr, surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create window surface");
     }

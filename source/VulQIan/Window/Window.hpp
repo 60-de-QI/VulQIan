@@ -32,7 +32,7 @@ class Window {
 
     inline bool should_close() const noexcept { return glfwWindowShouldClose(this->window.get()); }
 
-    void create_window_surface(VkInstance instance, VkSurfaceKHR* surface);
+    void create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const;
 
    private:
     const unsigned short int width{640};
