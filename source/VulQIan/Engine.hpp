@@ -5,4 +5,6 @@
 
 #pragma once
 
-#include "Window/window.hpp"
+#include "Graphics/Device/Device.hpp"
+#include "Graphics/Pipeline/Pipeline.hpp"
+#include "Window/Window.hpp"
