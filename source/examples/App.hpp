@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <stdexcept>
 
-#include "VulQian/Engine.hpp"
+#include "../VulQIan/Engine.hpp"
 
 class App {
     public:

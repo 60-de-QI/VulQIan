@@ -14,7 +14,7 @@
 namespace Vulqian::Engine {
 
     struct glfwDeleter {
-        void operator()(GLFWwindow* ptr){
+        void operator()(GLFWwindow* ptr) const{
             glfwDestroyWindow(ptr);
         }
     };
