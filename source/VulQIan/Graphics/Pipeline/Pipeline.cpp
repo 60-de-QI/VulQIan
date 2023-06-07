@@ -4,6 +4,7 @@
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
 #include "Pipeline.hpp"
+#include "../../Exception/Exception.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -18,7 +19,7 @@ std::vector<char> Pipeline::read_file(const std::string& path) {
     std::ifstream file{path, std::ios::ate | std::ios::binary};
 
     if (!file.is_open()) {
-        throw std::runtime_error("failed to open file: " + path);
+        throw Vulqian::Exception::failed_to_open("file at " + path);
     }
 
     auto file_size = static_cast<size_t>(file.tellg());

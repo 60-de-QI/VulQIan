@@ -4,6 +4,7 @@
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
 #include "Window.hpp"
+#include "../Exception/Exception.hpp"
 
 #include <stdexcept>
 
@@ -23,7 +24,7 @@ Window::~Window() {
 
 void Window::create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const {
     if (glfwCreateWindowSurface(instance, this->window.get(), nullptr, surface) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create window surface");
+        throw Vulqian::Exception::failed_to_create("window surface");
     }
 }
 

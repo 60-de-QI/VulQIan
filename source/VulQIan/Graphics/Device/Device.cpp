@@ -10,6 +10,8 @@
 #include <set>
 #include <unordered_set>
 
+#include "../../Exception/Exception.hpp"
+
 namespace Vulqian::Engine::Graphics {
 // local callback functions
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -73,7 +75,7 @@ Device::~Device() {
 
 void Device::createInstance() {
     if (enableValidationLayers && !checkValidationLayerSupport()) {
-        throw std::runtime_error("validation layers requested, but not available!");
+        throw Vulqian::Exception::unavailable("validation layers");
     }
 
     VkApplicationInfo appInfo = {};
@@ -98,14 +100,14 @@ void Device::createInstance() {
         createInfo.ppEnabledLayerNames = validationLayers.data();
 
         populateDebugMessengerCreateInfo(debugCreateInfo);
-        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+        createInfo.pNext = &debugCreateInfo;
     } else {
         createInfo.enabledLayerCount = 0;
         createInfo.pNext = nullptr;
     }
 
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create instance!");
+        throw Vulqian::Exception::failed_to_create("vk instance");
     }
 
     hasGflwRequiredInstanceExtensions();
@@ -115,7 +117,7 @@ void Device::pickPhysicalDevice() {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
     if (deviceCount == 0) {
-        throw std::runtime_error("failed to find GPUs with Vulkan support!");
+        throw Vulqian::Exception::failed_to_find("GPUs with Vulkan support");
     }
     std::cout << "Device count: " << deviceCount << std::endl;
     std::vector<VkPhysicalDevice> devices(deviceCount);
@@ -129,7 +131,7 @@ void Device::pickPhysicalDevice() {
     }
 
     if (physicalDevice == VK_NULL_HANDLE) {
-        throw std::runtime_error("failed to find a suitable GPU!");
+        throw Vulqian::Exception::failed_to_find("a suitable GPU");
     }
 
     vkGetPhysicalDeviceProperties(physicalDevice, &properties);
@@ -175,7 +177,7 @@ void Device::createLogicalDevice() {
     }
 
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create logical device!");
+        throw Vulqian::Exception::failed_to_create("logical device");
     }
 
     vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
@@ -192,7 +194,7 @@ void Device::createCommandPool() {
         VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create command pool!");
+        throw Vulqian::Exception::failed_to_create("command pool");
     }
 }
 
@@ -235,11 +237,11 @@ void Device::setupDebugMessenger() {
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
     populateDebugMessengerCreateInfo(createInfo);
     if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
-        throw std::runtime_error("failed to set up debug messenger!");
+        throw Vulqian::Exception::failed_to_setup("debug messenger");
     }
 }
 
-bool Device::checkValidationLayerSupport() {
+bool Device::checkValidationLayerSupport() const {
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -264,7 +266,7 @@ bool Device::checkValidationLayerSupport() {
     return true;
 }
 
-std::vector<const char *> Device::getRequiredExtensions() {
+std::vector<const char *> Device::getRequiredExtensions() const {
     uint32_t glfwExtensionCount = 0;
     const char **glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -278,7 +280,7 @@ std::vector<const char *> Device::getRequiredExtensions() {
     return extensions;
 }
 
-void Device::hasGflwRequiredInstanceExtensions() {
+void Device::hasGflwRequiredInstanceExtensions() const {
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
     std::vector<VkExtensionProperties> extensions(extensionCount);
@@ -288,7 +290,7 @@ void Device::hasGflwRequiredInstanceExtensions() {
     std::unordered_set<std::string> available;
     for (const auto &extension : extensions) {
         std::cout << "\t" << extension.extensionName << std::endl;
-        available.insert(extension.extensionName);
+        available.emplace(extension.extensionName);
     }
 
     std::cout << "required extensions:" << std::endl;
@@ -296,12 +298,12 @@ void Device::hasGflwRequiredInstanceExtensions() {
     for (const auto &required : requiredExtensions) {
         std::cout << "\t" << required << std::endl;
         if (available.find(required) == available.end()) {
-            throw std::runtime_error("Missing required glfw extension");
+            throw Vulqian::Exception::missing_requirements("glfw extension");
         }
     }
 }
 
-bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) const {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -391,28 +393,22 @@ VkFormat Device::findSupportedFormat(
             return format;
         }
     }
-    throw std::runtime_error("failed to find supported format!");
+    throw Vulqian::Exception::failed_to_find("supported format");
 }
 
-uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags props) {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) &&
-            (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            (memProperties.memoryTypes[i].propertyFlags & props) == props) {
             return i;
         }
     }
-
-    throw std::runtime_error("failed to find suitable memory type!");
+    throw Vulqian::Exception::failed_to_find("suitable memory type");
 }
 
-void Device::createBuffer(
-    VkDeviceSize size,
-    VkBufferUsageFlags usage,
-    VkMemoryPropertyFlags properties,
-    VkBuffer &buffer,
-    VkDeviceMemory &bufferMemory) {
+void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags_property, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;
@@ -420,7 +416,7 @@ void Device::createBuffer(
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
     if (vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create vertex buffer!");
+        throw Vulqian::Exception::failed_to_create("vertex buffer");
     }
 
     VkMemoryRequirements memRequirements;
@@ -429,10 +425,10 @@ void Device::createBuffer(
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, flags_property);
 
     if (vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate vertex buffer memory!");
+        throw Vulqian::Exception::failed_to_allocate("vertex buffer memory");
     }
 
     vkBindBufferMemory(device_, buffer, bufferMemory, 0);
@@ -509,13 +505,9 @@ void Device::copyBufferToImage(
     endSingleTimeCommands(commandBuffer);
 }
 
-void Device::createImageWithInfo(
-    const VkImageCreateInfo &imageInfo,
-    VkMemoryPropertyFlags properties,
-    VkImage &image,
-    VkDeviceMemory &imageMemory) {
+void Device::createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags flag_properties, VkImage &image, VkDeviceMemory &imageMemory) {
     if (vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create image!");
+        throw Vulqian::Exception::failed_to_create("image");
     }
 
     VkMemoryRequirements memRequirements;
@@ -524,14 +516,14 @@ void Device::createImageWithInfo(
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, flag_properties);
 
     if (vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate image memory!");
+        throw Vulqian::Exception::failed_to_allocate("image memory");
     }
 
     if (vkBindImageMemory(device_, image, imageMemory, 0) != VK_SUCCESS) {
-        throw std::runtime_error("failed to bind image memory!");
+        throw Vulqian::Exception::failed_to_bind("image memory");
     }
 }
 }  // namespace Vulqian::Engine::Graphics

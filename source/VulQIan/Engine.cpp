@@ -4,6 +4,3 @@
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
 #include "Engine.hpp"
-
-namespace Vulqian::Engine {
-}

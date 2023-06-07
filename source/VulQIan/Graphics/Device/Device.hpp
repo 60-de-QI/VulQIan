@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "../../Window/Window.hpp"
-
 #include <string>
 #include <vector>
+
+#include "../../Window/Window.hpp"
 
 namespace Vulqian::Engine::Graphics {
 
@@ -74,7 +74,6 @@ class Device {
         VkImage &image,
         VkDeviceMemory &imageMemory);
 
-    VkPhysicalDeviceProperties properties;
 
    private:
     void createInstance();
@@ -86,14 +85,15 @@ class Device {
 
     // helper functions
     bool isDeviceSuitable(VkPhysicalDevice device);
-    std::vector<const char *> getRequiredExtensions();
-    bool checkValidationLayerSupport();
+    std::vector<const char *> getRequiredExtensions() const;
+    bool checkValidationLayerSupport() const;
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const;
-    void hasGflwRequiredInstanceExtensions();
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+    void hasGflwRequiredInstanceExtensions() const;
+    bool checkDeviceExtensionSupport(VkPhysicalDevice device) const;
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
+    VkPhysicalDeviceProperties properties;
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
