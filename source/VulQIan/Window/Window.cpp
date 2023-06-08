@@ -6,8 +6,6 @@
 #include "Window.hpp"
 #include "../Exception/Exception.hpp"
 
-#include <stdexcept>
-
 namespace Vulqian::Engine {
 Window::Window(unsigned short int w, unsigned short int h, std::string_view n) : width(w), height(h), name(n) {
     glfwInit();

@@ -5,12 +5,10 @@
 
 #pragma once
 
+#include <VulQIan/Engine.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
-
-#include <VulQIan/Engine.hpp>
-#include <VulQIan/Graphics/Pipeline/Pipeline.hpp>
 
 class App {
    public:
@@ -21,5 +19,10 @@ class App {
 
    private:
     Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
-    Vulqian::Engine::Graphics::Pipeline pipeline{"/home/george/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.vert.spv", "/home/george/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.frag.spv"};
+    Vulqian::Engine::Graphics::Device device{this->window};
+    Vulqian::Engine::Graphics::Pipeline pipeline{
+        this->device,
+        "/home/george/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.vert.spv",
+        "/home/george/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.frag.spv",
+        Vulqian::Engine::Graphics::Pipeline::get_default_config(WIDTH, HEIGHT)};
 };
