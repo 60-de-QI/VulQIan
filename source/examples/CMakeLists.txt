@@ -15,3 +15,4 @@ add_executable(vulqian_example App.cpp main.cpp)
 # Add additional libraries or dependencies as needed
 target_include_directories(vulqian_example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(vulqian_example PRIVATE VulQIan)
+target_include_directories(vulqian_example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../VulQIan/)

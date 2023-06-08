@@ -297,7 +297,7 @@ void Device::hasGflwRequiredInstanceExtensions() const {
     auto requiredExtensions = getRequiredExtensions();
     for (const auto &required : requiredExtensions) {
         std::cout << "\t" << required << std::endl;
-        if (available.find(required) == available.end()) {
+        if (!available.contains(required)) {
             throw Vulqian::Exception::missing_requirements("glfw extension");
         }
     }
