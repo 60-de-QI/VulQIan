@@ -27,12 +27,12 @@ This is a simple 3D engine built using Vulkan, C++, CMake and Visual Studio Code
 
 ## Roadmap
 
-1.  :construction: Window Creation and Vulkan Initialization
-2.  :construction: Vulkan Swap Chain
-3.  :construction: Vertex and Index Buffers
-4.  :construction: Shaders and Pipeline Setup
-5.  :construction: Rendering a Triangle
-6.  :construction: Uniform Buffers
+1.  :heavy_check_mark: Window Creation and Vulkan Initialization
+2.  :heavy_check_mark: Vulkan Swap Chain
+3.  :heavy_check_mark: Vertex and Index Buffers
+4.  :heavy_check_mark: Shaders and Pipeline Setup
+5.  :heavy_check_mark: Rendering a Triangle
+6.  :white_check_mark: Uniform Buffers
 7.  :construction: Textures
 8.  :construction: Basic Lighting
 9.  :construction: Model Loading
