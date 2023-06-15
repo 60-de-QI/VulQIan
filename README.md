@@ -1,6 +1,6 @@
 # VulQIan: The Epic Intelligence Engine
 
-This is a simple 3D engine built using Vulkan, C++, CMake and Visual Studio Code. The engine aims to provide a foundation for creating real-time 3D applications.
+This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Code. The engine aims to provide a foundation for creating real-time 3D applications. This is mostly a way for me to explore concepts and techniques used in graphics programming on a lower level of implementation.
 
 ## Features
 
