@@ -46,8 +46,8 @@ void App::create_pipeline() {
     pipeline_info.pipeline_layout = this->pipeline_layout;
     this->pipeline = std::make_unique<Vulqian::Engine::Graphics::Pipeline>(
         this->device,
-        "/home/george/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.vert.spv",
-        "/home/george/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.frag.spv",
+        "./conan-build/Debug/Shaders/simple_shader.vert.spv",
+        "./conan-build/Debug/Shaders/simple_shader.frag.spv",
         pipeline_info);
 }
 
