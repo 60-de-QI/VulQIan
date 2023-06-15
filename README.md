@@ -48,7 +48,7 @@ This is a simple 3D engine built using Vulkan, C++, CMake and Visual Studio Code
 19.  :construction: Physics Simulation
 20.  :construction: Tooling and Editor
 
-Please note that this roadmap is a general guideline and can be adjusted based on your preferences and project requirements. Each feature builds upon the previous ones, allowing you to incrementally expand your engine's capabilities while deepening your understanding of the underlying concepts and technologies.
+Please note that this roadmap is a general guideline and can be adjusted based of my preferences and project requirements. Each feature builds upon the previous ones, allowing me to incrementally expand the engine's capabilities while deepening my understanding of the underlying concepts and technologies.
 
 ## Getting Started
 
