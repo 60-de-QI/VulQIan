@@ -37,7 +37,7 @@ class Pipeline {
     void operator=(const Pipeline&) = delete;
 
     void bind(VkCommandBuffer command_buffer);
-    static void get_default_config(PipelineConstructInfo default_conf, uint32_t width, uint32_t height) noexcept;
+    static void get_default_config(PipelineConstructInfo& default_conf, uint32_t width, uint32_t height) noexcept;
 
    private:
     void create_graphics_pipeline(const std::string& vert_filepath, const std::string& frag_filepath, const PipelineConstructInfo& config);

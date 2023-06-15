@@ -117,7 +117,7 @@ void Pipeline::create_shader_module(const std::vector<char>& code, VkShaderModul
     }
 }
 
-void Pipeline::get_default_config(PipelineConstructInfo default_conf, uint32_t width, uint32_t height) noexcept {
+void Pipeline::get_default_config(PipelineConstructInfo& default_conf, uint32_t width, uint32_t height) noexcept {
     // Represents the first step of the pipeline // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPrimitiveTopology.html
     default_conf.input_assembly_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     default_conf.input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;  // Every three verteces are grouped in triangles // A strip would use the previous two verteces with a new one to form a triangle

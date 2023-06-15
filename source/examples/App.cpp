@@ -39,9 +39,8 @@ void App::create_pipeline_layout() {
 }
 
 void App::create_pipeline() {
-    Vulqian::Engine::Graphics::PipelineConstructInfo pipeline_info{};    
+    Vulqian::Engine::Graphics::PipelineConstructInfo pipeline_info{};
     Vulqian::Engine::Graphics::Pipeline::get_default_config(pipeline_info, this->swap_chain.width(), this->swap_chain.height());
-
 
     pipeline_info.render_pass = this->swap_chain.getRenderPass();
     pipeline_info.pipeline_layout = this->pipeline_layout;
@@ -89,11 +88,11 @@ void App::create_command_buffers() {
 
         vkCmdBeginRenderPass(this->command_buffers[i], &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 
-        this->pipeline->bind(command_buffers[i]);
-        vkCmdDraw(command_buffers[i], 3, 1, 0, 0);
+        this->pipeline->bind(this->command_buffers[i]);
+        vkCmdDraw(this->command_buffers[i], 3, 1, 0, 0);
 
-        vkCmdEndRendering(command_buffers[i]);
-        if (vkEndCommandBuffer(command_buffers[i]) != VK_SUCCESS) {
+        vkCmdEndRenderPass(this->command_buffers[i]);
+        if (vkEndCommandBuffer(this->command_buffers[i]) != VK_SUCCESS) {
             throw Vulqian::Exception::failed_to_bind("and record command buffers");
         }
     }
@@ -111,5 +110,4 @@ void App::draw_frame() {
     if (result != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_open("swap chain image");
     }
-
 }
