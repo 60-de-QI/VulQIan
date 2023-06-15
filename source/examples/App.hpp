@@ -8,21 +8,35 @@
 #include <VulQIan/Engine.hpp>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
+#include <vector>
 
 class App {
    public:
     static constexpr int WIDTH = 800;
     static constexpr int HEIGHT = 600;
 
-    void run(void) const;
+    void run(void);
+
+    App();
+    ~App();
+
+    App(const App &) = delete;
+    App &operator=(const App&) = delete;
 
    private:
+    void create_pipeline_layout();
+    void create_pipeline();
+    void create_command_buffers();
+    void draw_frame();
+
     Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
     Vulqian::Engine::Graphics::Device device{this->window};
-    Vulqian::Engine::Graphics::Pipeline pipeline{
-        this->device,
-        "/home/george/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.vert.spv",
-        "/home/george/dev/VulQIan/source/VulQIan/Graphics/Shaders/simple_shader.frag.spv",
-        Vulqian::Engine::Graphics::Pipeline::get_default_config(WIDTH, HEIGHT)};
+    Vulqian::Engine::Graphics::SwapChain swap_chain{device, window.get_extent()};
+
+    VkPipelineLayout pipeline_layout;
+
+    std::unique_ptr<Vulqian::Engine::Graphics::Pipeline> pipeline;
+    std::vector<VkCommandBuffer> command_buffers;
 };

@@ -14,11 +14,11 @@
 
 namespace Vulqian::Engine {
 
-    struct glfwDeleter {
-        void operator()(GLFWwindow* ptr) const {
-            glfwDestroyWindow(ptr);
-        }
-    };
+struct glfwDeleter {
+    void operator()(GLFWwindow* ptr) const {
+        glfwDestroyWindow(ptr);
+    }
+};
 
 class Window {
    public:
@@ -31,6 +31,8 @@ class Window {
     Window& operator=(const Window&) = delete;
 
     inline bool should_close() const noexcept { return glfwWindowShouldClose(this->window.get()); }
+
+    VkExtent2D get_extent() const noexcept { return {static_cast<uint32_t>(this->width), static_cast<uint32_t>(this->height)}; }
 
     void create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const;
 

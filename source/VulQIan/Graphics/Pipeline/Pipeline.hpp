@@ -13,6 +13,18 @@
 namespace Vulqian::Engine::Graphics {
 
 struct PipelineConstructInfo {
+    VkViewport viewport;
+    VkRect2D scissor;
+    VkPipelineViewportStateCreateInfo viewport_info;
+    VkPipelineInputAssemblyStateCreateInfo input_assembly_info;
+    VkPipelineRasterizationStateCreateInfo rasterization_info;
+    VkPipelineMultisampleStateCreateInfo multisample_info;
+    VkPipelineColorBlendAttachmentState color_blend_attachment;
+    VkPipelineColorBlendStateCreateInfo color_blend_info;
+    VkPipelineDepthStencilStateCreateInfo depth_stencil_info;
+    VkPipelineLayout pipeline_layout = nullptr;
+    VkRenderPass render_pass = nullptr;
+    uint32_t subpass = 0;
 };
 
 class Pipeline {
@@ -24,10 +36,11 @@ class Pipeline {
     Pipeline(const Pipeline&) = delete;
     void operator=(const Pipeline&) = delete;
 
-    static PipelineConstructInfo get_default_config(uint32_t width, uint32_t height) noexcept;
+    void bind(VkCommandBuffer command_buffer);
+    static void get_default_config(PipelineConstructInfo default_conf, uint32_t width, uint32_t height) noexcept;
 
    private:
-    void create_graphics_pipeline(const std::string& vert_filepath, const std::string& frag_filepath, const PipelineConstructInfo& config) const;
+    void create_graphics_pipeline(const std::string& vert_filepath, const std::string& frag_filepath, const PipelineConstructInfo& config);
     void create_shader_module(const std::vector<char>& code, VkShaderModule* shader_mod);
 
     static std::vector<char> read_file(const std::string& path);

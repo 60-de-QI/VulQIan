@@ -7,4 +7,6 @@
 
 #include "Graphics/Device/Device.hpp"
 #include "Graphics/Pipeline/Pipeline.hpp"
+#include "Graphics/SwapChain/SwapChain.hpp"
+#include "Exception/Exception.hpp"
 #include "Window/Window.hpp"

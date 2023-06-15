@@ -3,7 +3,7 @@
 // This software is provided 'as is' and without any warranty, express or implied.
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
-#pragma on
+#pragma once
 
 #include <source_location>
 #include <stdexcept>
