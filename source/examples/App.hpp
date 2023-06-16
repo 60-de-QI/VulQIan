@@ -22,10 +22,12 @@ class App {
     App();
     ~App();
 
-    App(const App &) = delete;
-    App &operator=(const App&) = delete;
+    App(const App&) = delete;
+    App& operator=(const App&) = delete;
+    void generate_sierpinski_triangle(std::vector<Vulqian::Engine::Graphics::Model::Vertex>& vertices, int level, const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
 
    private:
+    void load_models();
     void create_pipeline_layout();
     void create_pipeline();
     void create_command_buffers();
@@ -39,4 +41,5 @@ class App {
 
     std::unique_ptr<Vulqian::Engine::Graphics::Pipeline> pipeline;
     std::vector<VkCommandBuffer> command_buffers;
+    std::unique_ptr<Vulqian::Engine::Graphics::Model> model;
 };

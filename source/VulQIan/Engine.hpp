@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Graphics/Device/Device.hpp"
+#include "Graphics/Model/Model.hpp"
 #include "Graphics/Pipeline/Pipeline.hpp"
 #include "Graphics/SwapChain/SwapChain.hpp"
 #include "Exception/Exception.hpp"

@@ -4,6 +4,8 @@
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
 #include "Pipeline.hpp"
+#include "../../Exception/Exception.hpp"
+#include "../Model/Model.hpp"
 
 #include <array>
 #include <bit>
@@ -11,7 +13,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "../../Exception/Exception.hpp"
 namespace Vulqian::Engine::Graphics {
 
 Pipeline::Pipeline(
@@ -74,12 +75,14 @@ void Pipeline::create_graphics_pipeline(const std::string& vert_filepath, const 
     shader_stage[1].pNext = nullptr;
     shader_stage[1].pSpecializationInfo = nullptr;
 
+    auto attribute_descriptions = Vulqian::Engine::Graphics::Model::Vertex::get_attribute_descriptions();
+    auto binding_descriptions = Vulqian::Engine::Graphics::Model::Vertex::get_binding_descriptions();
     VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertex_input_info.vertexAttributeDescriptionCount = 0;
-    vertex_input_info.vertexBindingDescriptionCount = 0;
-    vertex_input_info.pVertexAttributeDescriptions = nullptr;
-    vertex_input_info.pVertexBindingDescriptions = nullptr;
+    vertex_input_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size());
+    vertex_input_info.vertexBindingDescriptionCount = static_cast<uint32_t>(binding_descriptions.size());;
+    vertex_input_info.pVertexAttributeDescriptions = attribute_descriptions.data();
+    vertex_input_info.pVertexBindingDescriptions = binding_descriptions.data();
 
     VkGraphicsPipelineCreateInfo pipeline_info{};
     pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

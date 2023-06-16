@@ -394,7 +394,8 @@ uint32_t Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags props
     throw Vulqian::Exception::failed_to_find("suitable memory type");
 }
 
-void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags_property, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
+void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags_property, VkBuffer& buffer, VkDeviceMemory& buffer_memory) {
+    // We specify the reqs for the buffer
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;
@@ -405,19 +406,21 @@ void Device::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryP
         throw Vulqian::Exception::failed_to_create("vertex buffer");
     }
 
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(this->device, buffer, &memRequirements);
+    // Then we use these requirements and assign them to our buffer
+    VkMemoryRequirements mem_requirements;
+    vkGetBufferMemoryRequirements(this->device, buffer, &mem_requirements);
 
+    // Then we allocate the memory for our buffer
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize = memRequirements.size;
-    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, flags_property);
+    allocInfo.allocationSize = mem_requirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(mem_requirements.memoryTypeBits, flags_property);
 
-    if (vkAllocateMemory(this->device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+    if (vkAllocateMemory(this->device, &allocInfo, nullptr, &buffer_memory) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_allocate("vertex buffer memory");
     }
 
-    vkBindBufferMemory(this->device, buffer, bufferMemory, 0);
+    vkBindBufferMemory(this->device, buffer, buffer_memory, 0);
 }
 
 VkCommandBuffer Device::beginSingleTimeCommands() {

@@ -8,6 +8,7 @@
 #include <array>
 
 App::App() {
+    this->load_models();
     this->create_pipeline_layout();
     this->create_pipeline();
     this->create_command_buffers();
@@ -89,7 +90,9 @@ void App::create_command_buffers() {
         vkCmdBeginRenderPass(this->command_buffers[i], &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 
         this->pipeline->bind(this->command_buffers[i]);
-        vkCmdDraw(this->command_buffers[i], 3, 1, 0, 0);
+        this->model->bind(this->command_buffers[i]);
+        this->model->draw(this->command_buffers[i]);
+        // vkCmdDraw(this->command_buffers[i], 3, 1, 0, 0);
 
         vkCmdEndRenderPass(this->command_buffers[i]);
         if (vkEndCommandBuffer(this->command_buffers[i]) != VK_SUCCESS) {
@@ -110,4 +113,31 @@ void App::draw_frame() {
     if (result != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_open("swap chain image");
     }
+}
+
+void App::generate_sierpinski_triangle(std::vector<Vulqian::Engine::Graphics::Model::Vertex>& vertices, int level, const glm::vec2& a, const glm::vec2& b, const glm::vec2& c) {
+    if (level == 0) {
+        // Add the vertices of the triangle to the vector
+        vertices.push_back(Vulqian::Engine::Graphics::Model::Vertex(a));
+        vertices.push_back(Vulqian::Engine::Graphics::Model::Vertex(b));
+        vertices.push_back(Vulqian::Engine::Graphics::Model::Vertex(c));
+    } else {
+        // Calculate the midpoints of the sides
+        glm::vec2 ab = (a + b) * 0.5f;
+        glm::vec2 ac = (a + c) * 0.5f;
+        glm::vec2 bc = (b + c) * 0.5f;
+
+        // Recursively generate the smaller triangles
+        generate_sierpinski_triangle(vertices, level - 1, a, ab, ac);
+        generate_sierpinski_triangle(vertices, level - 1, ab, b, bc);
+        generate_sierpinski_triangle(vertices, level - 1, ac, bc, c);
+    }
+}
+
+void App::load_models() {
+    // std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices{{{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
+    std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices;
+    generate_sierpinski_triangle(vertices, 6, {0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f});
+
+    this->model = std::make_unique<Vulqian::Engine::Graphics::Model>(this->device, vertices);
 }
