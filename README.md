@@ -32,7 +32,7 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 3.  :heavy_check_mark: Vertex and Index Buffers
 4.  :heavy_check_mark: Shaders and Pipeline Setup
 5.  :heavy_check_mark: Rendering a Triangle
-6.  :white_check_mark: Uniform Buffers
+6.  :construction_worker: Uniform Buffers
 7.  :construction: Textures
 8.  :construction: Basic Lighting
 9.  :construction: Model Loading

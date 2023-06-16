@@ -49,9 +49,9 @@ class Device {
     VkQueue graphicsQueue() const noexcept { return this->graphics_queue; }
     VkQueue presentQueue() const noexcept { return this->present_queue; }
 
-    SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(this->physical_device); }
+    SwapChainSupportDetails getSwapChainSupport() noexcept { return querySwapChainSupport(this->physical_device); }
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(this->physical_device); }
+    QueueFamilyIndices findPhysicalQueueFamilies() noexcept { return findQueueFamilies(this->physical_device); }
     VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
     // Buffer Helper Functions
@@ -97,7 +97,7 @@ class Device {
     VkQueue graphics_queue;
     VkQueue present_queue;
 
-    const std::vector<const char *> validation_layers = {"VK_LAYER_KHRONOS_validation"};
-    const std::vector<const char *> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+    const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
+    const std::vector<const char*> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };
 }  // namespace Vulqian::Engine::Graphics
