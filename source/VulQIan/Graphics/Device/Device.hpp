@@ -15,15 +15,15 @@ namespace Vulqian::Engine::Graphics {
 struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
+    std::vector<VkPresentModeKHR> present_modes;
 };
 
 struct QueueFamilyIndices {
-    uint32_t graphicsFamily;
-    uint32_t presentFamily;
-    bool graphicsFamilyHasValue = false;
-    bool presentFamilyHasValue = false;
-    bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
+    uint32_t graphics_family;
+    uint32_t present_family;
+    bool graphics_family_has_value = false;
+    bool present_family_has_value = false;
+    bool isComplete() const { return graphics_family_has_value && present_family_has_value; }
 };
 
 class Device {
@@ -43,17 +43,16 @@ class Device {
     Device(Device &&) = delete;
     Device &operator=(Device &&) = delete;
 
-    VkCommandPool getCommandPool() { return commandPool; }
-    VkDevice device() { return device_; }
-    VkSurfaceKHR surface() { return surface_; }
-    VkQueue graphicsQueue() { return graphicsQueue_; }
-    VkQueue presentQueue() { return presentQueue_; }
+    VkCommandPool getCommandPool() const noexcept { return this->command_pool; }
+    VkDevice get_device() const noexcept { return this->device; }
+    VkSurfaceKHR get_surface() const noexcept { return this->surface; }
+    VkQueue graphicsQueue() const noexcept { return this->graphics_queue; }
+    VkQueue presentQueue() const noexcept { return this->present_queue; }
 
-    SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
+    SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(this->physical_device); }
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
-    VkFormat findSupportedFormat(
-        const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(this->physical_device); }
+    VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
     // Buffer Helper Functions
     void createBuffer(
@@ -65,15 +64,8 @@ class Device {
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-    void copyBufferToImage(
-        VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
-
-    void createImageWithInfo(
-        const VkImageCreateInfo &imageInfo,
-        VkMemoryPropertyFlags properties,
-        VkImage &image,
-        VkDeviceMemory &imageMemory);
-
+    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
+    void createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
 
    private:
     void createInstance();
@@ -95,17 +87,17 @@ class Device {
 
     VkPhysicalDeviceProperties properties;
     VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    VkDebugUtilsMessengerEXT debug_messenger;
+    VkPhysicalDevice physical_device = VK_NULL_HANDLE;
     Vulqian::Engine::Window &window;
-    VkCommandPool commandPool;
+    VkCommandPool command_pool;
 
-    VkDevice device_;
-    VkSurfaceKHR surface_;
-    VkQueue graphicsQueue_;
-    VkQueue presentQueue_;
+    VkDevice device;
+    VkSurfaceKHR surface;
+    VkQueue graphics_queue;
+    VkQueue present_queue;
 
-    const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-    const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+    const std::vector<const char *> validation_layers = {"VK_LAYER_KHRONOS_validation"};
+    const std::vector<const char *> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };
 }  // namespace Vulqian::Engine::Graphics

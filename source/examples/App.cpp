@@ -14,7 +14,7 @@ App::App() {
 }
 
 App::~App() {
-    vkDestroyPipelineLayout(this->device.device(), this->pipeline_layout, nullptr);
+    vkDestroyPipelineLayout(this->device.get_device(), this->pipeline_layout, nullptr);
 }
 
 void App::run() {
@@ -22,7 +22,7 @@ void App::run() {
         glfwPollEvents();
         this->draw_frame();
     }
-    vkDeviceWaitIdle(this->device.device());
+    vkDeviceWaitIdle(this->device.get_device());
 }
 
 void App::create_pipeline_layout() {
@@ -33,7 +33,7 @@ void App::create_pipeline_layout() {
     pipeline_create_info.pushConstantRangeCount = 0;
     pipeline_create_info.pPushConstantRanges = nullptr;
 
-    if (vkCreatePipelineLayout(this->device.device(), &pipeline_create_info, nullptr, &pipeline_layout) != VK_SUCCESS) {
+    if (vkCreatePipelineLayout(this->device.get_device(), &pipeline_create_info, nullptr, &pipeline_layout) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_create("pipeline layout");
     }
 }
@@ -60,7 +60,7 @@ void App::create_command_buffers() {
     alloc_info.commandPool = this->device.getCommandPool();
     alloc_info.commandBufferCount = static_cast<uint32_t>(this->command_buffers.size());
 
-    if (vkAllocateCommandBuffers(this->device.device(), &alloc_info, this->command_buffers.data()) != VK_SUCCESS) {
+    if (vkAllocateCommandBuffers(this->device.get_device(), &alloc_info, this->command_buffers.data()) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_allocate("Command buffers");
     }
 

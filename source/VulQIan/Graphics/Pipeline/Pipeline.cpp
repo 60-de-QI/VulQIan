@@ -23,9 +23,9 @@ Pipeline::Pipeline(
 }
 
 Pipeline::~Pipeline() {
-    vkDestroyShaderModule(this->device.device(), this->vert_module, nullptr);
-    vkDestroyShaderModule(this->device.device(), this->frag_module, nullptr);
-    vkDestroyPipeline(this->device.device(), this->graphics_pipeline, nullptr);
+    vkDestroyShaderModule(this->device.get_device(), this->vert_module, nullptr);
+    vkDestroyShaderModule(this->device.get_device(), this->frag_module, nullptr);
+    vkDestroyPipeline(this->device.get_device(), this->graphics_pipeline, nullptr);
 }
 
 std::vector<char> Pipeline::read_file(const std::string& path) {
@@ -101,7 +101,7 @@ void Pipeline::create_graphics_pipeline(const std::string& vert_filepath, const 
     pipeline_info.basePipelineIndex = -1;
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &graphics_pipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(device.get_device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &graphics_pipeline) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_create("graphics pipeline");
     }
 }
@@ -112,7 +112,7 @@ void Pipeline::create_shader_module(const std::vector<char>& code, VkShaderModul
     create_info.codeSize = code.size();
     create_info.pCode = std::bit_cast<const uint32_t*>(code.data());
 
-    if (vkCreateShaderModule(this->device.device(), &create_info, nullptr, shader_mod) != VK_SUCCESS) {
+    if (vkCreateShaderModule(this->device.get_device(), &create_info, nullptr, shader_mod) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_create("shader module");
     }
 }
