@@ -134,9 +134,11 @@ void App::generate_sierpinski_triangle(std::vector<Vulqian::Engine::Graphics::Mo
 }
 
 void App::load_models() {
-    // std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices{{{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
-    std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices;
-    generate_sierpinski_triangle(vertices, 6, {0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f});
+    std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices{
+        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+    // generate_sierpinski_triangle(vertices, 6, {0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f});
 
     this->model = std::make_unique<Vulqian::Engine::Graphics::Model>(this->device, vertices);
 }
