@@ -227,23 +227,23 @@ void Device::setupDebugMessenger() {
 }
 
 bool Device::checkValidationLayerSupport() const {
-    uint32_t layerCount;
-    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+    uint32_t layer_count;
+    vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
 
-    std::vector<VkLayerProperties> availableLayers(layerCount);
-    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+    std::vector<VkLayerProperties> available_layers(layer_count);
+    vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
 
-    for (const char *layerName : validation_layers) {
-        bool layerFound = false;
+    for (const char* layer_name : validation_layers) {
+        bool layer_found = false;
 
-        for (const auto &layerProperties : availableLayers) {
-            if (strcmp(layerName, layerProperties.layerName) == 0) {
-                layerFound = true;
+        for (const auto &layer_properties : available_layers) {
+            if (strcmp(layer_name, layer_properties.layerName) == 0) {
+                layer_found = true;
                 break;
             }
         }
 
-        if (!layerFound) {
+        if (!layer_found) {
             return false;
         }
     }
@@ -299,7 +299,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice selected_device) const
         &extensionCount,
         availableExtensions.data());
 
-    std::set<std::string> requiredExtensions(this->device_extensions.begin(), this->device_extensions.end());
+    std::set<std::string> requiredExtensions(this->device_extensions.cbegin(), this->device_extensions.cend());
 
     for (const auto &extension : availableExtensions) {
         requiredExtensions.erase(extension.extensionName);
