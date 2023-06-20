@@ -27,15 +27,18 @@ class App {
     void generate_sierpinski_triangle(std::vector<Vulqian::Engine::Graphics::Model::Vertex>& vertices, int level, const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
 
    private:
-    void load_models();
-    void create_pipeline_layout();
-    void create_pipeline();
-    void create_command_buffers();
-    void draw_frame();
+    void load_models(void);
+    void create_pipeline_layout(void);
+    void create_pipeline(void);
+    void create_command_buffers(void);
+    void free_command_buffers(void);
+    void draw_frame(void);
+    void recreate_swap_chain(void);
+    void record_command_buffer(int image_index);
 
     Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
     Vulqian::Engine::Graphics::Device device{this->window};
-    Vulqian::Engine::Graphics::SwapChain swap_chain{device, window.get_extent()};
+    std::unique_ptr<Vulqian::Engine::Graphics::SwapChain> swap_chain;
 
     VkPipelineLayout pipeline_layout;
 

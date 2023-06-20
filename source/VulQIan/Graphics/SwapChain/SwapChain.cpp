@@ -7,6 +7,16 @@
 
 namespace Vulqian::Engine::Graphics {
 SwapChain::SwapChain(Vulqian::Engine::Graphics::Device& deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent} {
+    this->init();
+}
+
+SwapChain::SwapChain(Vulqian::Engine::Graphics::Device& deviceRef, VkExtent2D extent, std::shared_ptr<SwapChain> previous) : device{deviceRef}, windowExtent{extent}, old_swap_chain{previous} {
+    this->init();
+
+    this->old_swap_chain = nullptr;
+}
+
+void SwapChain::init() {
     createSwapChain();
     createImageViews();
     createRenderPass();
@@ -156,7 +166,7 @@ void SwapChain::createSwapChain() {
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
 
-    createInfo.oldSwapchain = VK_NULL_HANDLE;
+    createInfo.oldSwapchain = this->old_swap_chain == nullptr ? VK_NULL_HANDLE : this->old_swap_chain->swapChain;
 
     if (vkCreateSwapchainKHR(device.get_device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_create("swap chain");

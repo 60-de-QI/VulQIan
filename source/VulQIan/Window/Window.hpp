@@ -22,7 +22,7 @@ struct glfwDeleter {
 
 class Window {
   public:
-    Window(unsigned short int w, unsigned short int h, std::string_view n);
+    Window(int w, int h, std::string_view n);
     ~Window();
 
     // in order to respect RAII, we delete copy operations
@@ -35,10 +35,14 @@ class Window {
     VkExtent2D get_extent() const noexcept { return {static_cast<uint32_t>(this->width), static_cast<uint32_t>(this->height)}; }
 
     void create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const;
+    bool was_window_resized(void) const noexcept { return this->frame_buffer_resized; }
+    void reset_window_resized_flage(void) { this->frame_buffer_resized = false; }
 
   private:
-    const unsigned short int width{640};
-    const unsigned short int height{360};
+    static void frame_buffer_resized_callback(GLFWwindow* window, int width, int height);
+    int width{640};
+    int height{360};
+    bool    frame_buffer_resized{false};
 
     std::string name{"Window"};
     std::unique_ptr<GLFWwindow, glfwDeleter> window;

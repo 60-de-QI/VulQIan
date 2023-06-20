@@ -95,7 +95,7 @@ void Pipeline::create_graphics_pipeline(const std::string& vert_filepath, const 
     pipeline_info.pMultisampleState = &config.multisample_info;
     pipeline_info.pColorBlendState = &config.color_blend_info;
     pipeline_info.pDepthStencilState = &config.depth_stencil_info;
-    pipeline_info.pDynamicState = nullptr;
+    pipeline_info.pDynamicState = &config.dynamic_state_info;
 
     pipeline_info.layout = config.pipeline_layout;
     pipeline_info.renderPass = config.render_pass;
@@ -120,30 +120,17 @@ void Pipeline::create_shader_module(const std::vector<char>& code, VkShaderModul
     }
 }
 
-void Pipeline::get_default_config(PipelineConstructInfo& default_conf, uint32_t width, uint32_t height) noexcept {
+void Pipeline::get_default_config(PipelineConstructInfo& default_conf) noexcept {
     // Represents the first step of the pipeline // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPrimitiveTopology.html
     default_conf.input_assembly_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     default_conf.input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; // Every three verteces are grouped in triangles // A strip would use the previous two verteces with a new one to form a triangle
     default_conf.input_assembly_info.primitiveRestartEnable = VK_FALSE;              // When this to true when using a strip we can break up a strip by index value in a buffer
 
-    // Describes the transformation between the image and the pipeline output {-1 to 1} view grid
-    default_conf.viewport.x = 0.0f;
-    default_conf.viewport.y = 0.0f;
-    default_conf.viewport.width = static_cast<float>(width);
-    default_conf.viewport.height = static_cast<float>(height);
-    // Depthrange for the view port, will linearly transforme the Z position of shaders and such
-    default_conf.viewport.minDepth = 0.0f;
-    default_conf.viewport.maxDepth = 1.0f;
-
-    // Anyting outside the scissor limits will be cut from the image
-    default_conf.scissor.offset = {0, 0};
-    default_conf.scissor.extent = {width, height};
-
     default_conf.viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     default_conf.viewport_info.viewportCount = 1;
-    default_conf.viewport_info.pViewports = &default_conf.viewport;
+    default_conf.viewport_info.pViewports = nullptr;
     default_conf.viewport_info.scissorCount = 1;
-    default_conf.viewport_info.pScissors = &default_conf.scissor;
+    default_conf.viewport_info.pScissors = nullptr;
 
     // The rasterization stage: breaks up goematry in fragments for every pixel of the triangles that overlaps.
     default_conf.rasterization_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -197,6 +184,12 @@ void Pipeline::get_default_config(PipelineConstructInfo& default_conf, uint32_t 
     default_conf.depth_stencil_info.stencilTestEnable = VK_FALSE;
     default_conf.depth_stencil_info.front = {}; // Optional
     default_conf.depth_stencil_info.back = {};  // Optional
+
+    default_conf.dynamic_state_enables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    default_conf.dynamic_state_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    default_conf.dynamic_state_info.pDynamicStates = default_conf.dynamic_state_enables.data();
+    default_conf.dynamic_state_info.dynamicStateCount = static_cast<uint32_t>(default_conf.dynamic_state_enables.size());
+    default_conf.dynamic_state_info.flags = 0;
 }
 
 void Pipeline::bind(VkCommandBuffer command_buffer) {

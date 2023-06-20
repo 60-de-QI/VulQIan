@@ -33,21 +33,9 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 4.  :heavy_check_mark: Shaders and Pipeline Setup
 5.  :heavy_check_mark: Rendering a Triangle
 6.  :heavy_check_mark: Vertex Buffers
-7.  :construction_worker: Fragment Interpolation
-8.  :construction: Textures
-9.  :construction: Basic Lighting
-10.  :construction: Model Loading
-11.  :construction: Camera Controls
-12.  :construction: Scene Graph
-13.  :construction: Advanced Lighting and Shading
-14.  :construction: Shadow Mapping
-15.  :construction: Post-Processing Effects
-16.  :construction: Optimization and Performance
-17.  :construction: Advanced Rendering Techniques
-18.  :construction: User Interface
-19.  :construction: Sound and Audio
-20.  :construction: Physics Simulation
-21.  :construction: Tooling and Editor
+7.  :heavy_check_mark: Fragment Interpolation
+8.  :construction_worker: Vulkan Push Constant
+9.  :construction: Textures
 
 Please note that this roadmap is a general guideline and can be adjusted based of my preferences and project requirements. Each feature builds upon the previous ones, allowing me to incrementally expand the engine's capabilities while deepening my understanding of the underlying concepts and technologies.
 
