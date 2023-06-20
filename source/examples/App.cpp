@@ -92,7 +92,6 @@ void App::create_command_buffers() {
         this->pipeline->bind(this->command_buffers[i]);
         this->model->bind(this->command_buffers[i]);
         this->model->draw(this->command_buffers[i]);
-        // vkCmdDraw(this->command_buffers[i], 3, 1, 0, 0);
 
         vkCmdEndRenderPass(this->command_buffers[i]);
         if (vkEndCommandBuffer(this->command_buffers[i]) != VK_SUCCESS) {

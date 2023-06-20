@@ -5,12 +5,14 @@
 
 #include "Model.hpp"
 
+#include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstring>
 
 namespace Vulqian::Engine::Graphics {
 Model::Model(Vulqian::Engine::Graphics::Device &device, const std::vector<Vertex> &vertices) : device(device) {
-    this->create_vertext_buffers(vertices);
+    this->create_vertex_buffers(vertices);
 }
 
 Model::~Model() {
@@ -18,7 +20,7 @@ Model::~Model() {
     vkFreeMemory(this->device.get_device(), this->vertex_buffer_memory, nullptr);
 }
 
-void Model::create_vertext_buffers(const std::vector<Vertex> &vertices) {
+void Model::create_vertex_buffers(const std::vector<Vertex>& vertices) {
     this->vertext_count = static_cast<uint32_t>(vertices.size());
 
     assert(this->vertext_count >= 3 && "Vertex count must be at least 3.");
@@ -33,17 +35,17 @@ void Model::create_vertext_buffers(const std::vector<Vertex> &vertices) {
 
     void *data;
     vkMapMemory(this->device.get_device(), this->vertex_buffer_memory, 0, buffer_size, 0, &data);
-    memcpy(data, vertices.data(), static_cast<size_t>(buffer_size));
+    std::copy(vertices.data(), vertices.data() + vertext_count, static_cast<Vertex *>(data));
     vkUnmapMemory(this->device.get_device(), this->vertex_buffer_memory);
 }
 
 void Model::bind(VkCommandBuffer command_buffer) {
-    VkBuffer buffers[] = {this->vertex_buffer};
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(command_buffer, 0, 1, buffers, offsets);
+    std::array<VkBuffer, 1> buffers = {this->vertex_buffer};
+    std::array<VkDeviceSize, 1> offsets = {0};
+    vkCmdBindVertexBuffers(command_buffer, 0, 1, buffers.data(), offsets.data());
 }
 
-void Model::draw(VkCommandBuffer command_buffer) {
+void Model::draw(VkCommandBuffer command_buffer) const {
     vkCmdDraw(command_buffer, this->vertext_count, 1, 0, 0);
 }
 

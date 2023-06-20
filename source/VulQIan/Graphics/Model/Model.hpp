@@ -31,10 +31,10 @@ class Model {
     Model &operator=(const Model &) = delete;
 
     void bind(VkCommandBuffer command_buffer);
-    void draw(VkCommandBuffer command_buffer);
+    void draw(VkCommandBuffer command_buffer) const;
 
    private:
-    void create_vertext_buffers(const std::vector<Vertex> &vertices);
+    void create_vertex_buffers(const std::vector<Vertex>& vertices);
 
     Vulqian::Engine::Graphics::Device &device;
     VkBuffer vertex_buffer;
