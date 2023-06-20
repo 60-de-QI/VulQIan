@@ -41,7 +41,7 @@ class Pipeline {
 
    private:
     void create_graphics_pipeline(const std::string& vert_filepath, const std::string& frag_filepath, const PipelineConstructInfo& config);
-    void create_shader_module(const std::vector<char>& code, VkShaderModule* shader_mod);
+    void create_shader_module(const std::vector<char>& code, VkShaderModule* shader_mod) const;
 
     static std::vector<char> read_file(const std::string& path);
     Device& device;

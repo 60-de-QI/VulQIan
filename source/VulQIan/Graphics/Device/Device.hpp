@@ -27,21 +27,21 @@ struct QueueFamilyIndices {
 };
 
 class Device {
-   public:
+  public:
 #ifdef NDEBUG
     const bool enableValidationLayers = false;
 #else
     const bool enableValidationLayers = true;
 #endif
 
-    explicit Device(Vulqian::Engine::Window &window);
+    explicit Device(Vulqian::Engine::Window& window);
     ~Device();
 
     // Not copyable or movable
-    Device(const Device &) = delete;
-    void operator=(const Device &) = delete;
-    Device(Device &&) = delete;
-    Device &operator=(Device &&) = delete;
+    Device(const Device&) = delete;
+    void operator=(const Device&) = delete;
+    Device(Device&&) = delete;
+    Device& operator=(Device&&) = delete;
 
     VkCommandPool getCommandPool() const noexcept { return this->command_pool; }
     VkDevice get_device() const noexcept { return this->device; }
@@ -52,22 +52,22 @@ class Device {
     SwapChainSupportDetails getSwapChainSupport() noexcept { return querySwapChainSupport(this->physical_device); }
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     QueueFamilyIndices findPhysicalQueueFamilies() noexcept { return findQueueFamilies(this->physical_device); }
-    VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
     // Buffer Helper Functions
     void createBuffer(
         VkDeviceSize size,
         VkBufferUsageFlags usage,
         VkMemoryPropertyFlags properties,
-        VkBuffer &buffer,
-        VkDeviceMemory &bufferMemory);
+        VkBuffer& buffer,
+        VkDeviceMemory& bufferMemory);
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
-    void createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
+    void createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 
-   private:
+  private:
     void createInstance();
     void setupDebugMessenger();
     void createSurface();
@@ -77,10 +77,10 @@ class Device {
 
     // helper functions
     bool isDeviceSuitable(VkPhysicalDevice device);
-    std::vector<const char *> getRequiredExtensions() const;
+    std::vector<const char*> getRequiredExtensions() const;
     bool checkValidationLayerSupport() const;
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const;
+    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) const;
     void hasGflwRequiredInstanceExtensions() const;
     bool checkDeviceExtensionSupport(VkPhysicalDevice device) const;
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
@@ -89,7 +89,7 @@ class Device {
     VkInstance instance;
     VkDebugUtilsMessengerEXT debug_messenger;
     VkPhysicalDevice physical_device = VK_NULL_HANDLE;
-    Vulqian::Engine::Window &window;
+    Vulqian::Engine::Window& window;
     VkCommandPool command_pool;
 
     VkDevice device;
@@ -100,4 +100,4 @@ class Device {
     const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char*> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };
-}  // namespace Vulqian::Engine::Graphics
+} // namespace Vulqian::Engine::Graphics

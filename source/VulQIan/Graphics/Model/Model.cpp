@@ -11,7 +11,7 @@
 #include <cstring>
 
 namespace Vulqian::Engine::Graphics {
-Model::Model(Vulqian::Engine::Graphics::Device &device, const std::vector<Vertex> &vertices) : device(device) {
+Model::Model(Vulqian::Engine::Graphics::Device& device, const std::vector<Vertex>& vertices) : device(device) {
     this->create_vertex_buffers(vertices);
 }
 
@@ -29,13 +29,13 @@ void Model::create_vertex_buffers(const std::vector<Vertex>& vertices) {
     this->device.createBuffer(
         buffer_size,
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,  // host = cpu
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // host = cpu
         this->vertex_buffer,
         this->vertex_buffer_memory);
 
-    void *data;
+    void* data;
     vkMapMemory(this->device.get_device(), this->vertex_buffer_memory, 0, buffer_size, 0, &data);
-    std::copy(vertices.data(), vertices.data() + vertext_count, static_cast<Vertex *>(data));
+    std::copy(vertices.data(), vertices.data() + vertext_count, static_cast<Vertex*>(data));
     vkUnmapMemory(this->device.get_device(), this->vertex_buffer_memory);
 }
 
@@ -59,4 +59,4 @@ std::vector<VkVertexInputAttributeDescription> Model::Vertex::get_attribute_desc
     // binding, location, format, offset
 }
 
-}  // namespace Vulqian::Engine::Graphics
+} // namespace Vulqian::Engine::Graphics

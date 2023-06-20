@@ -21,7 +21,7 @@ struct glfwDeleter {
 };
 
 class Window {
-   public:
+  public:
     Window(unsigned short int w, unsigned short int h, std::string_view n);
     ~Window();
 
@@ -36,11 +36,11 @@ class Window {
 
     void create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const;
 
-   private:
+  private:
     const unsigned short int width{640};
     const unsigned short int height{360};
 
     std::string name{"Window"};
     std::unique_ptr<GLFWwindow, glfwDeleter> window;
 };
-}  // namespace Vulqian::Engine
+} // namespace Vulqian::Engine

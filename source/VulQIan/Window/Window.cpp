@@ -26,4 +26,4 @@ void Window::create_window_surface(VkInstance instance, VkSurfaceKHR* surface) c
     }
 }
 
-}  // namespace Vulqian::Engine
+} // namespace Vulqian::Engine

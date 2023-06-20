@@ -80,7 +80,7 @@ void Pipeline::create_graphics_pipeline(const std::string& vert_filepath, const 
     VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertex_input_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size());
-    vertex_input_info.vertexBindingDescriptionCount = static_cast<uint32_t>(binding_descriptions.size());;
+    vertex_input_info.vertexBindingDescriptionCount = static_cast<uint32_t>(binding_descriptions.size());
     vertex_input_info.pVertexAttributeDescriptions = attribute_descriptions.data();
     vertex_input_info.pVertexBindingDescriptions = binding_descriptions.data();
 
@@ -109,7 +109,7 @@ void Pipeline::create_graphics_pipeline(const std::string& vert_filepath, const 
     }
 }
 
-void Pipeline::create_shader_module(const std::vector<char>& code, VkShaderModule* shader_mod) {
+void Pipeline::create_shader_module(const std::vector<char>& code, VkShaderModule* shader_mod) const {
     VkShaderModuleCreateInfo create_info{};
     create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     create_info.codeSize = code.size();
@@ -123,8 +123,8 @@ void Pipeline::create_shader_module(const std::vector<char>& code, VkShaderModul
 void Pipeline::get_default_config(PipelineConstructInfo& default_conf, uint32_t width, uint32_t height) noexcept {
     // Represents the first step of the pipeline // https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPrimitiveTopology.html
     default_conf.input_assembly_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    default_conf.input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;  // Every three verteces are grouped in triangles // A strip would use the previous two verteces with a new one to form a triangle
-    default_conf.input_assembly_info.primitiveRestartEnable = VK_FALSE;               // When this to true when using a strip we can break up a strip by index value in a buffer
+    default_conf.input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; // Every three verteces are grouped in triangles // A strip would use the previous two verteces with a new one to form a triangle
+    default_conf.input_assembly_info.primitiveRestartEnable = VK_FALSE;              // When this to true when using a strip we can break up a strip by index value in a buffer
 
     // Describes the transformation between the image and the pipeline output {-1 to 1} view grid
     default_conf.viewport.x = 0.0f;
@@ -147,60 +147,60 @@ void Pipeline::get_default_config(PipelineConstructInfo& default_conf, uint32_t 
 
     // The rasterization stage: breaks up goematry in fragments for every pixel of the triangles that overlaps.
     default_conf.rasterization_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    default_conf.rasterization_info.depthClampEnable = VK_FALSE;  // Clamp values between one or zero.
+    default_conf.rasterization_info.depthClampEnable = VK_FALSE; // Clamp values between one or zero.
     default_conf.rasterization_info.rasterizerDiscardEnable = VK_FALSE;
     default_conf.rasterization_info.polygonMode = VK_POLYGON_MODE_FILL;
     default_conf.rasterization_info.lineWidth = 1.0f;
     default_conf.rasterization_info.cullMode = VK_CULL_MODE_NONE;
     default_conf.rasterization_info.frontFace = VK_FRONT_FACE_CLOCKWISE;
     default_conf.rasterization_info.depthBiasEnable = VK_FALSE;
-    default_conf.rasterization_info.depthBiasConstantFactor = 0.0f;  // Optional
-    default_conf.rasterization_info.depthBiasClamp = 0.0f;           // Optional
-    default_conf.rasterization_info.depthBiasSlopeFactor = 0.0f;     // Optional
+    default_conf.rasterization_info.depthBiasConstantFactor = 0.0f; // Optional
+    default_conf.rasterization_info.depthBiasClamp = 0.0f;          // Optional
+    default_conf.rasterization_info.depthBiasSlopeFactor = 0.0f;    // Optional
 
     // Multisampling stage, it's how edges of triangles are managed to avoid Edges (MSAA for ex is multisampling method)
     default_conf.multisample_info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     default_conf.multisample_info.sampleShadingEnable = VK_FALSE;
     default_conf.multisample_info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-    default_conf.multisample_info.minSampleShading = 1.0f;           // Optional
-    default_conf.multisample_info.pSampleMask = nullptr;             // Optional
-    default_conf.multisample_info.alphaToCoverageEnable = VK_FALSE;  // Optional
-    default_conf.multisample_info.alphaToOneEnable = VK_FALSE;       // Optional
+    default_conf.multisample_info.minSampleShading = 1.0f;          // Optional
+    default_conf.multisample_info.pSampleMask = nullptr;            // Optional
+    default_conf.multisample_info.alphaToCoverageEnable = VK_FALSE; // Optional
+    default_conf.multisample_info.alphaToOneEnable = VK_FALSE;      // Optional
 
     // Colour Blending is to control how colours mix together when triangles overlap
     default_conf.color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     default_conf.color_blend_attachment.blendEnable = VK_FALSE;
-    default_conf.color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-    default_conf.color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-    default_conf.color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
-    default_conf.color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-    default_conf.color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-    default_conf.color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
+    default_conf.color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
+    default_conf.color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+    default_conf.color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;             // Optional
+    default_conf.color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;  // Optional
+    default_conf.color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+    default_conf.color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;             // Optional
 
     default_conf.color_blend_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     default_conf.color_blend_info.logicOpEnable = VK_FALSE;
-    default_conf.color_blend_info.logicOp = VK_LOGIC_OP_COPY;  // Optional
+    default_conf.color_blend_info.logicOp = VK_LOGIC_OP_COPY; // Optional
     default_conf.color_blend_info.attachmentCount = 1;
     default_conf.color_blend_info.pAttachments = &default_conf.color_blend_attachment;
-    default_conf.color_blend_info.blendConstants[0] = 0.0f;  // Optional
-    default_conf.color_blend_info.blendConstants[1] = 0.0f;  // Optional
-    default_conf.color_blend_info.blendConstants[2] = 0.0f;  // Optional
-    default_conf.color_blend_info.blendConstants[3] = 0.0f;  // Optional
+    default_conf.color_blend_info.blendConstants[0] = 0.0f; // Optional
+    default_conf.color_blend_info.blendConstants[1] = 0.0f; // Optional
+    default_conf.color_blend_info.blendConstants[2] = 0.0f; // Optional
+    default_conf.color_blend_info.blendConstants[3] = 0.0f; // Optional
 
     default_conf.depth_stencil_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     default_conf.depth_stencil_info.depthTestEnable = VK_TRUE;
     default_conf.depth_stencil_info.depthWriteEnable = VK_TRUE;
     default_conf.depth_stencil_info.depthCompareOp = VK_COMPARE_OP_LESS;
     default_conf.depth_stencil_info.depthBoundsTestEnable = VK_FALSE;
-    default_conf.depth_stencil_info.minDepthBounds = 0.0f;  // Optional
-    default_conf.depth_stencil_info.maxDepthBounds = 1.0f;  // Optional
+    default_conf.depth_stencil_info.minDepthBounds = 0.0f; // Optional
+    default_conf.depth_stencil_info.maxDepthBounds = 1.0f; // Optional
     default_conf.depth_stencil_info.stencilTestEnable = VK_FALSE;
-    default_conf.depth_stencil_info.front = {};  // Optional
-    default_conf.depth_stencil_info.back = {};   // Optional
+    default_conf.depth_stencil_info.front = {}; // Optional
+    default_conf.depth_stencil_info.back = {};  // Optional
 }
 
 void Pipeline::bind(VkCommandBuffer command_buffer) {
     vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->graphics_pipeline);
 }
 
-}  // namespace Vulqian::Engine::Graphics
+} // namespace Vulqian::Engine::Graphics

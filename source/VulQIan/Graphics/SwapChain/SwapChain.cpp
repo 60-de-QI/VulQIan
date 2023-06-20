@@ -6,7 +6,7 @@
 #include "./SwapChain.hpp"
 
 namespace Vulqian::Engine::Graphics {
-SwapChain::SwapChain(Vulqian::Engine::Graphics::Device &deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent} {
+SwapChain::SwapChain(Vulqian::Engine::Graphics::Device& deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent} {
     createSwapChain();
     createImageViews();
     createRenderPass();
@@ -46,7 +46,7 @@ SwapChain::~SwapChain() {
     }
 }
 
-VkResult SwapChain::acquireNextImage(uint32_t *imageIndex) {
+VkResult SwapChain::acquireNextImage(uint32_t* imageIndex) {
     vkWaitForFences(
         device.get_device(),
         1,
@@ -58,7 +58,7 @@ VkResult SwapChain::acquireNextImage(uint32_t *imageIndex) {
         device.get_device(),
         swapChain,
         std::numeric_limits<uint64_t>::max(),
-        imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
+        imageAvailableSemaphores[currentFrame], // must be a not signaled semaphore
         VK_NULL_HANDLE,
         imageIndex);
 
@@ -146,8 +146,8 @@ void SwapChain::createSwapChain() {
         createInfo.pQueueFamilyIndices = queueFamilyIndices.data();
     } else {
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        createInfo.queueFamilyIndexCount = 0;      // Optional
-        createInfo.pQueueFamilyIndices = nullptr;  // Optional
+        createInfo.queueFamilyIndexCount = 0;     // Optional
+        createInfo.pQueueFamilyIndices = nullptr; // Optional
     }
 
     createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
@@ -338,8 +338,8 @@ void SwapChain::createSyncObjects() {
     }
 }
 
-VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) const {
-    for (const auto &availableFormat : availableFormats) {
+VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const {
+    for (const auto& availableFormat : availableFormats) {
         if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
             availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
             return availableFormat;
@@ -349,7 +349,7 @@ VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfac
     return availableFormats[0];
 }
 
-VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) const {
+VkPresentModeKHR SwapChain::chooseSwapPresentMode([[maybe_unused]] const std::vector<VkPresentModeKHR>& availablePresentModes) const {
     // for (const auto &availablePresentMode : availablePresentModes) {
     //     if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
     //         std::cout << "Present mode: Mailbox" << std::endl;
@@ -368,7 +368,7 @@ VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentMod
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const {
+VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;
     } else {
@@ -390,4 +390,4 @@ VkFormat SwapChain::findDepthFormat() {
         VK_IMAGE_TILING_OPTIMAL,
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
-}  // namespace Vulqian::Graphics
+} // namespace Vulqian::Engine::Graphics
