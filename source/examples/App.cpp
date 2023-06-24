@@ -7,6 +7,14 @@
 
 #include <array>
 #include <cassert>
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+
+struct SimplePushConstantData {
+    glm::vec2 offset;
+    alignas(16) glm::vec3 color;
+};
 
 App::App() {
     this->load_models();
@@ -28,12 +36,17 @@ void App::run() {
 }
 
 void App::create_pipeline_layout() {
+    VkPushConstantRange constant_range{};
+    constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    constant_range.offset = 0;
+    constant_range.size = sizeof(SimplePushConstantData);
+
     VkPipelineLayoutCreateInfo pipeline_create_info{};
     pipeline_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipeline_create_info.setLayoutCount = 0;
     pipeline_create_info.pSetLayouts = nullptr;
-    pipeline_create_info.pushConstantRangeCount = 0;
-    pipeline_create_info.pPushConstantRanges = nullptr;
+    pipeline_create_info.pushConstantRangeCount = 1;
+    pipeline_create_info.pPushConstantRanges = &constant_range;
 
     if (vkCreatePipelineLayout(this->device.get_device(), &pipeline_create_info, nullptr, &pipeline_layout) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_create("pipeline layout");
@@ -97,13 +110,15 @@ void App::free_command_buffers(void) {
         this->device.get_device(),
         this->device.getCommandPool(),
         static_cast<uint32_t>(this->command_buffers.size()),
-        this->command_buffers.data()
-    );
+        this->command_buffers.data());
 
     this->command_buffers.clear();
 }
 
 void App::record_command_buffer(int image_index) {
+    static int frame = 0;
+    frame = (frame + 1) % 1000;
+
     VkCommandBufferBeginInfo begin_info{};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -120,7 +135,7 @@ void App::record_command_buffer(int image_index) {
     render_pass_info.renderArea.extent = this->swap_chain->getSwapChainExtent();
 
     std::array<VkClearValue, 2> clear_values{};
-    clear_values[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
+    clear_values[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
     clear_values[1].depthStencil = {1.0f, static_cast<uint32_t>(0.0f)};
     render_pass_info.clearValueCount = static_cast<uint32_t>(clear_values.size());
     render_pass_info.pClearValues = clear_values.data();
@@ -140,7 +155,24 @@ void App::record_command_buffer(int image_index) {
 
     this->pipeline->bind(this->command_buffers[image_index]);
     this->model->bind(this->command_buffers[image_index]);
-    this->model->draw(this->command_buffers[image_index]);
+
+    for (int j = 0; j< 4; j++) {
+        SimplePushConstantData push{};
+        push.offset = {-0.5f + frame * 0.002f, -0.4f + j * 0.25f};
+        push.color = {0.0f, 0.0f, 0.2f + 0.2f * j};
+
+        vkCmdPushConstants(
+            this->command_buffers[image_index],
+            this->pipeline_layout,
+            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            0,
+            sizeof(SimplePushConstantData),
+            &push
+        );
+
+        this->model->draw(this->command_buffers[image_index]);
+    }
+
 
     vkCmdEndRenderPass(this->command_buffers[image_index]);
     if (vkEndCommandBuffer(this->command_buffers[image_index]) != VK_SUCCESS) {
@@ -194,7 +226,7 @@ void App::generate_sierpinski_triangle(std::vector<Vulqian::Engine::Graphics::Mo
 
 void App::load_models() {
     std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices{
-        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.0f, -0.5f}, {0.0f, 0.0f, 1.0f}},
         {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
         {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
     // generate_sierpinski_triangle(vertices, 6, {0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f});

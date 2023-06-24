@@ -10,12 +10,13 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+
 #include <vector>
 
 namespace Vulqian::Engine::Graphics {
 
 class Model {
-   public:
+  public:
     struct Vertex {
         glm::vec2 position;
         glm::vec3 color;
@@ -24,22 +25,22 @@ class Model {
         static std::vector<VkVertexInputAttributeDescription> get_attribute_descriptions();
     };
 
-    Model(Vulqian::Engine::Graphics::Device &device, const std::vector<Vertex> &vertices);
+    Model(Vulqian::Engine::Graphics::Device& device, const std::vector<Vertex>& vertices);
     ~Model();
 
     // Since the class manages memory objects and vertex buffers it cannot be copied. We are in charge of memory management.
-    Model(const Model &) = delete;
-    Model &operator=(const Model &) = delete;
+    Model(const Model&) = delete;
+    Model& operator=(const Model&) = delete;
 
     void bind(VkCommandBuffer command_buffer);
     void draw(VkCommandBuffer command_buffer) const;
 
-   private:
+  private:
     void create_vertex_buffers(const std::vector<Vertex>& vertices);
 
-    Vulqian::Engine::Graphics::Device &device;
+    Vulqian::Engine::Graphics::Device& device;
     VkBuffer vertex_buffer;
     VkDeviceMemory vertex_buffer_memory;
     uint32_t vertext_count;
 };
-}  // namespace Vulqian::Graphics
+} // namespace Vulqian::Engine::Graphics

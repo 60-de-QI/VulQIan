@@ -6,6 +6,7 @@
 #pragma once
 
 #include <VulQIan/Engine.hpp>
+
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -13,7 +14,7 @@
 #include <vector>
 
 class App {
-   public:
+  public:
     static constexpr int WIDTH = 800;
     static constexpr int HEIGHT = 600;
 
@@ -26,7 +27,7 @@ class App {
     App& operator=(const App&) = delete;
     void generate_sierpinski_triangle(std::vector<Vulqian::Engine::Graphics::Model::Vertex>& vertices, int level, const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
 
-   private:
+  private:
     void load_models(void);
     void create_pipeline_layout(void);
     void create_pipeline(void);
