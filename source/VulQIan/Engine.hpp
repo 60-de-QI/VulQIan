@@ -11,4 +11,5 @@
 #include "Graphics/Pipeline/Pipeline.hpp"
 #include "Graphics/SwapChain/SwapChain.hpp"
 #include "Graphics/WorldObject/WorldObject.hpp"
+#include "Graphics/Renderer/Renderer.hpp"
 #include "Window/Window.hpp"

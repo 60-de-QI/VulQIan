@@ -31,20 +31,14 @@ class App {
     void load_world_objects(void);
     void create_pipeline_layout(void);
     void create_pipeline(void);
-    void create_command_buffers(void);
-    void free_command_buffers(void);
-    void draw_frame(void);
-    void recreate_swap_chain(void);
-    void record_command_buffer(int image_index);
     void render_world_objects(VkCommandBuffer command_buffer);
 
     Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
     Vulqian::Engine::Graphics::Device device{this->window};
-    std::unique_ptr<Vulqian::Engine::Graphics::SwapChain> swap_chain;
+    Vulqian::Engine::Graphics::Renderer renderer{this->window, this->device};
 
     VkPipelineLayout pipeline_layout;
 
     std::unique_ptr<Vulqian::Engine::Graphics::Pipeline> pipeline;
-    std::vector<VkCommandBuffer> command_buffers;
     std::vector<Vulqian::Engine::Graphics::WorldObject> world_objects;
 };
