@@ -10,14 +10,16 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 
 struct SimplePushConstantData {
+    glm::mat2 transform{2.f};
     glm::vec2 offset;
     alignas(16) glm::vec3 color;
 };
 
 App::App() {
-    this->load_models();
+    this->load_world_objects();
     this->create_pipeline_layout();
     this->recreate_swap_chain();
     this->create_command_buffers();
@@ -116,9 +118,6 @@ void App::free_command_buffers(void) {
 }
 
 void App::record_command_buffer(int image_index) {
-    static int frame = 0;
-    frame = (frame + 1) % 1000;
-
     VkCommandBufferBeginInfo begin_info{};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -153,30 +152,34 @@ void App::record_command_buffer(int image_index) {
     vkCmdSetViewport(this->command_buffers[image_index], 0, 1, &viewport);
     vkCmdSetScissor(this->command_buffers[image_index], 0, 1, &scissor);
 
-    this->pipeline->bind(this->command_buffers[image_index]);
-    this->model->bind(this->command_buffers[image_index]);
-
-    for (int j = 0; j< 4; j++) {
-        SimplePushConstantData push{};
-        push.offset = {-0.5f + frame * 0.002f, -0.4f + j * 0.25f};
-        push.color = {0.0f, 0.0f, 0.2f + 0.2f * j};
-
-        vkCmdPushConstants(
-            this->command_buffers[image_index],
-            this->pipeline_layout,
-            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-            0,
-            sizeof(SimplePushConstantData),
-            &push
-        );
-
-        this->model->draw(this->command_buffers[image_index]);
-    }
-
+    this->render_world_objects(this->command_buffers[image_index]);
 
     vkCmdEndRenderPass(this->command_buffers[image_index]);
     if (vkEndCommandBuffer(this->command_buffers[image_index]) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_bind("and record command buffers");
+    }
+}
+
+void App::render_world_objects(VkCommandBuffer command_buffer) {
+    this->pipeline->bind(command_buffer);
+
+    for (auto& object : this->world_objects) {
+        object.transform_2d.rotation = glm::mod(object.transform_2d.rotation + 0.0001f, glm::two_pi<float>());
+        SimplePushConstantData push{};
+        push.offset = object.transform_2d.translation;
+        push.color = object.color;
+
+        push.transform = object.transform_2d.mat2();
+
+        vkCmdPushConstants(
+            command_buffer,
+            this->pipeline_layout,
+            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            0,
+            sizeof(SimplePushConstantData),
+            &push);
+        object.model->bind(command_buffer);
+        object.model->draw(command_buffer);
     }
 }
 
@@ -224,12 +227,21 @@ void App::generate_sierpinski_triangle(std::vector<Vulqian::Engine::Graphics::Mo
     }
 }
 
-void App::load_models() {
+void App::load_world_objects(void) {
     std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices{
         {{0.0f, -0.5f}, {0.0f, 0.0f, 1.0f}},
         {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
         {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
     // generate_sierpinski_triangle(vertices, 6, {0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f});
 
-    this->model = std::make_unique<Vulqian::Engine::Graphics::Model>(this->device, vertices);
+    auto model = std::make_shared<Vulqian::Engine::Graphics::Model>(this->device, vertices);
+
+    auto triangle = Vulqian::Engine::Graphics::WorldObject::create_game_object();
+    triangle.model = model;
+    triangle.color = {.1f, .8f, .1f};
+    triangle.transform_2d.translation.x = .2f;
+    triangle.transform_2d.scale = {2.f, .5f};
+    triangle.transform_2d.rotation = .25f * glm::two_pi<float>();    
+
+    this->world_objects.push_back(std::move(triangle));
 }
