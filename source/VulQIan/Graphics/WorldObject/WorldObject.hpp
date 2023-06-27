@@ -15,7 +15,7 @@ struct Transform2dComponent {
     glm::vec2 scale{1.f, 1.f};
     float rotation;
 
-    glm::mat2 mat2() {
+    glm::mat2 mat2() const {
         const float s = glm::sin(rotation);
         const float c = glm::cos(rotation);
 
@@ -48,7 +48,7 @@ class WorldObject {
     Transform2dComponent transform_2d{};
 
   private:
-    WorldObject(id_t _id) : id{_id} {}
+    explicit WorldObject(id_t _id) : id{_id} {}
     id_t id;
 };
 
