@@ -132,8 +132,8 @@ std::unique_ptr<Vulqian::Engine::Graphics::Model> createPyramidModel(Vulqian::En
 
 void App::load_world_objects(void) {
     std::shared_ptr<Vulqian::Engine::Graphics::Model> lveModel = createCubeModel(device, {.0f, .0f, .0f});
-    auto                                              cube = Vulqian::Engine::Graphics::WorldObject::create_game_object();
 
+    auto cube = Vulqian::Engine::Graphics::WorldObject::create_game_object();
     cube.model = lveModel;
     cube.transform.translation = {.0f, .0f, .5f};
     cube.transform.scale = {.5f, .5f, .5f};

@@ -29,8 +29,8 @@ class App {
   private:
     void load_world_objects(void);
 
-    Vulqian::Engine::Window window{WIDTH, HEIGHT, "VulQIan - Demo"};
-    Vulqian::Engine::Graphics::Device device{this->window};
+    Vulqian::Engine::Window             window{WIDTH, HEIGHT, "VulQIan - Demo"};
+    Vulqian::Engine::Graphics::Device   device{this->window};
     Vulqian::Engine::Graphics::Renderer renderer{this->window, this->device};
 
     std::vector<Vulqian::Engine::Graphics::WorldObject> world_objects;

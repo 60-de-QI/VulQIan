@@ -5,8 +5,8 @@
 
 #include <bit>
 
-#include "Window.hpp"
 #include "../Exception/Exception.hpp"
+#include "Window.hpp"
 
 namespace Vulqian::Engine {
 Window::Window(int w, int h, std::string_view n) : width(w), height(h), name(n) {
@@ -37,6 +37,5 @@ void Window::frame_buffer_resized_callback(GLFWwindow* window, int width, int he
     new_window->width = width;
     new_window->height = height;
 }
-
 
 } // namespace Vulqian::Engine
