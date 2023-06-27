@@ -85,7 +85,7 @@ VkResult SwapChain::submitCommandBuffers(const VkCommandBuffer* buffers, const u
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    std::vector<VkSemaphore> waitSemaphores = {imageAvailableSemaphores[currentFrame]};
+    std::vector<VkSemaphore>          waitSemaphores = {imageAvailableSemaphores[currentFrame]};
     std::vector<VkPipelineStageFlags> waitStages = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
     submitInfo.waitSemaphoreCount = 1;
@@ -127,8 +127,8 @@ void SwapChain::createSwapChain() {
     Engine::Graphics::SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.present_modes);
-    VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+    VkPresentModeKHR   presentMode = chooseSwapPresentMode(swapChainSupport.present_modes);
+    VkExtent2D         extent = chooseSwapExtent(swapChainSupport.capabilities);
 
     uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
     if (swapChainSupport.capabilities.maxImageCount > 0 &&
@@ -148,7 +148,7 @@ void SwapChain::createSwapChain() {
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     Engine::Graphics::QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
-    std::vector<uint32_t> queueFamilyIndices = {indices.graphics_family, indices.present_family};
+    std::vector<uint32_t>                queueFamilyIndices = {indices.graphics_family, indices.present_family};
 
     if (indices.graphics_family != indices.present_family) {
         createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -240,15 +240,15 @@ void SwapChain::createRenderPass() {
     subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
     VkSubpassDependency dependency = {};
+    dependency.dstSubpass = 0;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
     dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
     dependency.srcAccessMask = 0;
     dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-    dependency.dstSubpass = 0;
-    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
     std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
-    VkRenderPassCreateInfo renderPassInfo = {};
+    VkRenderPassCreateInfo                 renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
     renderPassInfo.pAttachments = attachments.data();
@@ -267,7 +267,7 @@ void SwapChain::createFramebuffers() {
     for (size_t i = 0; i < imageCount(); i++) {
         std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
 
-        VkExtent2D swap_chain_extent = getSwapChainExtent();
+        VkExtent2D              swap_chain_extent = getSwapChainExtent();
         VkFramebufferCreateInfo framebufferInfo = {};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = renderPass;
@@ -284,7 +284,8 @@ void SwapChain::createFramebuffers() {
 }
 
 void SwapChain::createDepthResources() {
-    VkFormat depthFormat = findDepthFormat();
+    VkFormat   depthFormat = findDepthFormat();
+    this->swapChainDepthFormat = depthFormat;
     VkExtent2D swap_chain_extent = getSwapChainExtent();
 
     depthImages.resize(imageCount());

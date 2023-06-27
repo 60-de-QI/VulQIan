@@ -32,17 +32,18 @@ void Renderer::recreate_swap_chain() {
     if (this->swap_chain == nullptr) {
         this->swap_chain = std::make_unique<Vulqian::Engine::Graphics::SwapChain>(this->device, extent);
     } else {
-        this->swap_chain = std::make_unique<Vulqian::Engine::Graphics::SwapChain>(this->device, extent, std::move(this->swap_chain));
-        if (this->swap_chain->imageCount() != this->command_buffers.size()) {
-            this->free_command_buffers();
-            this->create_command_buffers();
+        std::shared_ptr<Vulqian::Engine::Graphics::SwapChain> oldSwapChain = std::move(this->swap_chain);
+        this->swap_chain = std::make_unique<Vulqian::Engine::Graphics::SwapChain>(this->device, extent, oldSwapChain);
+
+        if (!oldSwapChain->compareSwapFormats(*this->swap_chain.get())) {
+            throw Vulqian::Exception::failed_to_create("SwapChain, as image, or depth, format has changed");
         }
     }
     // we'll be right back to recreate swapchain
 }
 
 void Renderer::create_command_buffers() {
-    this->command_buffers.resize(this->swap_chain->imageCount());
+    this->command_buffers.resize(Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo alloc_info{};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -81,7 +82,7 @@ VkCommandBuffer Renderer::begin_frame(void) {
 
     this->is_frame_started = true;
 
-    auto command_buffer = get_current_commanBuffer();
+    auto                     command_buffer = get_current_commanBuffer();
     VkCommandBufferBeginInfo begin_info{};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -93,23 +94,26 @@ VkCommandBuffer Renderer::begin_frame(void) {
 
 void Renderer::end_frame(void) {
     assert(is_frame_started && "Can't call end_frame while frame is not in progress");
-
     auto command_buffer = this->get_current_commanBuffer();
 
     if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_bind("and record command buffers");
     }
 
-    auto result = this->swap_chain->submitCommandBuffers(&command_buffer, &this->current_image_index);
+    auto result = this->swap_chain->submitCommandBuffers(&command_buffer, &current_image_index);
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || this->window.was_window_resized()) {
         this->window.reset_window_resized_flage();
         this->recreate_swap_chain();
-    }
-    if (result != VK_SUCCESS) {
+    } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw Vulqian::Exception::failed_to_open("swap chain image");
     }
 
+    if (result == VK_SUBOPTIMAL_KHR) {
+        std::clog << "Swap Chain image result is suboptimal\n";
+    }
+
     this->is_frame_started = false;
+    this->current_frame_index = (this->current_frame_index + 1) % Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT;
 }
 
 void Renderer::begin_SwapChain_RenderPass(VkCommandBuffer command_buffer) {

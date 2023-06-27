@@ -21,7 +21,7 @@ class App {
     void run(void);
 
     App();
-    ~App();
+    ~App() = default;
 
     App(const App&) = delete;
     App& operator=(const App&) = delete;
@@ -29,16 +29,10 @@ class App {
 
   private:
     void load_world_objects(void);
-    void create_pipeline_layout(void);
-    void create_pipeline(void);
-    void render_world_objects(VkCommandBuffer command_buffer);
 
     Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
     Vulqian::Engine::Graphics::Device device{this->window};
     Vulqian::Engine::Graphics::Renderer renderer{this->window, this->device};
 
-    VkPipelineLayout pipeline_layout;
-
-    std::unique_ptr<Vulqian::Engine::Graphics::Pipeline> pipeline;
     std::vector<Vulqian::Engine::Graphics::WorldObject> world_objects;
 };
