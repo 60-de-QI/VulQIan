@@ -10,7 +10,7 @@ class CompressorRecipe(ConanFile):
 
     def requirements(self):
         self.requires("glfw/3.3.8")
-        self.requires("glm/0.9.5.4")
+        self.requires("glm/0.9.9.8")
         self.requires("vulkan-headers/1.1.101.0")
 
     def build_requirements(self):

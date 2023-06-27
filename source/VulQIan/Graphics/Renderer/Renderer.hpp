@@ -37,7 +37,7 @@ class Renderer {
     VkCommandBuffer begin_frame(void);
     void end_frame(void);
     void begin_SwapChain_RenderPass(VkCommandBuffer command_buffer);
-    void end_SwapChain_RenderPass(VkCommandBuffer command_buffer);
+    void end_SwapChain_RenderPass(VkCommandBuffer command_buffer) const;
 
   private:
     void create_command_buffers(void);

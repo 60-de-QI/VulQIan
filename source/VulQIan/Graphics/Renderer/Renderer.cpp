@@ -66,7 +66,7 @@ void Renderer::free_command_buffers(void) {
 }
 
 VkCommandBuffer Renderer::begin_frame(void) {
-    assert(!this->is_frame_started && "can't call begin_Frame while already in proogress");
+    assert(!this->is_frame_started && "can't call begin_Frame while already in progress");
 
     auto result = this->swap_chain->acquireNextImage(&this->current_image_index);
 
@@ -109,11 +109,11 @@ void Renderer::end_frame(void) {
         throw Vulqian::Exception::failed_to_open("swap chain image");
     }
 
-    this->is_frame_started = true;
+    this->is_frame_started = false;
 }
 
 void Renderer::begin_SwapChain_RenderPass(VkCommandBuffer command_buffer) {
-    assert(!is_frame_started && "Can't call begin_SwapChain_RenderPass while frame is not in progress");
+    assert(is_frame_started && "Can't call begin_SwapChain_RenderPass while frame is not in progress");
     assert(command_buffer == this->get_current_commanBuffer() && "Can't begin render pass on command buffer from different frame");
 
     VkRenderPassBeginInfo render_pass_info{};
@@ -144,8 +144,8 @@ void Renderer::begin_SwapChain_RenderPass(VkCommandBuffer command_buffer) {
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 }
 
-void Renderer::end_SwapChain_RenderPass(VkCommandBuffer command_buffer) {
-    assert(!is_frame_started && "Can't call end_SwapChain_RenderPass while frame is not in progress");
+void Renderer::end_SwapChain_RenderPass(VkCommandBuffer command_buffer) const {
+    assert(is_frame_started && "Can't call end_SwapChain_RenderPass while frame is not in progress");
     assert(command_buffer == this->get_current_commanBuffer() && "Can't end render pass on command buffer from different frame");
 
     vkCmdEndRenderPass(command_buffer);

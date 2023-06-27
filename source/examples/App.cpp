@@ -85,7 +85,7 @@ void App::render_world_objects(VkCommandBuffer command_buffer) {
     this->pipeline->bind(command_buffer);
 
     for (auto& object : this->world_objects) {
-        object.transform_2d.rotation = glm::mod(object.transform_2d.rotation + 0.0001f, glm::two_pi<float>());
+        object.transform_2d.rotation = glm::mod(object.transform_2d.rotation + 0.01f, glm::two_pi<float>());
         SimplePushConstantData push{};
         push.offset = object.transform_2d.translation;
         push.color = object.color;
