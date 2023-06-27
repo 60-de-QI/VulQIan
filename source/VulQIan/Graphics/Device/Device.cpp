@@ -128,7 +128,7 @@ void Device::createLogicalDevice() {
     QueueFamilyIndices indices = findQueueFamilies(this->physical_device);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = {indices.graphics_family, indices.present_family};
+    std::set<uint32_t>                   uniqueQueueFamilies = {indices.graphics_family, indices.present_family};
 
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -250,7 +250,7 @@ bool Device::checkValidationLayerSupport() const {
 }
 
 std::vector<const char*> Device::getRequiredExtensions() const {
-    uint32_t glfwExtensionCount = 0;
+    uint32_t     glfwExtensionCount = 0;
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 

@@ -5,12 +5,12 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-
-#include <memory>
-#include <string>
 
 namespace Vulqian::Engine {
 
@@ -40,11 +40,11 @@ class Window {
 
   private:
     static void frame_buffer_resized_callback(GLFWwindow* window, int width, int height);
-    int width{640};
-    int height{360};
-    bool    frame_buffer_resized{false};
+    int         width{640};
+    int         height{360};
+    bool        frame_buffer_resized{false};
 
-    std::string name{"Window"};
+    std::string                              name{"Window"};
     std::unique_ptr<GLFWwindow, glfwDeleter> window;
 };
 } // namespace Vulqian::Engine

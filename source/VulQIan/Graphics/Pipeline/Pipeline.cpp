@@ -17,9 +17,9 @@ namespace Vulqian::Engine::Graphics {
 
 Pipeline::Pipeline(
     Vulqian::Engine::Graphics::Device& device,
-    const std::string& vert_filepath,
-    const std::string& frag_filepath,
-    const PipelineConstructInfo& config) : device(device) {
+    const std::string&                 vert_filepath,
+    const std::string&                 frag_filepath,
+    const PipelineConstructInfo&       config) : device(device) {
     this->create_graphics_pipeline(vert_filepath, frag_filepath, config);
 }
 
@@ -75,8 +75,8 @@ void Pipeline::create_graphics_pipeline(const std::string& vert_filepath, const 
     shader_stage[1].pNext = nullptr;
     shader_stage[1].pSpecializationInfo = nullptr;
 
-    auto attribute_descriptions = Vulqian::Engine::Graphics::Model::Vertex::get_attribute_descriptions();
-    auto binding_descriptions = Vulqian::Engine::Graphics::Model::Vertex::get_binding_descriptions();
+    auto                                 attribute_descriptions = Vulqian::Engine::Graphics::Model::Vertex::get_attribute_descriptions();
+    auto                                 binding_descriptions = Vulqian::Engine::Graphics::Model::Vertex::get_binding_descriptions();
     VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertex_input_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size());

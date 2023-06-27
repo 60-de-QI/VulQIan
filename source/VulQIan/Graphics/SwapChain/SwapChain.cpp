@@ -284,7 +284,7 @@ void SwapChain::createFramebuffers() {
 }
 
 void SwapChain::createDepthResources() {
-    VkFormat   depthFormat = findDepthFormat();
+    VkFormat depthFormat = findDepthFormat();
     this->swapChainDepthFormat = depthFormat;
     VkExtent2D swap_chain_extent = getSwapChainExtent();
 

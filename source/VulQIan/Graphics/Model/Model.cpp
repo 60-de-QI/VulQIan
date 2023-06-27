@@ -40,7 +40,7 @@ void Model::create_vertex_buffers(const std::vector<Vertex>& vertices) {
 }
 
 void Model::bind(VkCommandBuffer command_buffer) {
-    std::array<VkBuffer, 1> buffers = {this->vertex_buffer};
+    std::array<VkBuffer, 1>     buffers = {this->vertex_buffer};
     std::array<VkDeviceSize, 1> offsets = {0};
     vkCmdBindVertexBuffers(command_buffer, 0, 1, buffers.data(), offsets.data());
 }
@@ -56,9 +56,8 @@ std::vector<VkVertexInputBindingDescription> Model::Vertex::get_binding_descript
 
 std::vector<VkVertexInputAttributeDescription> Model::Vertex::get_attribute_descriptions() {
     return {
-        {0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position)},
-        {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)}
-    };
+        {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)},
+        {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)}};
     // binding, location, format, offset
 }
 

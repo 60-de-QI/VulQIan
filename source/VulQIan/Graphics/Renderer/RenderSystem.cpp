@@ -12,10 +12,8 @@
 
 namespace Vulqian::Engine::Graphics {
 
-
 struct SimplePushConstantData {
-    glm::mat2 transform{2.f};
-    glm::vec2 offset;
+    glm::mat4 transform{1.f};
     alignas(16) glm::vec3 color;
 };
 
@@ -65,12 +63,12 @@ void RenderSystem::render_world_objects(VkCommandBuffer command_buffer, std::vec
     this->pipeline->bind(command_buffer);
 
     for (auto& object : world_objects) {
-        object.transform_2d.rotation = glm::mod(object.transform_2d.rotation + 0.01f, glm::two_pi<float>());
+        object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.01f, glm::two_pi<float>());
+        object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
         SimplePushConstantData push{};
-        push.offset = object.transform_2d.translation;
         push.color = object.color;
 
-        push.transform = object.transform_2d.mat2();
+        push.transform = object.transform.mat4();
 
         vkCmdPushConstants(
             command_buffer,
