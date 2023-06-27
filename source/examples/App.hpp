@@ -25,12 +25,11 @@ class App {
 
     App(const App&) = delete;
     App& operator=(const App&) = delete;
-    void generate_sierpinski_triangle(std::vector<Vulqian::Engine::Graphics::Model::Vertex>& vertices, int level, const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
 
   private:
     void load_world_objects(void);
 
-    Vulqian::Engine::Window window{WIDTH, HEIGHT, "TEST"};
+    Vulqian::Engine::Window window{WIDTH, HEIGHT, "VulQIan - Demo"};
     Vulqian::Engine::Graphics::Device device{this->window};
     Vulqian::Engine::Graphics::Renderer renderer{this->window, this->device};
 
