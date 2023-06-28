@@ -9,6 +9,7 @@
 
 #include "Window/Window.hpp"
 
+#include "Graphics/Camera/Camera.hpp"
 #include "Graphics/Device/Device.hpp"
 #include "Graphics/Model/Model.hpp"
 #include "Graphics/Pipeline/Pipeline.hpp"
