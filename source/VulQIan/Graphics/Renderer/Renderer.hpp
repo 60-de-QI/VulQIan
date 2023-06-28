@@ -27,6 +27,7 @@ class Renderer {
     Renderer& operator=(const Renderer&) = delete;
 
     VkRenderPass get_SwapChain_RenderPass(void) const noexcept { return this->swap_chain->getRenderPass(); }
+    float        get_aspect_ratio() const noexcept { return this->swap_chain->extentAspectRatio(); }
     int          get_frame_index(void) const noexcept {
         assert(this->is_frame_started && "Cannot get current frame index when frame not in progress");
         return this->current_frame_index;

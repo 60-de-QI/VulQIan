@@ -24,8 +24,9 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 9.  :heavy_check_mark: Rendering Systems
 10. :heavy_check_mark: 2D Transformations
 11. :heavy_check_mark: Euler Angles and Homogeneous Coordinate systems
-12. :construction_worker: Perspective Projection
-13. :construction: Perspective Projection & Projection Matrix
+12. :heavy_check_mark: Perspective Projection & Projection Matrix & Camera View
+12. :construction_worker: Main Loop Pattern & User Input
+13. :construction: Index and Stagin buffers
 
 Please note that this roadmap is a general guideline and can be adjusted based of my preferences and project requirements. Each feature builds upon the previous ones, allowing me to incrementally expand the engine's capabilities while deepening my understanding of the underlying concepts and technologies.
 
