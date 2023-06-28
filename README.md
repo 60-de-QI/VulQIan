@@ -8,22 +8,8 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 - Vulkan swap chain for image presentation.
 - Vertex and index buffers for geometry storage.
 - Shaders and pipeline setup for rendering.
-- Rendering of basic primitives (e.g., triangles).
+- Rendering of basic primitives (e.g., triangles, Cubes).
 - Uniform buffers for passing data to shaders.
-- Texture loading and sampling in shaders.
-- Basic lighting support using techniques like Phong shading.
-- Model loading from common 3D formats (e.g., .obj).
-- Camera controls and user interaction for scene navigation.
-- Scene graph or entity-component system for scene organization.
-- Advanced lighting and shading techniques (e.g., normal mapping, PBR).
-- Shadow mapping for casting and receiving shadows.
-- Post-processing effects like bloom and depth of field.
-- Optimization techniques (e.g., frustum culling, LOD).
-- Advanced rendering techniques (e.g., deferred shading, GPU compute).
-- User interface system for displaying menus and UI elements.
-- Sound and audio effects integration.
-- Physics simulation using a physics library.
-- Tooling and editor for content creation and scene management.
 
 ## Roadmap
 
@@ -37,8 +23,9 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 8.  :heavy_check_mark: Vulkan Push Constant
 9.  :heavy_check_mark: Rendering Systems
 10. :heavy_check_mark: 2D Transformations
-11. :construction_worker: Euler Angles and Homogeneous Coordinate systems
-12. :construction: Perspective Projection
+11. :heavy_check_mark: Euler Angles and Homogeneous Coordinate systems
+12. :construction_worker: Perspective Projection
+13. :construction: Perspective Projection & Projection Matrix
 
 Please note that this roadmap is a general guideline and can be adjusted based of my preferences and project requirements. Each feature builds upon the previous ones, allowing me to incrementally expand the engine's capabilities while deepening my understanding of the underlying concepts and technologies.
 
