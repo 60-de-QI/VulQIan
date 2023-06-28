@@ -5,11 +5,9 @@
 
 #pragma once
 
+#include "ECS/EntityManager.hpp"
+
 #include "Exception/Exception.hpp"
-
-#include "Window/Window.hpp"
-
-#include "Input/Keyboard/Keyboard.hpp"
 
 #include "Graphics/Camera/Camera.hpp"
 #include "Graphics/Device/Device.hpp"
@@ -19,3 +17,7 @@
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/SwapChain/SwapChain.hpp"
 #include "Graphics/WorldObject/WorldObject.hpp"
+
+#include "Input/Keyboard/Keyboard.hpp"
+
+#include "Window/Window.hpp"
