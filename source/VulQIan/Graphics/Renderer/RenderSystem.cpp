@@ -61,15 +61,13 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
 
 void RenderSystem::render_world_objects(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::Graphics::WorldObject>& world_objects, const Vulqian::Engine::Graphics::Camera& camera) {
     this->pipeline->bind(command_buffer);
-
     auto projection_view = camera.get_projection() * camera.get_view();
 
     for (auto& object : world_objects) {
-        object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.0001f, glm::two_pi<float>());
-        object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.00005f, glm::two_pi<float>());
+        // object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.01f, glm::two_pi<float>());
+        // object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
         SimplePushConstantData push{};
         push.color = object.color;
-
         push.transform = projection_view * object.transform.mat4();
 
         vkCmdPushConstants(

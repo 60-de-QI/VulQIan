@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cassert>
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -19,14 +20,25 @@ App::App() {
 void App::run() {
     Vulqian::Engine::Graphics::RenderSystem render_system{this->device, this->renderer.get_SwapChain_RenderPass()};
     Vulqian::Engine::Graphics::Camera       camera{};
-    // camera.set_view_direction(glm::vec3{0.f}, glm::vec3{0.5f, 0.f, 1.f});
+
     camera.set_view_target(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
+
+    auto viewer_object = Vulqian::Engine::Graphics::WorldObject::create_game_object();
+   Vulqian::Engine::Input::KeyboardMovementController camera_controller{};
+
+    auto current_time = std::chrono::high_resolution_clock::now();
 
     while (!this->window.should_close()) {
         glfwPollEvents();
 
+        auto  new_time = std::chrono::high_resolution_clock::now();
+        float frame_time = std::chrono::duration<float, std::chrono::seconds::period>(new_time - current_time).count();
+        current_time = new_time;
+
+        camera_controller.move_in_plane_xz(this->window.get_window(), frame_time, viewer_object);
+        camera.set_view_YXZ(viewer_object.transform.translation, viewer_object.transform.rotation);
+
         float aspect = this->renderer.get_aspect_ratio();
-        // camera.set_orthographic_projection(-aspect, aspect, -1, 1, -1, 1);
         camera.set_perspective_projection(glm::radians(50.f), aspect, .1f, 10.f);
 
         if (auto command_buffer = this->renderer.begin_frame()) {

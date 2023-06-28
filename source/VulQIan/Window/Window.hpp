@@ -37,6 +37,7 @@ class Window {
     void create_window_surface(VkInstance instance, VkSurfaceKHR* surface) const;
     bool was_window_resized(void) const noexcept { return this->frame_buffer_resized; }
     void reset_window_resized_flage(void) { this->frame_buffer_resized = false; }
+    GLFWwindow* get_window(void) const noexcept { return this->window.get(); }
 
   private:
     static void frame_buffer_resized_callback(GLFWwindow* window, int width, int height);

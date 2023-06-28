@@ -9,6 +9,8 @@
 
 #include "Window/Window.hpp"
 
+#include "Input/Keyboard/Keyboard.hpp"
+
 #include "Graphics/Camera/Camera.hpp"
 #include "Graphics/Device/Device.hpp"
 #include "Graphics/Model/Model.hpp"
