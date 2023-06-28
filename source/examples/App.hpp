@@ -7,6 +7,7 @@
 
 #include <VulQIan/Engine.hpp>
 
+#include <chrono>
 #include <cstdlib>
 #include <iostream>
 #include <memory>

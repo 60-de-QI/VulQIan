@@ -360,12 +360,12 @@ VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfac
 }
 
 VkPresentModeKHR SwapChain::chooseSwapPresentMode([[maybe_unused]] const std::vector<VkPresentModeKHR>& availablePresentModes) const {
-    // for (const auto &availablePresentMode : availablePresentModes) {
-    //     if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-    //         std::cout << "Present mode: Mailbox" << std::endl;
-    //         return availablePresentMode;
-    //     }
-    // }
+    for (const auto &availablePresentMode : availablePresentModes) {
+        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            std::cout << "Present mode: Mailbox" << std::endl;
+            return availablePresentMode;
+        }
+    }
 
     // for (const auto &availablePresentMode : availablePresentModes) {
     //   if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
