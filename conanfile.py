@@ -12,6 +12,7 @@ class CompressorRecipe(ConanFile):
         self.requires("glfw/3.3.8")
         self.requires("glm/0.9.9.8")
         self.requires("vulkan-headers/1.1.101.0")
+        self.requires("tinyobjloader/2.0.0-rc10")
 
     def build_requirements(self):
         self.tool_requires("cmake/3.26.4")
