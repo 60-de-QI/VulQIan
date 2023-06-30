@@ -16,7 +16,6 @@
 #include <array>
 #include <cassert>
 #include <cstring>
-#include <iostream>
 #include <unordered_map>
 
 namespace std {
@@ -126,7 +125,6 @@ std::unique_ptr<Model> Model::create_model_from_file(Vulqian::Engine::Graphics::
     Data data{};
     data.load_model(filepath);
 
-    std::cout << "vertex count: " << data.vertices.size() << "\n";
     return std::make_unique<Model>(device, data);
 }
 
