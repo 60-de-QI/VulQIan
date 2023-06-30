@@ -17,3 +17,8 @@ find_package(glm REQUIRED)
 if(NOT glm_FOUND)
     message(FATAL_ERROR "GLM NOT FOUND")
 endif()
+
+find_package(tinyobjloader REQUIRED)
+if(NOT tinyobjloader_FOUND)
+    message(FATAL_ERROR "tinyobjloader NOT FOUND")
+endif()
