@@ -28,8 +28,9 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 12. :heavy_check_mark: Simple Main Loop Pattern & User Input
 13. :heavy_check_mark: Add Mouse Controls
 14. :heavy_check_mark: Index and Staging buffers
-15. :construction_worker: Loading 3D Models
-15. :construction: Diffuse Shading
+15. :heavy_check_mark: Loading 3D Models
+16. :construction_worker: Diffuse Shading
+17. :construction: Uniform Buffers
 
 For even later:
 - :construction: Replace World Objects with an ECS
