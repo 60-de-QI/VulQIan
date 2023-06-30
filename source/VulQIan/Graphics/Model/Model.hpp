@@ -11,6 +11,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+#include <memory>
 #include <vector>
 
 namespace Vulqian::Engine::Graphics {
@@ -20,14 +21,22 @@ class Model {
     struct Vertex {
         glm::vec3 position{};
         glm::vec3 color{};
+        glm::vec3 normal{};
+        glm::vec2 uv{};
 
         static std::vector<VkVertexInputBindingDescription>   get_binding_descriptions();
         static std::vector<VkVertexInputAttributeDescription> get_attribute_descriptions();
+
+        bool operator==(const Vertex& other) const {
+            return position == other.position && color == other.color && normal == other.normal && uv == other.uv;
+        }
     };
 
     struct Data {
         std::vector<Vertex>   vertices{};
         std::vector<uint32_t> indices{};
+
+        void load_model(const std::string& filepath);
     };
 
     Model(Vulqian::Engine::Graphics::Device& device, const Data& vertices);
@@ -36,6 +45,8 @@ class Model {
     // Since the class manages memory objects and vertex buffers it cannot be copied. We are in charge of memory management.
     Model(const Model&) = delete;
     Model& operator=(const Model&) = delete;
+
+    static std::unique_ptr<Model> create_model_from_file(Vulqian::Engine::Graphics::Device& device, const std::string& filepath);
 
     void bind(VkCommandBuffer command_buffer);
     void draw(VkCommandBuffer command_buffer) const;

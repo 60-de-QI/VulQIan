@@ -4,11 +4,33 @@
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
 #include "Model.hpp"
+#include "../../Exception/Exception.hpp"
+#include "../../Utils/Utils.hpp"
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
 
 #include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstring>
+#include <unordered_map>
+
+namespace std {
+template <>
+struct hash<Vulqian::Engine::Graphics::Model::Vertex> {
+    size_t operator()(Vulqian::Engine::Graphics::Model::Vertex const& vertex) const {
+        size_t seed = 0;
+
+        Vulqian::Engine::Utils::hash_combine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+
+        return seed;
+    }
+};
+
+} // namespace std
 
 namespace Vulqian::Engine::Graphics {
 Model::Model(Vulqian::Engine::Graphics::Device& device, const Data& data) : device(device) {
@@ -82,7 +104,8 @@ void Model::create_index_buffers(const std::vector<uint32_t>& indices) {
 
     void* data;
     vkMapMemory(this->device.get_device(), staging_buffer_memory, 0, buffer_size, 0, &data);
-    memcpy(data, indices.data(), static_cast<size_t>(buffer_size));
+    // memcpy(data, indices.data(), static_cast<size_t>(buffer_size));
+    std::copy(indices.begin(), indices.end(), static_cast<uint32_t*>(data));
     vkUnmapMemory(this->device.get_device(), staging_buffer_memory);
 
     this->device.createBuffer(
@@ -96,6 +119,13 @@ void Model::create_index_buffers(const std::vector<uint32_t>& indices) {
 
     vkDestroyBuffer(this->device.get_device(), staging_buffer, nullptr);
     vkFreeMemory(this->device.get_device(), staging_buffer_memory, nullptr);
+}
+
+std::unique_ptr<Model> Model::create_model_from_file(Vulqian::Engine::Graphics::Device& device, const std::string& filepath) {
+    Data data{};
+    data.load_model(filepath);
+
+    return std::make_unique<Model>(device, data);
 }
 
 void Model::bind(VkCommandBuffer command_buffer) {
@@ -126,6 +156,65 @@ std::vector<VkVertexInputAttributeDescription> Model::Vertex::get_attribute_desc
         {0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)},
         {1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)}};
     // binding, location, format, offset
+}
+
+void Model::Data::load_model(const std::string& filepath) {
+    tinyobj::attrib_t                attrib;
+    std::vector<tinyobj::shape_t>    shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string                      warn;
+    std::string                      err;
+
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str())) {
+        throw Vulqian::Exception::failed_to_load(warn + err);
+    }
+
+    vertices.clear();
+    indices.clear();
+
+    std::unordered_map<Vertex, uint32_t> unique_vertices{};
+
+    for (const auto& shape : shapes) {
+        for (const auto& index : shape.mesh.indices) {
+            Vertex vertex{};
+
+            if (index.vertex_index >= 0) {
+                vertex.position = {
+                    attrib.vertices[3 * index.vertex_index + 0],
+                    attrib.vertices[3 * index.vertex_index + 1],
+                    attrib.vertices[3 * index.vertex_index + 2]};
+
+                auto color_index = 3 * index.vertex_index + 2;
+                if (color_index < attrib.colors.size()) {
+                    vertex.color = {
+                        attrib.vertices[color_index - 0],
+                        attrib.vertices[color_index - 1],
+                        attrib.vertices[color_index - 2]};
+                } else {
+                    vertex.color = {1.f, 1.f, 1.f}; // set default color
+                }
+            }
+
+            if (index.normal_index >= 0) {
+                vertex.normal = {
+                    attrib.normals[3 * index.normal_index + 0],
+                    attrib.normals[3 * index.normal_index + 1],
+                    attrib.normals[3 * index.normal_index + 2]};
+            }
+
+            if (index.texcoord_index >= 0) {
+                vertex.uv = {
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    attrib.texcoords[2 * index.texcoord_index + 1]};
+            }
+
+            if (unique_vertices.count(vertex) == 0) {
+                unique_vertices[vertex] = static_cast<uint32_t>(vertices.size());
+                vertices.push_back(vertex);
+            }
+            indices.push_back(unique_vertices[vertex]);
+        }
+    }
 }
 
 } // namespace Vulqian::Engine::Graphics
