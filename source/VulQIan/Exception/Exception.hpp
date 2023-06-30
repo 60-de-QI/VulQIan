@@ -73,6 +73,12 @@ class failed_to_bind : public Vulqian::Exception::general_exception<failed_to_bi
     static std::string get_prefix() { return "failed to bind : "; }
 };
 
+class failed_to_load : public Vulqian::Exception::general_exception<failed_to_load> {
+  public:
+    using general_exception::general_exception;
+    static std::string get_prefix() { return "failed to load : "; }
+};
+
 class missing_requirements : public Vulqian::Exception::general_exception<missing_requirements> {
   public:
     using general_exception::general_exception;
