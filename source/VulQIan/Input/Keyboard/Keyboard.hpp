@@ -26,10 +26,15 @@ class KeyboardMovementController {
     };
 
     void move_in_plane_xz(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object);
+    void update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object);
 
     KeyMappings keys{};
-    float move_speed{3.f};
-    float look_speed{1.5f};
+    float       move_speed{3.f};
+    float       look_speed{1.5f};
+
+    // Tentative mouse implementation
+    float mouse_sensitivity{0.01f};
+    bool  invert_mouse{false};
 };
 
 } // namespace Vulqian::Engine::Input

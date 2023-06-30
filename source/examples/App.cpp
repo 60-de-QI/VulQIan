@@ -24,7 +24,8 @@ void App::run() {
     camera.set_view_target(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
     auto viewer_object = Vulqian::Engine::Graphics::WorldObject::create_game_object();
-   Vulqian::Engine::Input::KeyboardMovementController camera_controller{};
+
+    Vulqian::Engine::Input::KeyboardMovementController camera_controller{};
 
     auto current_time = std::chrono::high_resolution_clock::now();
 
@@ -36,6 +37,8 @@ void App::run() {
         current_time = new_time;
 
         camera_controller.move_in_plane_xz(this->window.get_window(), frame_time, viewer_object);
+        camera_controller.update_camera_orientation(this->window.get_window(), frame_time, viewer_object);
+
         camera.set_view_YXZ(viewer_object.transform.translation, viewer_object.transform.rotation);
 
         float aspect = this->renderer.get_aspect_ratio();
@@ -53,65 +56,57 @@ void App::run() {
 
 // temporary helper function, creates a 1x1x1 cube centered at offset
 std::unique_ptr<Vulqian::Engine::Graphics::Model> createCubeModel(Vulqian::Engine::Graphics::Device& device, glm::vec3 offset) {
-    std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices{
+    Vulqian::Engine::Graphics::Model::Data model_data{};
 
+    model_data.vertices = {
         // left face (white)
         {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
         {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
         {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-        {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
         {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-        {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
 
         // right face (yellow)
         {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
         {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
         {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-        {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
         {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-        {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
 
         // top face (orange, remember y axis points down)
         {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
         {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
         {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-        {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
         {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-        {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
 
         // bottom face (red)
         {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
         {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
         {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-        {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
         {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-        {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
 
         // nose face (blue)
         {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
         {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
         {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-        {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
         {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-        {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
 
         // tail face (green)
         {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
         {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
         {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-        {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
         {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-        {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-
     };
-    for (auto& v : vertices) {
-        v.position += offset;
-    }
-    return std::make_unique<Vulqian::Engine::Graphics::Model>(device, vertices);
+
+    model_data.indices = {0, 1, 2, 0, 3, 1, 4, 5, 6, 4, 7, 5, 8, 9, 10, 8, 11, 9,
+                          12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21};
+
+    return std::make_unique<Vulqian::Engine::Graphics::Model>(device, model_data);
 }
 
 std::unique_ptr<Vulqian::Engine::Graphics::Model> createPyramidModel(Vulqian::Engine::Graphics::Device& device, glm::vec3 offset) {
-    std::vector<Vulqian::Engine::Graphics::Model::Vertex> vertices{
+
+    Vulqian::Engine::Graphics::Model::Data model_data{};
+
+    model_data.vertices = {
 
         // base (white)
         {{-0.5f, -0.5f, -0.5f}, {0.9f, 0.9f, 0.9f}},
@@ -142,11 +137,11 @@ std::unique_ptr<Vulqian::Engine::Graphics::Model> createPyramidModel(Vulqian::En
         {{0.5f, -0.5f, -0.5f}, {0.1f, 0.1f, 0.8f}},
     };
 
-    for (auto& v : vertices) {
+    for (auto& v : model_data.vertices) {
         v.position += offset;
     }
 
-    return std::make_unique<Vulqian::Engine::Graphics::Model>(device, vertices);
+    return std::make_unique<Vulqian::Engine::Graphics::Model>(device, model_data);
 }
 
 void App::load_world_objects(void) {

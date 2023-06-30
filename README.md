@@ -26,12 +26,15 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 11. :heavy_check_mark: Euler Angles and Homogeneous Coordinate systems
 12. :heavy_check_mark: Perspective Projection & Projection Matrix & Camera View
 12. :heavy_check_mark: Simple Main Loop Pattern & User Input
-13. :construction_worker: Index and Stagin buffers
-14. :construction: Loading 3D Models
+13. :heavy_check_mark: Add Mouse Controls
+14. :heavy_check_mark: Index and Staging buffers
+15. :construction_worker: Loading 3D Models
+15. :construction: Diffuse Shading
 
 For even later:
 - :construction: Replace World Objects with an ECS
-- :construction: Add Mouse Controls
+
+- :construction: Add Quaternion support
 
 Please note that this roadmap is a general guideline and can be adjusted based of my preferences and project requirements. Each feature builds upon the previous ones, allowing me to incrementally expand the engine's capabilities while deepening my understanding of the underlying concepts and technologies.
 

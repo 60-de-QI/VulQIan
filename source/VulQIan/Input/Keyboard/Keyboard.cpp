@@ -53,4 +53,31 @@ void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, 
     }
 }
 
+void KeyboardMovementController::update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
+    static double last_xpos = xpos;
+    static double last_ypos = ypos;
+
+    double xoffset = xpos - last_xpos;
+    double yoffset = last_ypos - ypos; // Reversed since y-coordinates go from bottom to top
+
+    last_xpos = xpos;
+    last_ypos = ypos;
+
+    xoffset *= mouse_sensitivity;
+    yoffset *= mouse_sensitivity;
+
+    if (invert_mouse) {
+        yoffset *= -1.0f;
+    }
+
+    object.transform.rotation.y += static_cast<float>(xoffset);
+    object.transform.rotation.x += static_cast<float>(yoffset);
+
+    object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -1.5f, 1.5f);
+    object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
+}
+
 } // namespace Vulqian::Engine::Input
