@@ -25,7 +25,12 @@ class Model {
         static std::vector<VkVertexInputAttributeDescription> get_attribute_descriptions();
     };
 
-    Model(Vulqian::Engine::Graphics::Device& device, const std::vector<Vertex>& vertices);
+    struct Data {
+        std::vector<Vertex>   vertices{};
+        std::vector<uint32_t> indices{};
+    };
+
+    Model(Vulqian::Engine::Graphics::Device& device, const Data& vertices);
     ~Model();
 
     // Since the class manages memory objects and vertex buffers it cannot be copied. We are in charge of memory management.
@@ -37,10 +42,17 @@ class Model {
 
   private:
     void create_vertex_buffers(const std::vector<Vertex>& vertices);
+    void create_index_buffers(const std::vector<uint32_t>& indices);
 
     Vulqian::Engine::Graphics::Device& device;
-    VkBuffer                           vertex_buffer;
-    VkDeviceMemory                     vertex_buffer_memory;
-    uint32_t                           vertext_count;
+
+    VkBuffer       vertex_buffer;
+    VkDeviceMemory vertex_buffer_memory;
+    uint32_t       vertext_count;
+
+    bool           has_index_buffer{false};
+    VkBuffer       index_buffer;
+    VkDeviceMemory index_buffer_memory;
+    uint32_t       index_count;
 };
 } // namespace Vulqian::Engine::Graphics
