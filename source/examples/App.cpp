@@ -14,15 +14,17 @@
 #include <glm/gtc/constants.hpp>
 
 App::App() {
-    this->load_world_objects();
 
     // ECS
     this->coordinator.init();
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>();
-    // auto physics_system = this->coordinator.register_system<Vulqian::Engine::ECS::Systems::Physics>();
+    auto physics_system = this->coordinator.register_system<Vulqian::Engine::ECS::Systems::Physics>();
 
     // this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>());
     // this->coordinator.set_system_signature<Vulqian::Engine::ECS::Systems::Physics>(signature);
+
+    // WorldObjects
+    this->load_world_objects();
 }
 
 void App::run() {

@@ -7,9 +7,13 @@
 
 #include "Components/ComponentArray.hpp"
 #include "Components/Transform.hpp"
+
 #include "Coordinator/Coordinator.hpp"
+
 #include "Entities/EntityManager.hpp"
+
 #include "Systems/Physics.hpp"
 #include "Systems/System.hpp"
 #include "Systems/SystemManager.hpp"
+
 #include "Types.hpp"
