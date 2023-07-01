@@ -35,4 +35,8 @@ class App {
     Vulqian::Engine::Graphics::Renderer renderer{this->window, this->device};
 
     std::vector<Vulqian::Engine::Graphics::WorldObject> world_objects;
+
+    // ECS
+    Vulqian::Engine::ECS::Coordinator coordinator{};
+    Vulqian::Engine::ECS::Signature signature{};
 };

@@ -15,6 +15,14 @@
 
 App::App() {
     this->load_world_objects();
+
+    // ECS
+    this->coordinator.init();
+    this->coordinator.register_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>();
+    // auto physics_system = this->coordinator.register_system<Vulqian::Engine::ECS::Systems::Physics>();
+
+    // this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>());
+    // this->coordinator.set_system_signature<Vulqian::Engine::ECS::Systems::Physics>(signature);
 }
 
 void App::run() {
@@ -22,6 +30,10 @@ void App::run() {
     Vulqian::Engine::Graphics::Camera       camera{};
 
     camera.set_view_target(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
+
+    // Vulqian::Engine::ECS::Entity viewer_object = Vulqian::Engine::ECS::WorldObject::create_game_object();
+    // Vulqian::Engine::ECS::Entity viewer_object = Vulqian::Engine::ECS::Entity::create();
+    // auto&                        transform_component = world_objects_registry.add<Vulqian::Engine::ECS::TransformComponent>(viewer_object);
 
     auto viewer_object = Vulqian::Engine::Graphics::WorldObject::create_game_object();
 
@@ -55,12 +67,23 @@ void App::run() {
 }
 
 void App::load_world_objects(void) {
-    std::shared_ptr<Vulqian::Engine::Graphics::Model> lveModel = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, "./conan-build/Debug/models/smooth_vase.obj");
+    std::shared_ptr<Vulqian::Engine::Graphics::Model> model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, "./conan-build/Debug/models/smooth_vase.obj");
 
     auto object = Vulqian::Engine::Graphics::WorldObject::create_game_object();
-    object.model = lveModel;
+    object.model = model;
     object.transform.translation = {.0f, .0f, 2.5f};
     object.transform.scale = glm::vec3{3.f};
 
     this->world_objects.push_back(std::move(object));
 }
+
+// void App::load_world_objects(void) {
+//     std::shared_ptr<Vulqian::Engine::Graphics::Model> lveModel =
+//         Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, "./conan-build/Debug/models/smooth_vase.obj");
+
+//     Vulqian::Engine::ECS::Entity object = Vulqian::Engine::ECS::Entity::create();
+
+//     auto& transform_component = world_objects_registry.add<Vulqian::Engine::ECS::TransformComponent>(object);
+//     transform_component.translation = {.0f, .0f, 2.5f};
+//     transform_component.scale = glm::vec3{3.f};
+// }
