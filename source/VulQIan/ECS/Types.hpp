@@ -11,7 +11,7 @@
 namespace Vulqian::Engine::ECS {
 
 using Entity = std::uint32_t;
-const Entity MAX_ENTITIES = 5000;
+const Entity MAX_ENTITIES = 500;
 
 // Used to define the size of arrays later on
 using ComponentType = std::uint8_t;

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "../../ECS/ECS.hpp"
 #include "../Camera/Camera.hpp"
 #include "../Device/Device.hpp"
 #include "../Pipeline/Pipeline.hpp"
@@ -25,6 +26,7 @@ class RenderSystem {
     RenderSystem& operator=(const RenderSystem&) = delete;
 
     void render_world_objects(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::Graphics::WorldObject>& world_objects, const Vulqian::Engine::Graphics::Camera& camera);
+    void render_world_objects(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera);
 
   private:
     void create_pipeline_layout(void);

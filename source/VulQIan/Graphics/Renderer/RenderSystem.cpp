@@ -64,8 +64,12 @@ void RenderSystem::render_world_objects(VkCommandBuffer command_buffer, std::vec
     auto projection_view = camera.get_projection() * camera.get_view();
 
     for (auto& object : world_objects) {
-        // object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.01f, glm::two_pi<float>());
-        // object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
+        if (!object.model) {
+            continue;
+        }
+
+        object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.001f, glm::two_pi<float>());
+        object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.0005f, glm::two_pi<float>());
         SimplePushConstantData push{};
         push.color = object.color;
         push.transform = projection_view * object.transform.mat4();
@@ -80,6 +84,15 @@ void RenderSystem::render_world_objects(VkCommandBuffer command_buffer, std::vec
         object.model->bind(command_buffer);
         object.model->draw(command_buffer);
     }
+}
+
+void RenderSystem::render_world_objects(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera) {
+    // this->pipeline->bind(command_buffer);
+    // auto projection_view = camera.get_projection() * camera.get_view();
+
+    // for (auto& entity: entities) {
+        
+    // }
 }
 
 } // namespace Vulqian::Engine::Graphics

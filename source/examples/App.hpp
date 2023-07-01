@@ -39,4 +39,7 @@ class App {
     // ECS
     Vulqian::Engine::ECS::Coordinator coordinator{};
     Vulqian::Engine::ECS::Signature signature{};
+    std::shared_ptr<Vulqian::Engine::ECS::Systems::Physics> physics_system;
+
+    std::vector<Vulqian::Engine::ECS::Entity> entities;
 };

@@ -6,6 +6,7 @@
 #pragma once
 
 #include "../Types.hpp"
+#include "../Coordinator/Coordinator.hpp"
 
 #include <set>
 

@@ -12,6 +12,7 @@
 #include "../Types.hpp"
 #include "ComponentArray.hpp"
 #include "Transform.hpp"
+#include "Mesh.hpp"
 
 namespace Vulqian::Engine::ECS {
 
