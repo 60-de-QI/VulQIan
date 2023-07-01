@@ -28,6 +28,16 @@ void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, 
     object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -1.5f, 1.5f);
     object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
 
+    // if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) {
+    //     glm::vec3 rotationAxis = glm::normalize(rotate);
+    //     float     rotationAngle = this->look_speed * dt * glm::length(rotate);
+    //     glm::quat rotationDelta = glm::angleAxis(rotationAngle, rotationAxis);
+    //     object.transform.rotation = rotationDelta * object.transform.rotation;
+    // }
+
+    object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -1.5f, 1.5f);
+    object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
+
     float           yaw{object.transform.rotation.y};
     const glm::vec3 forward_dir{sin(yaw), 0.f, cos(yaw)};
     const glm::vec3 right_dir{forward_dir.z, 0.f, -forward_dir.x};

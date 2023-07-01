@@ -8,7 +8,7 @@
 #include <array>
 #include <unordered_map>
 
-#include "Types.hpp"
+#include "../Types.hpp"
 
 namespace Vulqian::Engine::ECS {
 

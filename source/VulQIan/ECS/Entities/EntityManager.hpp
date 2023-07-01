@@ -8,7 +8,7 @@
 #include <array>
 #include <queue>
 
-#include "Types.hpp"
+#include "../Types.hpp"
 
 namespace Vulqian::Engine::ECS {
 class EntityManager {

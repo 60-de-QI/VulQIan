@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 #include "ComponentArray.hpp"
-#include "Types.hpp"
+#include "../Types.hpp"
 
 namespace Vulqian::Engine::ECS {
 

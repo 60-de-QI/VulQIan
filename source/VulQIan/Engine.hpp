@@ -5,7 +5,13 @@
 
 #pragma once
 
-#include "ECS/EntityManager.hpp"
+#include "ECS/Components/ComponentArray.hpp"
+#include "ECS/Components/ComponentManager.hpp"
+#include "ECS/Coordinator/Coordinator.hpp"
+#include "ECS/Entities/EntityManager.hpp"
+#include "ECS/Systems/System.hpp"
+#include "ECS/Systems/SystemManager.hpp"
+#include "ECS/Types.hpp"
 
 #include "Exception/Exception.hpp"
 
