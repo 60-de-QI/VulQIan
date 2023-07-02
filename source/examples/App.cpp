@@ -15,8 +15,7 @@
 #include <glm/gtc/constants.hpp>
 
 App::App() {
-    // WorldObjects
-    this->load_world_objects();
+    this->load_entities();
 }
 
 void App::run() {
@@ -48,7 +47,7 @@ void App::run() {
 
         if (auto command_buffer = this->renderer.begin_frame()) {
             this->renderer.begin_SwapChain_RenderPass(command_buffer);
-            render_system.render_world_objects(command_buffer, this->world_objects, camera);
+            render_system.render_entities(command_buffer, this->entities, camera, this->coordinator);
             this->renderer.end_SwapChain_RenderPass(command_buffer);
             this->renderer.end_frame();
         }
@@ -57,7 +56,7 @@ void App::run() {
     vkDeviceWaitIdle(this->device.get_device());
 }
 
-void App::load_world_objects(void) {
+void App::load_entities(void) {
     // ECS
     this->coordinator.init();
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>();
@@ -95,16 +94,4 @@ void App::load_world_objects(void) {
         this->entities.push_back(entity);
     }
 
-    for (auto& entity : this->entities) {
-        auto  object_to_add = Vulqian::Engine::Graphics::WorldObject::create_game_object();
-        auto& mesh = this->coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
-        auto& transform = this->coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
-
-        object_to_add.model = mesh.model;
-        object_to_add.transform.translation = transform.translation;
-        object_to_add.transform.scale = transform.scale;
-        object_to_add.transform.rotation = transform.rotation;
-
-        this->world_objects.push_back(std::move(object_to_add));
-    }
 }

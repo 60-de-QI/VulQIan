@@ -9,7 +9,6 @@
 #include "../Camera/Camera.hpp"
 #include "../Device/Device.hpp"
 #include "../Pipeline/Pipeline.hpp"
-#include "../WorldObject/WorldObject.hpp"
 #include "Renderer.hpp"
 
 #include <memory>
@@ -25,8 +24,7 @@ class RenderSystem {
     RenderSystem(const RenderSystem&) = delete;
     RenderSystem& operator=(const RenderSystem&) = delete;
 
-    void render_world_objects(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::Graphics::WorldObject>& world_objects, const Vulqian::Engine::Graphics::Camera& camera);
-    void render_world_objects(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera);
+    void render_entities(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator);
 
   private:
     void create_pipeline_layout(void);

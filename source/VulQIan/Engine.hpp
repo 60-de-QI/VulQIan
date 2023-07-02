@@ -16,7 +16,6 @@
 #include "Graphics/Renderer/RenderSystem.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/SwapChain/SwapChain.hpp"
-#include "Graphics/WorldObject/WorldObject.hpp"
 
 #include "Input/Keyboard/Keyboard.hpp"
 

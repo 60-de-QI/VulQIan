@@ -29,12 +29,11 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 13. :heavy_check_mark: Add Mouse Controls
 14. :heavy_check_mark: Index and Staging buffers
 15. :heavy_check_mark: Loading 3D Models
-16. :construction_worker: Diffuse Shading
-17. :construction: Uniform Buffers
+16. :heavy_check_mark: Replace World Objects with an ECS
+17. :construction_worker: Diffuse Shading
+18. :construction: Uniform Buffers
 
 For even later:
-- :construction: Replace World Objects with an ECS
-
 - :construction: Add Quaternion support
 
 Please note that this roadmap is a general guideline and can be adjusted based of my preferences and project requirements. Each feature builds upon the previous ones, allowing me to incrementally expand the engine's capabilities while deepening my understanding of the underlying concepts and technologies.

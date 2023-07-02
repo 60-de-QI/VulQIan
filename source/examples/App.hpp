@@ -28,7 +28,7 @@ class App {
     App& operator=(const App&) = delete;
 
   private:
-    void load_world_objects(void);
+    void load_entities(void);
 
     Vulqian::Engine::Window             window{WIDTH, HEIGHT, "VulQIan - Demo"};
     Vulqian::Engine::Graphics::Device   device{this->window};
@@ -38,8 +38,8 @@ class App {
 
     // ECS
     Vulqian::Engine::ECS::Coordinator coordinator{};
-    Vulqian::Engine::ECS::Signature signature{};
-    std::shared_ptr<Vulqian::Engine::ECS::Systems::Physics> physics_system;
+    Vulqian::Engine::ECS::Signature   signature{};
 
-    std::vector<Vulqian::Engine::ECS::Entity> entities;
+    std::shared_ptr<Vulqian::Engine::ECS::Systems::Physics> physics_system;
+    std::vector<Vulqian::Engine::ECS::Entity>               entities;
 };
