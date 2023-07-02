@@ -59,16 +59,20 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
         pipeline_info);
 }
 
-void RenderSystem::render_world_objects(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::Graphics::WorldObject>& world_objects, const Vulqian::Engine::Graphics::Camera& camera) {
+void RenderSystem::render_entities(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator) {
     this->pipeline->bind(command_buffer);
     auto projection_view = camera.get_projection() * camera.get_view();
 
-    for (auto& object : world_objects) {
-        // object.transform.rotation.y = glm::mod(object.transform.rotation.y + 0.01f, glm::two_pi<float>());
-        // object.transform.rotation.x = glm::mod(object.transform.rotation.x + 0.005f, glm::two_pi<float>());
+    for (auto& entity : entities) {
+        auto& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
+        auto& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+
+        transform.rotation.y = glm::mod(transform.rotation.y + 0.001f, glm::two_pi<float>());
+        transform.rotation.x = glm::mod(transform.rotation.x + 0.0005f, glm::two_pi<float>());
+
         SimplePushConstantData push{};
-        push.color = object.color;
-        push.transform = projection_view * object.transform.mat4();
+        push.color = mesh.color;
+        push.transform = projection_view * transform.mat4();
 
         vkCmdPushConstants(
             command_buffer,
@@ -77,8 +81,8 @@ void RenderSystem::render_world_objects(VkCommandBuffer command_buffer, std::vec
             0,
             sizeof(SimplePushConstantData),
             &push);
-        object.model->bind(command_buffer);
-        object.model->draw(command_buffer);
+        mesh.model->bind(command_buffer);
+        mesh.model->draw(command_buffer);
     }
 }
 

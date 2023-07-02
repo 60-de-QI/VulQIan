@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cassert>
+#include <random>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -14,7 +15,7 @@
 #include <glm/gtc/constants.hpp>
 
 App::App() {
-    this->load_world_objects();
+    this->load_entities();
 }
 
 void App::run() {
@@ -42,25 +43,55 @@ void App::run() {
         camera.set_view_YXZ(viewer_object.transform.translation, viewer_object.transform.rotation);
 
         float aspect = this->renderer.get_aspect_ratio();
-        camera.set_perspective_projection(glm::radians(50.f), aspect, .1f, 10.f);
+        camera.set_perspective_projection(glm::radians(50.f), aspect, .1f, 1000.f);
 
         if (auto command_buffer = this->renderer.begin_frame()) {
             this->renderer.begin_SwapChain_RenderPass(command_buffer);
-            render_system.render_world_objects(command_buffer, this->world_objects, camera);
+            render_system.render_entities(command_buffer, this->entities, camera, this->coordinator);
             this->renderer.end_SwapChain_RenderPass(command_buffer);
             this->renderer.end_frame();
         }
+        this->physics_system->update();
     }
     vkDeviceWaitIdle(this->device.get_device());
 }
 
-void App::load_world_objects(void) {
-    std::shared_ptr<Vulqian::Engine::Graphics::Model> lveModel = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, "./conan-build/Debug/models/smooth_vase.obj");
+void App::load_entities(void) {
+    // ECS
+    this->coordinator.init();
+    this->coordinator.register_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>();
+    this->coordinator.register_component<Vulqian::Engine::ECS::Components::Mesh>();
 
-    auto object = Vulqian::Engine::Graphics::WorldObject::create_game_object();
-    object.model = lveModel;
-    object.transform.translation = {.0f, .0f, 2.5f};
-    object.transform.scale = glm::vec3{3.f};
+    this->physics_system = this->coordinator.register_system<Vulqian::Engine::ECS::Systems::Physics>();
 
-    this->world_objects.push_back(std::move(object));
+    this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>());
+    this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Mesh>());
+
+    this->coordinator.set_system_signature<Vulqian::Engine::ECS::Systems::Physics>(signature);
+
+    std::default_random_engine            generator;
+    std::uniform_real_distribution<float> randPosition(-100.0f, 100.f);
+    std::uniform_real_distribution<float> randRotation(0.0f, 3.0f);
+    std::uniform_real_distribution<float> randScale(0.5f, 3.f);
+
+    this->entities.reserve(Vulqian::Engine::ECS::MAX_ENTITIES);
+
+    for (int i = 0; i != Vulqian::Engine::ECS::MAX_ENTITIES; i++) {
+        float scale = randScale(generator);
+
+        Vulqian::Engine::ECS::Entity entity = this->coordinator.create_entity();
+
+        Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
+        transform.scale = glm::vec3{scale, scale, scale};
+        transform.rotation = glm::vec3{randRotation(generator), randRotation(generator), randRotation(generator)};
+        transform.translation = glm::vec3{randPosition(generator), randPosition(generator), randPosition(generator)};
+
+        Vulqian::Engine::ECS::Components::Mesh mesh{};
+        mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, "./conan-build/Debug/models/colored_cube.obj");
+
+        this->coordinator.add_component(entity, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
+        this->coordinator.add_component(entity, Vulqian::Engine::ECS::Components::Mesh{mesh});
+        this->entities.push_back(entity);
+    }
+
 }

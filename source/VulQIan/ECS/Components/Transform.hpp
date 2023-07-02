@@ -5,16 +5,26 @@
 
 #pragma once
 
-#include <memory>
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "../Model/Model.hpp"
+namespace Vulqian::Engine::ECS::Components {
 
-namespace Vulqian::Engine::Graphics {
+struct Transform_Quaternion {
+    glm::vec3 translation{};
+    glm::vec3 scale{1.f, 1.f, 1.f};
+    glm::quat rotation{}; // Use quaternion for rotation
 
-struct TransformComponent {
+    // Matrix = translation * rotation * scale
+    glm::mat4 mat4() const {
+        glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), translation);
+        transformMatrix *= glm::mat4_cast(rotation);
+        transformMatrix = glm::scale(transformMatrix, scale);
+        return transformMatrix;
+    }
+};
+
+struct Transform_TB_YXZ {
     glm::vec3 translation{};
     glm::vec3 scale{1.f, 1.f, 1.f};
     glm::vec3 rotation{};
@@ -50,44 +60,6 @@ struct TransformComponent {
             },
             {translation.x, translation.y, translation.z, 1.0f}};
     }
-
-    // glm::vec3 translation{};
-    // glm::vec3 scale{1.f, 1.f, 1.f};
-    // glm::quat rotation{}; // Use quaternion for rotation
-
-    // // Matrix = translation * rotation * scale
-    // glm::mat4 mat4() const {
-    //     glm::mat4 transformMatrix = glm::translate(glm::mat4(1.0f), translation);
-    //     transformMatrix *= glm::mat4_cast(rotation);
-    //     transformMatrix = glm::scale(transformMatrix, scale);
-    //     return transformMatrix;
-    // }
 };
 
-class WorldObject {
-  public:
-    using id_t = unsigned int;
-
-    static WorldObject create_game_object() {
-        static id_t current_id{0};
-        return WorldObject{current_id++};
-    }
-
-    // Deletion of copy constructor but keeping the move
-    WorldObject(const WorldObject&) = delete;
-    WorldObject& operator=(const WorldObject&) = delete;
-    WorldObject(WorldObject&&) = default;
-    WorldObject& operator=(WorldObject&&) = default;
-
-    id_t get_id(void) const noexcept { return this->id; }
-
-    std::shared_ptr<Vulqian::Engine::Graphics::Model> model{};
-    glm::vec3                                         color{};
-    TransformComponent                                transform{};
-
-  private:
-    explicit WorldObject(id_t _id) : id{_id} {}
-    id_t id;
-};
-
-} // namespace Vulqian::Engine::Graphics
+} // namespace Vulqian::Engine::ECS::Components
