@@ -16,6 +16,7 @@
 
 App::App() {
     this->load_entities();
+    this->load_systems();
 }
 
 void App::run() {
@@ -51,9 +52,29 @@ void App::run() {
             this->renderer.end_SwapChain_RenderPass(command_buffer);
             this->renderer.end_frame();
         }
-        this->physics_system->update();
     }
     vkDeviceWaitIdle(this->device.get_device());
+}
+
+void App::load_vase(void) {
+    Vulqian::Engine::ECS::Entity                       smooth_vase = this->coordinator.create_entity();
+    Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
+
+    transform.scale = glm::vec3{3.f, 1.5f, 3.f};
+    transform.rotation = glm::vec3{0.f};
+    transform.translation = glm::vec3{-.5f, .5f, 2.5f};
+
+    Vulqian::Engine::ECS::Components::Mesh mesh{};
+    mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, "./conan-build/Debug/models/smooth_vase.obj");
+
+    this->coordinator.add_component(smooth_vase, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
+    this->coordinator.add_component(smooth_vase, Vulqian::Engine::ECS::Components::Mesh{mesh});
+    this->entities.push_back(smooth_vase);
+}
+
+void App::load_systems(void) {
+    this->physics_system = this->coordinator.register_system<Vulqian::Engine::ECS::Systems::Physics>();
+    this->coordinator.set_system_signature<Vulqian::Engine::ECS::Systems::Physics>(signature);
 }
 
 void App::load_entities(void) {
@@ -62,21 +83,19 @@ void App::load_entities(void) {
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>();
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::Mesh>();
 
-    this->physics_system = this->coordinator.register_system<Vulqian::Engine::ECS::Systems::Physics>();
-
     this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>());
     this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Mesh>());
-
-    this->coordinator.set_system_signature<Vulqian::Engine::ECS::Systems::Physics>(signature);
 
     std::default_random_engine            generator;
     std::uniform_real_distribution<float> randPosition(-100.0f, 100.f);
     std::uniform_real_distribution<float> randRotation(0.0f, 3.0f);
     std::uniform_real_distribution<float> randScale(0.5f, 3.f);
 
-    this->entities.reserve(Vulqian::Engine::ECS::MAX_ENTITIES);
+    this->entities.reserve(Vulqian::Engine::ECS::MAX_ENTITIES + 1);
 
-    for (int i = 0; i != Vulqian::Engine::ECS::MAX_ENTITIES; i++) {
+    this->load_vase();
+
+    for (int i = 0; i != 400; i++) {
         float scale = randScale(generator);
 
         Vulqian::Engine::ECS::Entity entity = this->coordinator.create_entity();
@@ -93,5 +112,4 @@ void App::load_entities(void) {
         this->coordinator.add_component(entity, Vulqian::Engine::ECS::Components::Mesh{mesh});
         this->entities.push_back(entity);
     }
-
 }

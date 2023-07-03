@@ -82,6 +82,12 @@ class Coordinator {
         this->system_manager->set_signature<T>(signature);
     }
 
+    template <typename T>
+    bool has_component(Entity entity) {
+        auto signature = entity_manager->get_signature(entity);
+        return signature.test(component_manager->get_component_type<T>());
+    }
+
   private:
     std::unique_ptr<Vulqian::Engine::ECS::ComponentManager> component_manager;
     std::unique_ptr<Vulqian::Engine::ECS::EntityManager>    entity_manager;

@@ -16,9 +16,7 @@ namespace Vulqian::Engine::ECS::Systems {
 class Physics : public System {
   public:
     void update() {
-        for (auto const& entity : this->entities) {
-            // auto& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
-        }
+
     }
 };
 

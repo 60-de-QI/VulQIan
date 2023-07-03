@@ -62,17 +62,20 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
 void RenderSystem::render_entities(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator) {
     this->pipeline->bind(command_buffer);
     auto projection_view = camera.get_projection() * camera.get_view();
+    SimplePushConstantData push{};
 
     for (auto& entity : entities) {
-        auto& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
-        auto& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+        push.transform = projection_view;
 
-        transform.rotation.y = glm::mod(transform.rotation.y + 0.001f, glm::two_pi<float>());
-        transform.rotation.x = glm::mod(transform.rotation.x + 0.0005f, glm::two_pi<float>());
+        if (coordinator.has_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity)) {
+            auto& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
+            auto& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
 
-        SimplePushConstantData push{};
-        push.color = mesh.color;
-        push.transform = projection_view * transform.mat4();
+            transform.rotation.y = glm::mod(transform.rotation.y + 0.001f, glm::two_pi<float>());
+            transform.rotation.x = glm::mod(transform.rotation.x + 0.0005f, glm::two_pi<float>());
+
+            push.transform = projection_view * transform.mat4();
+        }
 
         vkCmdPushConstants(
             command_buffer,
@@ -81,8 +84,12 @@ void RenderSystem::render_entities(VkCommandBuffer command_buffer, std::vector<V
             0,
             sizeof(SimplePushConstantData),
             &push);
-        mesh.model->bind(command_buffer);
-        mesh.model->draw(command_buffer);
+
+        if (coordinator.has_component<Vulqian::Engine::ECS::Components::Mesh>(entity)) {
+            auto& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
+            mesh.model->bind(command_buffer);
+            mesh.model->draw(command_buffer);
+        }
     }
 }
 

@@ -29,6 +29,8 @@ class App {
 
   private:
     void load_entities(void);
+    void load_systems(void);
+    void load_vase(void);
 
     Vulqian::Engine::Window             window{WIDTH, HEIGHT, "VulQIan - Demo"};
     Vulqian::Engine::Graphics::Device   device{this->window};
