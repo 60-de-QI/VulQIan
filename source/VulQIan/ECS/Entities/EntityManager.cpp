@@ -37,7 +37,7 @@ void EntityManager::destroy_entity(Entity entity) {
     --this->living_entity_count;
 }
 
-void EntityManager::set_signature(Entity entity, Signature signature) {
+void EntityManager::set_signature(Entity entity, Signature const& signature) {
     assert(entity < MAX_ENTITIES && "entity out of range");
 
     // Put this entity's signature into the array

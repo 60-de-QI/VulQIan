@@ -62,12 +62,10 @@ class ComponentManager {
         return this->get_component_array<T>()->get_data(entity);
     }
 
-    void entity_destroyed(Entity entity) {
+    void entity_destroyed(Entity entity) const {
         // Notify each component array that an entity has been destroyed
         // If it has a component for that entity, it will remove it
-        for (auto const& pair : this->component_arrays) {
-            auto const& component = pair.second;
-
+        for (auto const& [type, component] : this->component_arrays) {
             component->entity_destroyed(entity);
         }
     }

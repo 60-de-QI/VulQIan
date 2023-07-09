@@ -28,9 +28,7 @@ class Model {
         static std::vector<VkVertexInputBindingDescription>   get_binding_descriptions();
         static std::vector<VkVertexInputAttributeDescription> get_attribute_descriptions();
 
-        bool operator==(const Vertex& other) const {
-            return position == other.position && color == other.color && normal == other.normal && uv == other.uv;
-        }
+        bool operator==(const Vertex& other) const = default;
     };
 
     struct Data {

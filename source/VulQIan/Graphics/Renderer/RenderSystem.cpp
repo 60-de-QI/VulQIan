@@ -59,12 +59,12 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
         pipeline_info);
 }
 
-void RenderSystem::render_entities(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator) {
+void RenderSystem::render_entities(VkCommandBuffer command_buffer, const std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator) {
     this->pipeline->bind(command_buffer);
     auto                   projection_view = camera.get_projection() * camera.get_view();
     SimplePushConstantData push{};
 
-    for (auto& entity : entities) {
+    for (auto const& entity : entities) {
         push.transform = projection_view;
 
         if (coordinator.has_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity)) {

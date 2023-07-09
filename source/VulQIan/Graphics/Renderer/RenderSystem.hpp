@@ -25,7 +25,7 @@ class RenderSystem {
     RenderSystem(const RenderSystem&) = delete;
     RenderSystem& operator=(const RenderSystem&) = delete;
 
-    void render_entities(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator);
+    void render_entities(VkCommandBuffer command_buffer, const std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator);
 
   private:
     void create_pipeline_layout(void);

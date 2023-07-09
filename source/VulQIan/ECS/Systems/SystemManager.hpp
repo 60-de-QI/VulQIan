@@ -36,24 +36,22 @@ class SystemManager {
         assert(systems.find(typeName) != systems.end() && "System used before registered.");
 
         // Set the signature for this system
-        signatures.insert({typeName, signature});
+        signatures.try_emplace(typeName, signature);
     }
 
-    void entity_destroyed(Entity entity) {
+    void entity_destroyed(Entity entity) const {
         // Erase a destroyed entity from all system lists
         // entities is a set so no check needed
-        for (auto const& pair : this->systems) {
-            auto const& system = pair.second;
+        for (auto const& [type, system_ptr] : this->systems) {
+            auto const& system = system_ptr;
 
             system->entities.erase(entity);
         }
     }
 
-    void entity_signature_changed(Entity entity, Signature entitySignature) {
+    void entity_signature_changed(Entity entity, Signature const& entitySignature) {
         // Notify each system that an entity's signature changed
-        for (auto const& pair : systems) {
-            auto const& type = pair.first;
-            auto const& system = pair.second;
+        for (auto const& [type, system] : systems) {
             auto const& systemSignature = signatures[type];
 
             // Entity signature matches system signature - insert into set

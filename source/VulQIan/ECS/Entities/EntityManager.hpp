@@ -17,7 +17,7 @@ class EntityManager {
 
     Entity    create_entity();
     void      destroy_entity(Entity entity);
-    void      set_signature(Entity entity, Signature signature);
+    void      set_signature(Entity entity, Signature const& signature);
     Signature get_signature(Entity entity);
 
   private:

@@ -26,7 +26,7 @@ void Camera::set_perspective_projection(float fov_y, float aspect, float near, f
     const float tanHalfFovy = tan(fov_y / 2.f);
     this->projection_matrix = glm::mat4{0.0f};
     this->projection_matrix[0][0] = 1.f / (aspect * tanHalfFovy);
-    this->projection_matrix[1][1] = 1.f / (tanHalfFovy);
+    this->projection_matrix[1][1] = 1.f / tanHalfFovy;
     this->projection_matrix[2][2] = far / (far - near);
     this->projection_matrix[2][3] = 1.f;
     this->projection_matrix[3][2] = -(far * near) / (far - near);

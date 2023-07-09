@@ -33,11 +33,9 @@ struct hash<Vulqian::Engine::Graphics::Model::Vertex> {
 } // namespace std
 
 namespace Vulqian::Engine::Graphics {
-Model::Model(Vulqian::Engine::Graphics::Device& device, const Data& data) : device(device) {
+Model::Model(Vulqian::Engine::Graphics::Device& device, const Data& data) : device(device), file_name(data.filepath) {
     this->create_vertex_buffers(data.vertices);
     this->create_index_buffers(data.indices);
-
-    this->file_name = data.filepath;
 }
 
 Model::~Model() {
@@ -106,8 +104,7 @@ void Model::create_index_buffers(const std::vector<uint32_t>& indices) {
 
     void* data;
     vkMapMemory(this->device.get_device(), staging_buffer_memory, 0, buffer_size, 0, &data);
-    // memcpy(data, indices.data(), static_cast<size_t>(buffer_size));
-    std::copy(indices.begin(), indices.end(), static_cast<uint32_t*>(data));
+    std::ranges::copy(indices.begin(), indices.end(), static_cast<uint32_t*>(data));
     vkUnmapMemory(this->device.get_device(), staging_buffer_memory);
 
     this->device.createBuffer(
@@ -160,20 +157,19 @@ std::vector<VkVertexInputAttributeDescription> Model::Vertex::get_attribute_desc
     // binding, location, format, offset
 }
 
-void Model::Data::load_model(const std::string& filepath) {
+void Model::Data::load_model(const std::string& model_filepath) {
     tinyobj::attrib_t                attrib;
     std::vector<tinyobj::shape_t>    shapes;
     std::vector<tinyobj::material_t> materials;
     std::string                      warn;
-    std::string                      err;
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str())) {
+    if (std::string err; !tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, model_filepath.c_str())) {
         throw Vulqian::Exception::failed_to_load(warn + err);
     }
 
     vertices.clear();
     indices.clear();
-    this->filepath = filepath;
+    this->filepath = model_filepath;
 
     std::unordered_map<Vertex, uint32_t> unique_vertices{};
 
@@ -187,15 +183,10 @@ void Model::Data::load_model(const std::string& filepath) {
                     attrib.vertices[3 * index.vertex_index + 1],
                     attrib.vertices[3 * index.vertex_index + 2]};
 
-                auto color_index = 3 * index.vertex_index + 2;
-                if (color_index < attrib.colors.size()) {
-                    vertex.color = {
-                        attrib.vertices[color_index - 0],
-                        attrib.vertices[color_index - 1],
-                        attrib.vertices[color_index - 2]};
-                } else {
-                    vertex.color = {1.f, 1.f, 1.f}; // set default color
-                }
+                vertex.color = {
+                    attrib.colors[3 * index.vertex_index + 0],
+                    attrib.colors[3 * index.vertex_index + 1],
+                    attrib.colors[3 * index.vertex_index + 2]};
             }
 
             if (index.normal_index >= 0) {
@@ -211,7 +202,7 @@ void Model::Data::load_model(const std::string& filepath) {
                     attrib.texcoords[2 * index.texcoord_index + 1]};
             }
 
-            if (unique_vertices.count(vertex) == 0) {
+            if (!unique_vertices.contains(vertex)) {
                 unique_vertices[vertex] = static_cast<uint32_t>(vertices.size());
                 vertices.push_back(vertex);
             }
