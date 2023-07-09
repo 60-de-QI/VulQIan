@@ -14,7 +14,7 @@ namespace Vulqian::Engine::Graphics {
 
 struct SimplePushConstantData {
     glm::mat4 transform{1.f};
-    alignas(16) glm::vec3 color;
+    glm::mat4 normal_matrix{1.f};
 };
 
 RenderSystem::RenderSystem(Vulqian::Engine::Graphics::Device& device, VkRenderPass render_pass) : device{device} {
@@ -68,8 +68,8 @@ void RenderSystem::render_entities(VkCommandBuffer command_buffer, const std::ve
         push.transform = projection_view;
 
         if (coordinator.has_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity)) {
-            auto& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
-            auto& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+            auto const& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
+            auto&       transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
 
             if (mesh.model->get_file_name() == Vulqian::Engine::Utils::colored_cube) {
                 transform.rotation.y = glm::mod(transform.rotation.y + 0.001f, glm::two_pi<float>());
@@ -77,6 +77,7 @@ void RenderSystem::render_entities(VkCommandBuffer command_buffer, const std::ve
             }
 
             push.transform = projection_view * transform.mat4();
+            push.normal_matrix = transform.normal_matrix();
         }
 
         vkCmdPushConstants(
@@ -88,7 +89,7 @@ void RenderSystem::render_entities(VkCommandBuffer command_buffer, const std::ve
             &push);
 
         if (coordinator.has_component<Vulqian::Engine::ECS::Components::Mesh>(entity)) {
-            auto& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
+            auto const& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
             mesh.model->bind(command_buffer);
             mesh.model->draw(command_buffer);
         }
