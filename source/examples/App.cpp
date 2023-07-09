@@ -79,7 +79,7 @@ void App::load_vase(void) {
 
     transform_flat.scale = {3.f, 1.5f, 3.f};
     // transform.rotation = glm::vec3{0.f};
-    transform_flat.translation = {-.5f, .5f, 2.5f};
+    transform_flat.translation = {.5f, .5f, 2.5f};
 
     Vulqian::Engine::ECS::Components::Mesh flat_mesh{};
     flat_mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, Vulqian::Engine::Utils::flat_vase);
