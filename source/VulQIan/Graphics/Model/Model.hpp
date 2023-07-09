@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace Vulqian::Engine::Graphics {
@@ -35,6 +36,7 @@ class Model {
     struct Data {
         std::vector<Vertex>   vertices{};
         std::vector<uint32_t> indices{};
+        std::string           filepath;
 
         void load_model(const std::string& filepath);
     };
@@ -51,6 +53,8 @@ class Model {
     void bind(VkCommandBuffer command_buffer);
     void draw(VkCommandBuffer command_buffer) const;
 
+    std::string get_file_name(void) const noexcept { return this->file_name; }
+
   private:
     void create_vertex_buffers(const std::vector<Vertex>& vertices);
     void create_index_buffers(const std::vector<uint32_t>& indices);
@@ -65,5 +69,6 @@ class Model {
     VkBuffer       index_buffer;
     VkDeviceMemory index_buffer_memory;
     uint32_t       index_count;
+    std::string    file_name;
 };
 } // namespace Vulqian::Engine::Graphics

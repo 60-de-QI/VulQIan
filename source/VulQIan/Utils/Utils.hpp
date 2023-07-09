@@ -6,6 +6,7 @@
 #pragma once
 
 #include <limits>
+#include <string>
 
 namespace Vulqian::Engine::Utils {
 
@@ -15,5 +16,8 @@ void hash_combine(std::size_t& seed, const T& v, const Rest&... rest) {
     seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
     (hash_combine(seed, rest), ...);
 };
+
+const std::string colored_cube{"./conan-build/Debug/models/colored_cube.obj"};
+const std::string smooth_vase{"./conan-build/Debug/models/smooth_vase.obj"};
 
 } // namespace Vulqian::Engine::Utils

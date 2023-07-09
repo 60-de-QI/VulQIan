@@ -36,6 +36,8 @@ namespace Vulqian::Engine::Graphics {
 Model::Model(Vulqian::Engine::Graphics::Device& device, const Data& data) : device(device) {
     this->create_vertex_buffers(data.vertices);
     this->create_index_buffers(data.indices);
+
+    this->file_name = data.filepath;
 }
 
 Model::~Model() {
@@ -171,6 +173,7 @@ void Model::Data::load_model(const std::string& filepath) {
 
     vertices.clear();
     indices.clear();
+    this->filepath = filepath;
 
     std::unordered_map<Vertex, uint32_t> unique_vertices{};
 

@@ -61,7 +61,7 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
 
 void RenderSystem::render_entities(VkCommandBuffer command_buffer, std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator) {
     this->pipeline->bind(command_buffer);
-    auto projection_view = camera.get_projection() * camera.get_view();
+    auto                   projection_view = camera.get_projection() * camera.get_view();
     SimplePushConstantData push{};
 
     for (auto& entity : entities) {
@@ -71,8 +71,10 @@ void RenderSystem::render_entities(VkCommandBuffer command_buffer, std::vector<V
             auto& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
             auto& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
 
-            transform.rotation.y = glm::mod(transform.rotation.y + 0.001f, glm::two_pi<float>());
-            transform.rotation.x = glm::mod(transform.rotation.x + 0.0005f, glm::two_pi<float>());
+            if (mesh.model->get_file_name() == Vulqian::Engine::Utils::colored_cube) {
+                transform.rotation.y = glm::mod(transform.rotation.y + 0.001f, glm::two_pi<float>());
+                transform.rotation.x = glm::mod(transform.rotation.x + 0.0005f, glm::two_pi<float>());
+            }
 
             push.transform = projection_view * transform.mat4();
         }

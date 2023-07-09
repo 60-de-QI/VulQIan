@@ -6,6 +6,7 @@
 #pragma once
 
 #include "../../ECS/ECS.hpp"
+#include "../../Utils/Utils.hpp"
 #include "../Camera/Camera.hpp"
 #include "../Device/Device.hpp"
 #include "../Pipeline/Pipeline.hpp"

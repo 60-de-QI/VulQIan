@@ -65,7 +65,7 @@ void App::load_vase(void) {
     transform.translation = glm::vec3{-.5f, .5f, 2.5f};
 
     Vulqian::Engine::ECS::Components::Mesh mesh{};
-    mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, "./conan-build/Debug/models/smooth_vase.obj");
+    mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, Vulqian::Engine::Utils::smooth_vase);
 
     this->coordinator.add_component(smooth_vase, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
     this->coordinator.add_component(smooth_vase, Vulqian::Engine::ECS::Components::Mesh{mesh});
@@ -87,8 +87,8 @@ void App::load_entities(void) {
     this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Mesh>());
 
     std::default_random_engine            generator;
-    std::uniform_real_distribution<float> randPosition(-100.0f, 100.f);
-    std::uniform_real_distribution<float> randRotation(0.0f, 3.0f);
+    std::uniform_real_distribution<float> randPosition(-100.0f, 100.0f);
+    std::uniform_real_distribution<float> randRotation(.0f, 3.0f);
     std::uniform_real_distribution<float> randScale(0.5f, 3.f);
 
     this->entities.reserve(Vulqian::Engine::ECS::MAX_ENTITIES + 1);
@@ -106,7 +106,7 @@ void App::load_entities(void) {
         transform.translation = glm::vec3{randPosition(generator), randPosition(generator), randPosition(generator)};
 
         Vulqian::Engine::ECS::Components::Mesh mesh{};
-        mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, "./conan-build/Debug/models/colored_cube.obj");
+        mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, Vulqian::Engine::Utils::colored_cube);
 
         this->coordinator.add_component(entity, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
         this->coordinator.add_component(entity, Vulqian::Engine::ECS::Components::Mesh{mesh});
