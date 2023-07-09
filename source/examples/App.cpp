@@ -62,7 +62,6 @@ void App::load_vase(void) {
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
 
     transform.scale = glm::vec3{3.f, 1.5f, 3.f};
-    // transform.rotation = glm::vec3{0.f};
     transform.translation = glm::vec3{-.5f, .5f, 2.5f};
 
     Vulqian::Engine::ECS::Components::Mesh mesh{};
@@ -78,7 +77,6 @@ void App::load_vase(void) {
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform_flat{};
 
     transform_flat.scale = {3.f, 1.5f, 3.f};
-    // transform.rotation = glm::vec3{0.f};
     transform_flat.translation = {.5f, .5f, 2.5f};
 
     Vulqian::Engine::ECS::Components::Mesh flat_mesh{};
