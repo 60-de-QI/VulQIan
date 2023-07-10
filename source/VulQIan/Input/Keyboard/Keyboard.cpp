@@ -9,7 +9,7 @@
 
 namespace Vulqian::Engine::Input {
 
-void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) {
+void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) const {
     glm::vec3 rotate{0};
 
     if (glfwGetKey(window, this->keys.look_right) == GLFW_PRESS)
@@ -63,8 +63,9 @@ void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, 
     }
 }
 
-void KeyboardMovementController::update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) {
-    double xpos, ypos;
+void KeyboardMovementController::update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) const {
+    double xpos;
+    double ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
 
     static double last_xpos = xpos;
@@ -76,8 +77,8 @@ void KeyboardMovementController::update_camera_orientation(GLFWwindow* window, f
     last_xpos = xpos;
     last_ypos = ypos;
 
-    xoffset *= mouse_sensitivity;
-    yoffset *= mouse_sensitivity;
+    xoffset *= mouse_sensitivity * dt;
+    yoffset *= mouse_sensitivity * dt;
 
     if (invert_mouse) {
         yoffset *= -1.0f;
