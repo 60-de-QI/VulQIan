@@ -25,12 +25,16 @@ void App::run() {
 
     camera.set_view_target(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
-    auto viewer_object = Vulqian::Engine::Graphics::WorldObject::create_game_object();
+    auto viewer_entity = this->coordinator.create_entity();
+
+    Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
+    this->coordinator.add_component(viewer_entity, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
 
     Vulqian::Engine::Input::KeyboardMovementController camera_controller{};
-    Vulqian::Engine::Input::MouseCameraController mouse_controller{};
+    Vulqian::Engine::Input::MouseCameraController      mouse_controller{};
 
-    auto current_time = std::chrono::high_resolution_clock::now();
+    auto  current_time = std::chrono::high_resolution_clock::now();
+    auto& fetched_transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(viewer_entity);
 
     while (!this->window.should_close()) {
         glfwPollEvents();
@@ -39,10 +43,10 @@ void App::run() {
         float frame_time = std::chrono::duration<float, std::chrono::seconds::period>(new_time - current_time).count();
         current_time = new_time;
 
-        mouse_controller.update_camera_orientation(this->window.get_window(), frame_time, viewer_object);
-        camera_controller.move_in_plane_xz(this->window.get_window(), frame_time, viewer_object);
+        mouse_controller.update_camera_orientation(this->window.get_window(), frame_time, fetched_transform);
+        camera_controller.move_in_plane_xz(this->window.get_window(), frame_time, fetched_transform);
 
-        camera.set_view_YXZ(viewer_object.transform.translation, viewer_object.transform.rotation);
+        camera.set_view_YXZ(fetched_transform.translation, fetched_transform.rotation);
 
         float aspect = this->renderer.get_aspect_ratio();
         camera.set_perspective_projection(glm::radians(50.f), aspect, .1f, 1000.f);

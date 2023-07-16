@@ -9,7 +9,7 @@
 
 namespace Vulqian::Engine::Input {
 
-void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) const {
+void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt,Vulqian::Engine::ECS::Components::Transform_TB_YXZ& transform) const {
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -27,11 +27,11 @@ void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, 
         rotate.x -= 1.f;
 
     if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) {
-        object.transform.rotation += this->look_speed * dt * glm::normalize(rotate);
+        transform.rotation += this->look_speed * dt * glm::normalize(rotate);
     }
 
-    object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -1.5f, 1.5f);
-    object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
+    transform.rotation.x = glm::clamp(transform.rotation.x, -1.5f, 1.5f);
+    transform.rotation.y = glm::mod(transform.rotation.y, glm::two_pi<float>());
 
     // if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) {
     //     glm::vec3 rotationAxis = glm::normalize(rotate);
@@ -40,10 +40,10 @@ void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, 
     //     object.transform.rotation = rotationDelta * object.transform.rotation;
     // }
 
-    object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -1.5f, 1.5f);
-    object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
+    transform.rotation.x = glm::clamp(transform.rotation.x, -1.5f, 1.5f);
+    transform.rotation.y = glm::mod(transform.rotation.y, glm::two_pi<float>());
 
-    float           yaw{object.transform.rotation.y};
+    float           yaw{transform.rotation.y};
     const glm::vec3 forward_dir{sin(yaw), 0.f, cos(yaw)};
     const glm::vec3 right_dir{forward_dir.z, 0.f, -forward_dir.x};
     const glm::vec3 up_dir{0.f, -1.f, 0.f};
@@ -64,7 +64,7 @@ void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, 
         move_dir -= up_dir;
 
     if (glm::dot(move_dir, move_dir) > std::numeric_limits<float>::epsilon()) {
-        object.transform.translation += this->move_speed * dt * glm::normalize(move_dir);
+        transform.translation += this->move_speed * dt * glm::normalize(move_dir);
     }
 }
 

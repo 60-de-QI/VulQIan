@@ -7,7 +7,7 @@
 
 namespace Vulqian::Engine::Input {
 
-void MouseCameraController::update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) const {
+void MouseCameraController::update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::ECS::Components::Transform_TB_YXZ& transform) const {
     double xpos;
     double ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
@@ -28,11 +28,11 @@ void MouseCameraController::update_camera_orientation(GLFWwindow* window, float 
         yoffset *= -1.0f;
     }
 
-    object.transform.rotation.y += static_cast<float>(xoffset);
-    object.transform.rotation.x += static_cast<float>(yoffset);
+    transform.rotation.y += static_cast<float>(xoffset);
+    transform.rotation.x += static_cast<float>(yoffset);
 
-    object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -1.5f, 1.5f);
-    object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
+    transform.rotation.x = glm::clamp(transform.rotation.x, -1.5f, 1.5f);
+    transform.rotation.y = glm::mod(transform.rotation.y, glm::two_pi<float>());
 }
 
 } // namespace Vulqian::Engine::Input

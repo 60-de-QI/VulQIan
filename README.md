@@ -31,13 +31,13 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 15. :heavy_check_mark: Loading 3D Models
 16. :heavy_check_mark: Replace World Objects with an ECS
 17. :heavy_check_mark: Diffuse Shading
-18. :construction: Uniform Buffers
-19. :construction_worker: Descriptor Set
+18. :heavy_check_mark: Move mouse controls in its own instance away from Keyboard controller and support simultenous mouse and keyboard movement
+19. :heavy_check_mark: Completly delete WorldObjects and replace it with the ECS 
+20. :construction: Uniform Buffers
+21. :construction_worker: Descriptor Set
 
 For even later:
-- :construction: Add Quaternion support
-- :construction: Replace Camera by ECS and completly delete WorldObjects
-- :construction: move mouse controls in its own instance away from Keyboard controller and support simultenous mouse and keyboard movement
+- :construction: Add Quaternion support on Camera (functionnal code commented present but not fully implemented)
 
 Please note that this roadmap is a general guideline and can be adjusted based of my preferences and project requirements. Each feature builds upon the previous ones, allowing me to incrementally expand the engine's capabilities while deepening my understanding of the underlying concepts and technologies.
 

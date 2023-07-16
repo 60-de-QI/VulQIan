@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "../../Graphics/WorldObject/WorldObject.hpp"
 #include "../../Window/Window.hpp"
+#include "../../ECS/ECS.hpp"
 
 namespace Vulqian::Engine::Input {
 
@@ -25,7 +25,7 @@ class KeyboardMovementController {
         int look_down = GLFW_KEY_DOWN;
     };
 
-    void move_in_plane_xz(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) const;
+    void move_in_plane_xz(GLFWwindow* window, float dt, Vulqian::Engine::ECS::Components::Transform_TB_YXZ& transform) const;
 
     KeyMappings keys{};
     float       move_speed{3.f};

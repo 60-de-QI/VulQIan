@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include "../../Graphics/WorldObject/WorldObject.hpp"
 #include "../../Window/Window.hpp"
+#include "../../ECS/ECS.hpp"
 
 namespace Vulqian::Engine::Input {
 class MouseCameraController {
   public:
-    void update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) const;
+    void update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::ECS::Components::Transform_TB_YXZ& transform) const;
 
     // Tentative mouse implementation
     float mouse_sensitivity{.5f};
