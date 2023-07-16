@@ -33,8 +33,7 @@ void App::run() {
     Vulqian::Engine::Input::KeyboardMovementController camera_controller{};
     Vulqian::Engine::Input::MouseCameraController      mouse_controller{};
 
-    auto  current_time = std::chrono::high_resolution_clock::now();
-    auto& fetched_transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(viewer_entity);
+    auto current_time = std::chrono::high_resolution_clock::now();
 
     while (!this->window.should_close()) {
         glfwPollEvents();
@@ -43,10 +42,9 @@ void App::run() {
         float frame_time = std::chrono::duration<float, std::chrono::seconds::period>(new_time - current_time).count();
         current_time = new_time;
 
-        mouse_controller.update_camera_orientation(this->window.get_window(), frame_time, fetched_transform);
-        camera_controller.move_in_plane_xz(this->window.get_window(), frame_time, fetched_transform);
-
-        camera.set_view_YXZ(fetched_transform.translation, fetched_transform.rotation);
+        mouse_controller.update_camera_orientation(this->window.get_window(), frame_time, transform);
+        camera_controller.move_in_plane_xz(this->window.get_window(), frame_time, transform);
+        camera.set_view_YXZ(transform.translation, transform.rotation);
 
         float aspect = this->renderer.get_aspect_ratio();
         camera.set_perspective_projection(glm::radians(50.f), aspect, .1f, 1000.f);
@@ -62,8 +60,7 @@ void App::run() {
 }
 
 void App::load_vase(void) {
-    Vulqian::Engine::ECS::Entity smooth_vase = this->coordinator.create_entity();
-
+    Vulqian::Engine::ECS::Entity                       smooth_vase = this->coordinator.create_entity();
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
 
     transform.scale = glm::vec3{3.f, 1.5f, 3.f};
@@ -77,8 +74,7 @@ void App::load_vase(void) {
     this->entities.push_back(smooth_vase);
 
     // flat vase
-    Vulqian::Engine::ECS::Entity flat_vase = this->coordinator.create_entity();
-
+    Vulqian::Engine::ECS::Entity                       flat_vase = this->coordinator.create_entity();
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform_flat{};
 
     transform_flat.scale = {3.f, 1.5f, 3.f};

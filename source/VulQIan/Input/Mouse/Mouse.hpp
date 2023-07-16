@@ -14,7 +14,7 @@ class MouseCameraController {
     void update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::ECS::Components::Transform_TB_YXZ& transform) const;
 
     // Tentative mouse implementation
-    float mouse_sensitivity{.5f};
+    float mouse_sensitivity{.75f};
     bool  invert_mouse{false};
 };
 } // namespace Vulqian::Engine::Input
