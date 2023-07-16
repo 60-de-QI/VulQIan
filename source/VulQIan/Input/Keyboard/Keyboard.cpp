@@ -10,6 +10,11 @@
 namespace Vulqian::Engine::Input {
 
 void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) const {
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
     glm::vec3 rotate{0};
 
     if (glfwGetKey(window, this->keys.look_right) == GLFW_PRESS)
@@ -61,34 +66,6 @@ void KeyboardMovementController::move_in_plane_xz(GLFWwindow* window, float dt, 
     if (glm::dot(move_dir, move_dir) > std::numeric_limits<float>::epsilon()) {
         object.transform.translation += this->move_speed * dt * glm::normalize(move_dir);
     }
-}
-
-void KeyboardMovementController::update_camera_orientation(GLFWwindow* window, float dt, Vulqian::Engine::Graphics::WorldObject& object) const {
-    double xpos;
-    double ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-
-    static double last_xpos = xpos;
-    static double last_ypos = ypos;
-
-    double xoffset = xpos - last_xpos;
-    double yoffset = last_ypos - ypos; // Reversed since y-coordinates go from bottom to top
-
-    last_xpos = xpos;
-    last_ypos = ypos;
-
-    xoffset *= mouse_sensitivity * dt;
-    yoffset *= mouse_sensitivity * dt;
-
-    if (invert_mouse) {
-        yoffset *= -1.0f;
-    }
-
-    object.transform.rotation.y += static_cast<float>(xoffset);
-    object.transform.rotation.x += static_cast<float>(yoffset);
-
-    object.transform.rotation.x = glm::clamp(object.transform.rotation.x, -1.5f, 1.5f);
-    object.transform.rotation.y = glm::mod(object.transform.rotation.y, glm::two_pi<float>());
 }
 
 } // namespace Vulqian::Engine::Input

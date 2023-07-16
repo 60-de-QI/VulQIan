@@ -18,6 +18,7 @@
 #include "Graphics/SwapChain/SwapChain.hpp"
 
 #include "Input/Keyboard/Keyboard.hpp"
+#include "Input/Mouse/Mouse.hpp"
 
 #include "Window/Window.hpp"
 

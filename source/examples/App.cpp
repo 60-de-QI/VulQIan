@@ -28,6 +28,7 @@ void App::run() {
     auto viewer_object = Vulqian::Engine::Graphics::WorldObject::create_game_object();
 
     Vulqian::Engine::Input::KeyboardMovementController camera_controller{};
+    Vulqian::Engine::Input::MouseCameraController mouse_controller{};
 
     auto current_time = std::chrono::high_resolution_clock::now();
 
@@ -38,8 +39,8 @@ void App::run() {
         float frame_time = std::chrono::duration<float, std::chrono::seconds::period>(new_time - current_time).count();
         current_time = new_time;
 
+        mouse_controller.update_camera_orientation(this->window.get_window(), frame_time, viewer_object);
         camera_controller.move_in_plane_xz(this->window.get_window(), frame_time, viewer_object);
-        camera_controller.update_camera_orientation(this->window.get_window(), frame_time, viewer_object);
 
         camera.set_view_YXZ(viewer_object.transform.translation, viewer_object.transform.rotation);
 
