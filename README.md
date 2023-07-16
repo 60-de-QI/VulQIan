@@ -33,7 +33,8 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 17. :heavy_check_mark: Diffuse Shading
 18. :heavy_check_mark: Move mouse controls in its own instance away from Keyboard controller and support simultenous mouse and keyboard movement
 19. :heavy_check_mark: Completly delete WorldObjects and replace it with the ECS 
-20. :construction: Uniform Buffers
+20. :heavy_check_mark: Uniform Buffers
+20. :construction: Descriptor Set
 21. :construction_worker: Descriptor Set
 
 For even later:

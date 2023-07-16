@@ -59,9 +59,9 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
         pipeline_info);
 }
 
-void RenderSystem::render_entities(VkCommandBuffer command_buffer, const std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator) {
-    this->pipeline->bind(command_buffer);
-    auto                   projection_view = camera.get_projection() * camera.get_view();
+void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info& frame_info, const std::vector<Vulqian::Engine::ECS::Entity>& entities, Vulqian::Engine::ECS::Coordinator& coordinator) {
+    this->pipeline->bind(frame_info.command_buffer);
+    auto                   projection_view = frame_info.camera.get_projection() * frame_info.camera.get_view();
     SimplePushConstantData push{};
 
     for (auto const& entity : entities) {
@@ -81,7 +81,7 @@ void RenderSystem::render_entities(VkCommandBuffer command_buffer, const std::ve
         }
 
         vkCmdPushConstants(
-            command_buffer,
+            frame_info.command_buffer,
             this->pipeline_layout,
             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
             0,
@@ -90,8 +90,8 @@ void RenderSystem::render_entities(VkCommandBuffer command_buffer, const std::ve
 
         if (coordinator.has_component<Vulqian::Engine::ECS::Components::Mesh>(entity)) {
             auto const& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
-            mesh.model->bind(command_buffer);
-            mesh.model->draw(command_buffer);
+            mesh.model->bind(frame_info.command_buffer);
+            mesh.model->draw(frame_info.command_buffer);
         }
     }
 }

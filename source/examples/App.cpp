@@ -5,6 +5,7 @@
 
 #include "App.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <random>
@@ -14,12 +15,27 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+struct GlobalUbo {
+    glm::mat4 projection_view{1.f};
+    glm::vec3 light_direction{glm::normalize(glm::vec3{1.f, -3.f, -1.f})};
+};
+
 App::App() {
     this->load_entities();
     this->load_systems();
 }
 
 void App::run() {
+    Vulqian::Engine::Graphics::Buffer global_ubo_buffer{
+        this->device,
+        sizeof(GlobalUbo),
+        Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT,
+        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+        this->device.get_physical_device_properties().limits.minUniformBufferOffsetAlignment,
+    };
+    global_ubo_buffer.map();
+
     Vulqian::Engine::Graphics::RenderSystem render_system{this->device, this->renderer.get_SwapChain_RenderPass()};
     Vulqian::Engine::Graphics::Camera       camera{};
 
@@ -49,9 +65,26 @@ void App::run() {
         float aspect = this->renderer.get_aspect_ratio();
         camera.set_perspective_projection(glm::radians(50.f), aspect, .1f, 1000.f);
 
+        Vulqian::Engine::Graphics::Frames::Info frame_info{
+            0,
+            frame_time,
+            nullptr,
+            camera};
+
         if (auto command_buffer = this->renderer.begin_frame()) {
+            int frame_index = this->renderer.get_frame_index();
+            frame_index = this->renderer.get_frame_index();
+            frame_info.command_buffer = command_buffer;
+
+            // update objects and memory
+            GlobalUbo ubo{};
+            ubo.projection_view = camera.get_projection() * camera.get_view();
+            global_ubo_buffer.writeToIndex(&ubo, frame_info.frame_index);
+            global_ubo_buffer.flushIndex(frame_info.frame_index);
+
+            // rendering phase
             this->renderer.begin_SwapChain_RenderPass(command_buffer);
-            render_system.render_entities(command_buffer, this->entities, camera, this->coordinator);
+            render_system.render_entities(frame_info, this->entities, this->coordinator);
             this->renderer.end_SwapChain_RenderPass(command_buffer);
             this->renderer.end_frame();
         }
