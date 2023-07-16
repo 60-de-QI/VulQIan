@@ -9,6 +9,7 @@
 
 #include "Exception/Exception.hpp"
 
+#include "Graphics/Buffer/Buffer.hpp"
 #include "Graphics/Camera/Camera.hpp"
 #include "Graphics/Device/Device.hpp"
 #include "Graphics/Model/Model.hpp"

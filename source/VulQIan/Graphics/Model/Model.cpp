@@ -38,47 +38,32 @@ Model::Model(Vulqian::Engine::Graphics::Device& device, const Data& data) : devi
     this->create_index_buffers(data.indices);
 }
 
-Model::~Model() {
-    vkDestroyBuffer(this->device.get_device(), this->vertex_buffer, nullptr);
-    vkFreeMemory(this->device.get_device(), this->vertex_buffer_memory, nullptr);
-
-    if (this->has_index_buffer) {
-        vkDestroyBuffer(this->device.get_device(), this->index_buffer, nullptr);
-        vkFreeMemory(this->device.get_device(), this->index_buffer_memory, nullptr);
-    }
-}
-
 void Model::create_vertex_buffers(const std::vector<Vertex>& vertices) {
-    this->vertext_count = static_cast<uint32_t>(vertices.size());
+    this->vertex_count = static_cast<uint32_t>(vertices.size());
 
-    assert(this->vertext_count >= 3 && "Vertex count must be at least 3.");
-    VkDeviceSize   buffer_size = sizeof(vertices[0]) * this->vertext_count;
-    VkBuffer       staging_buffer;
-    VkDeviceMemory staging_buffer_memory;
+    assert(this->vertex_count >= 3 && "Vertex count must be at least 3.");
+    VkDeviceSize buffer_size = sizeof(vertices[0]) * this->vertex_count;
+    uint32_t     vertex_size = sizeof(vertices[0]);
 
-    this->device.createBuffer(
-        buffer_size,
+    Vulqian::Engine::Graphics::Buffer staging_buffer{
+        this->device,
+        vertex_size,
+        this->vertex_count,
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // host = cpu
-        staging_buffer,
-        staging_buffer_memory);
+    };
+    staging_buffer.map();
+    staging_buffer.writeToBuffer((void*)vertices.data()); // I hate void* but Vulkan requires them
 
-    void* data;
-    vkMapMemory(this->device.get_device(), staging_buffer_memory, 0, buffer_size, 0, &data);
-    std::copy(vertices.data(), vertices.data() + vertext_count, static_cast<Vertex*>(data));
-    vkUnmapMemory(this->device.get_device(), staging_buffer_memory);
-
-    this->device.createBuffer(
-        buffer_size,
+    this->vertex_buffer = std::make_unique<Vulqian::Engine::Graphics::Buffer>(
+        this->device,
+        vertex_size,
+        this->vertex_count,
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // host = cpu
-        this->vertex_buffer,
-        this->vertex_buffer_memory);
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT // host = cpu
+    );
 
-    this->device.copyBuffer(staging_buffer, this->vertex_buffer, buffer_size);
-
-    vkDestroyBuffer(this->device.get_device(), staging_buffer, nullptr);
-    vkFreeMemory(this->device.get_device(), staging_buffer_memory, nullptr);
+    this->device.copyBuffer(staging_buffer.getBuffer(), this->vertex_buffer->getBuffer(), buffer_size);
 }
 
 void Model::create_index_buffers(const std::vector<uint32_t>& indices) {
@@ -91,33 +76,28 @@ void Model::create_index_buffers(const std::vector<uint32_t>& indices) {
     }
 
     VkDeviceSize buffer_size = sizeof(indices[0]) * this->index_count;
+    uint32_t     index_size = sizeof(indices[0]);
 
-    VkBuffer       staging_buffer;
-    VkDeviceMemory staging_buffer_memory;
-
-    this->device.createBuffer(
-        buffer_size,
+    Vulqian::Engine::Graphics::Buffer index_buffer{
+        this->device,
+        index_size,
+        this->index_count,
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, // host = cpu
-        staging_buffer,
-        staging_buffer_memory);
+    };
 
-    void* data;
-    vkMapMemory(this->device.get_device(), staging_buffer_memory, 0, buffer_size, 0, &data);
-    std::ranges::copy(indices.begin(), indices.end(), static_cast<uint32_t*>(data));
-    vkUnmapMemory(this->device.get_device(), staging_buffer_memory);
+    index_buffer.map();
+    index_buffer.writeToBuffer((void*)indices.data()); // I hate void* but Vulkan requires them
 
-    this->device.createBuffer(
-        buffer_size,
+    this->index_buffer = std::make_unique<Vulqian::Engine::Graphics::Buffer>(
+        this->device,
+        index_size,
+        this->index_count,
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, // host = cpu
-        this->index_buffer,
-        this->index_buffer_memory);
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT // host = cpu
+    );
 
-    this->device.copyBuffer(staging_buffer, this->index_buffer, buffer_size);
-
-    vkDestroyBuffer(this->device.get_device(), staging_buffer, nullptr);
-    vkFreeMemory(this->device.get_device(), staging_buffer_memory, nullptr);
+    this->device.copyBuffer(index_buffer.getBuffer(), this->index_buffer->getBuffer(), buffer_size);
 }
 
 std::unique_ptr<Model> Model::create_model_from_file(Vulqian::Engine::Graphics::Device& device, const std::string& filepath) {
@@ -128,12 +108,12 @@ std::unique_ptr<Model> Model::create_model_from_file(Vulqian::Engine::Graphics::
 }
 
 void Model::bind(VkCommandBuffer command_buffer) {
-    std::array<VkBuffer, 1>     buffers = {this->vertex_buffer};
+    std::array<VkBuffer, 1>     buffers = {this->vertex_buffer->getBuffer()};
     std::array<VkDeviceSize, 1> offsets = {0};
     vkCmdBindVertexBuffers(command_buffer, 0, 1, buffers.data(), offsets.data());
 
     if (this->has_index_buffer) {
-        vkCmdBindIndexBuffer(command_buffer, this->index_buffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(command_buffer, this->index_buffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
     }
 }
 
@@ -141,7 +121,7 @@ void Model::draw(VkCommandBuffer command_buffer) const {
     if (this->has_index_buffer) {
         vkCmdDrawIndexed(command_buffer, this->index_count, 1, 0, 0, 0);
     } else {
-        vkCmdDraw(command_buffer, this->vertext_count, 1, 0, 0);
+        vkCmdDraw(command_buffer, this->vertex_count, 1, 0, 0);
     }
 }
 
