@@ -13,24 +13,8 @@ if (VULQIAN_BUILD_TESTS)
     # Locate and link Google Test
     find_package(GTest REQUIRED)
     target_link_libraries(VulQIan ${Vulkan_LIBRARIES} glfw glm::glm tinyobjloader::tinyobjloader GTest::GTest GTest::Main)
-
-    # Add the test executable and set its sources
-    file(GLOB_RECURSE VULQIAN_TEST_SOURCES LIST_DIRECTORIES false
-        "tests/*.cpp"
-    )
-    add_executable(VulQIanTests ${VULQIAN_TEST_SOURCES})
-
-    # Set the binary output directory for tests to the same as the main executable
-    set_target_properties(VulQIanTests PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    )
-
-    # Link the engine library and any other dependencies needed for tests
-    target_link_libraries(VulQIanTests PRIVATE VulQIan)
-
-    # Register the test with CTest so it can be executed by 'ctest' command
     enable_testing()
-    add_test(NAME VulQIanTests COMMAND VulQIanTests)
+    add_subdirectory(tests)
 else()
     target_link_libraries(VulQIan ${Vulkan_LIBRARIES} glfw glm::glm tinyobjloader::tinyobjloader)
 endif()
