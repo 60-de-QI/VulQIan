@@ -76,7 +76,7 @@ This directory is also where you can tune CMake to your liking.
 | Value  | Option | Detail  |
 | ------------- | ------------- | ------------- |
 | VULQIAN_BUILD_EXAMPLE  | ON/OFF  | This is the default app to try and see the capabilities of the engine located by default in `source/examples/` |
-| ENABLE_SHADER_COMPILATION  | ON/OFF  | A .sh and .bat script is located in `source/VulQIan/Shaders` where you can use `glslc` to cpile your .vert and .frag |
+| ENABLE_SHADER_COMPILATION  | ON/OFF  | A .sh and .bat script is located in `source/VulQIan/Shaders` where you can use `glslc` to compile your .vert and .frag |
 | VULQIAN_BUILD_TESTS | ON/OFF | builds the unit tests in the `source/VulQIan/tests` directory. They can be used automatically by Ctests. Toggling this option off completly bypasses the unit testing phase. |
 
 ## Contributing
