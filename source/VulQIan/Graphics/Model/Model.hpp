@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "../Buffer/Buffer.hpp"
 #include "../Device/Device.hpp"
 
 #define GLM_FORCE_RADIANS
@@ -40,7 +41,7 @@ class Model {
     };
 
     Model(Vulqian::Engine::Graphics::Device& device, const Data& vertices);
-    ~Model();
+    ~Model() = default;
 
     // Since the class manages memory objects and vertex buffers it cannot be copied. We are in charge of memory management.
     Model(const Model&) = delete;
@@ -59,14 +60,14 @@ class Model {
 
     Vulqian::Engine::Graphics::Device& device;
 
-    VkBuffer       vertex_buffer;
-    VkDeviceMemory vertex_buffer_memory;
-    uint32_t       vertext_count;
+    uint32_t vertex_count;
+    uint32_t index_count;
 
-    bool           has_index_buffer{false};
-    VkBuffer       index_buffer;
-    VkDeviceMemory index_buffer_memory;
-    uint32_t       index_count;
-    std::string    file_name;
+    std::unique_ptr<Vulqian::Engine::Graphics::Buffer> vertex_buffer;
+    std::unique_ptr<Vulqian::Engine::Graphics::Buffer> index_buffer;
+
+    bool has_index_buffer{false};
+
+    std::string file_name;
 };
 } // namespace Vulqian::Engine::Graphics

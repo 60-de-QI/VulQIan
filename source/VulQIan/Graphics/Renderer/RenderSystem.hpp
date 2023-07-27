@@ -9,6 +9,7 @@
 #include "../../Utils/Utils.hpp"
 #include "../Camera/Camera.hpp"
 #include "../Device/Device.hpp"
+#include "../Frames/Frame.hpp"
 #include "../Pipeline/Pipeline.hpp"
 #include "Renderer.hpp"
 
@@ -25,7 +26,7 @@ class RenderSystem {
     RenderSystem(const RenderSystem&) = delete;
     RenderSystem& operator=(const RenderSystem&) = delete;
 
-    void render_entities(VkCommandBuffer command_buffer, const std::vector<Vulqian::Engine::ECS::Entity>& entities, const Vulqian::Engine::Graphics::Camera& camera, Vulqian::Engine::ECS::Coordinator& coordinator);
+    void render_entities(Vulqian::Engine::Graphics::Frames::Info& frame_info, const std::vector<Vulqian::Engine::ECS::Entity>& entities, Vulqian::Engine::ECS::Coordinator& coordinator);
 
   private:
     void create_pipeline_layout(void);
