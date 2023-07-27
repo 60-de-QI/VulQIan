@@ -20,6 +20,11 @@ if (VULQIAN_BUILD_TESTS)
     )
     add_executable(VulQIanTests ${VULQIAN_TEST_SOURCES})
 
+    # Specify the binary directory for tests
+    set_target_properties(VulQIanTests PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/tests"
+    )
+
     # Link the engine library and any other dependencies needed for tests
     target_link_libraries(VulQIanTests PRIVATE VulQIan)
 
