@@ -34,8 +34,9 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 18. :heavy_check_mark: Move mouse controls in its own instance away from Keyboard controller and support simultenous mouse and keyboard movement
 19. :heavy_check_mark: Completly delete WorldObjects and replace it with the ECS 
 20. :heavy_check_mark: Uniform Buffers
-20. :construction: Descriptor Set
-21. :construction_worker: Descriptor Set
+21. :heavy_check_mark: Unit Testing support with google tests.
+22. :construction: Descriptor Set
+23. :construction_worker: Point Lights
 
 For even later:
 - :construction: Add Quaternion support on Camera (functionnal code commented present but not fully implemented)
@@ -67,6 +68,16 @@ Ensure you have the `VULKAN_SDK` environment variable set or compilation will no
 The engine uses this path to load both the Lib and the Includes.
 
 [![Requirements](https://skillicons.dev/icons?i=cpp,cmake,git,vscode,v&perline=5)](https://github.com/60-de-QI/VulQIan)
+
+## CMake and Options
+Through CMake you can toggle certain options and use the repo at a higher level. You can check these options in the cmake/options.cmake file.
+This directory is also where you can tune CMake to your liking.
+
+| Value  | Option | Detail  |
+| ------------- | ------------- | ------------- |
+| VULQIAN_BUILD_EXAMPLE  | ON/OFF  | This is the default app to try and see the capabilities of the engine located by default in `source/examples/` |
+| ENABLE_SHADER_COMPILATION  | ON/OFF  | A .sh and .bat script is located in `source/VulQIan/Shaders` where you can use `glslc` to cpile your .vert and .frag |
+| VULQIAN_BUILD_TESTS | ON/OFF | builds the unit tests in the `source/VulQIan/tests` directory. They can be used automatically by Ctests. Toggling this option off completly bypasses the unit testing phase. |
 
 ## Contributing
 
