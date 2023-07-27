@@ -8,4 +8,13 @@ add_library(VulQIan ${VULQIAN_SOURCES})
 
 # Include directories for the engine library
 target_include_directories(VulQIan PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${VULKAN_SDK_PATH}/include)
-target_link_libraries(VulQIan ${Vulkan_LIBRARIES} glfw glm::glm tinyobjloader::tinyobjloader)
+
+if (VULQIAN_BUILD_TESTS)
+    # Locate and link Google Test
+    find_package(GTest REQUIRED)
+    target_link_libraries(VulQIan ${Vulkan_LIBRARIES} glfw glm::glm tinyobjloader::tinyobjloader GTest::GTest GTest::Main)
+    enable_testing()
+    add_subdirectory(tests)
+else()
+    target_link_libraries(VulQIan ${Vulkan_LIBRARIES} glfw glm::glm tinyobjloader::tinyobjloader)
+endif()
