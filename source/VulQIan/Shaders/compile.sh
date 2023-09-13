@@ -1,7 +1,6 @@
 #!/bin/bash
 
-VULKAN_SDK_PATH="/home/george/vulkan/1.3.250.0/x86_64"
-GLSLC_EXE="$VULKAN_SDK_PATH/bin/glslc"
+GLSLC_EXE="$VULKAN_SDK/bin/glslc"
 
 # Check if glslc executable exists
 if [ ! -x "$GLSLC_EXE" ]; then

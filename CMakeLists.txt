@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.22.1)
 project(VulQIan)
 
 # Include all CMake files in the cmake directory
