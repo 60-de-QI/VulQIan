@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/60-de-QI/VulQIan/compare/v1.0.0...v1.0.1) (2023-11-09)
+
+
+### Bug Fixes
+
+* gif link on readme ([52f94e3](https://github.com/60-de-QI/VulQIan/commit/52f94e3d7f0598306f05ee4a95a4d68db443e534))
+
 ## 1.0.0 (2023-11-09)
 
 
