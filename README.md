@@ -66,6 +66,18 @@ For more detailed instructions on building and running the engine, please refer 
 3. Specify the generated example as the entry point for the debugger in your `launch.json` file, for debug on windows for example: `"program": "${workspaceFolder}/conan-build/source/example/Debug/vulqian_example.exe"`
 4. Press F5 and debug should run!
 
+### More on the ECS
+As of the Replace World Objects with an ECS feature (completed in Step 19 of the roadmap), VulQIan now incorporates an Entity Component System (ECS) architecture. This integration allows for more efficient and scalable management of entities within the 3D engine.
+
+The ECS design pattern in VUlQIan revolves around three main components and one meta component:
+
+- **Entities:** These are the basic elements of the ECS pattern, representing the game objects or entities that need to be managed.
+- **Components:** These are the data elements attached to entities, defining their behavior or characteristics. Components can be simple or complex, representing attributes like position, velocity, appearance, or any other aspect of an entity.
+- **Systems:** Systems are the logic or behavior applied to groups of entities that possess specific combinations of components. Systems act on entities with specific component configurations, allowing for efficient and modular processing.
+- **Coordinator:** This is a meta object that serves only to preserve the rest of the other objects from beeing polluted by logic systems that are incompatible with the aim of offering a pure ECS pattern to the user.
+
+All the ECS code is contained within: `source/VulQIan/ECS` and you can check the example App to see its usage in action with components that offer mesh systems and transformation systems in `void App::load_entities()` in `source/examples/App.cpp`.
+
 ## Requirements
 
 Ensure you have the `VULKAN_SDK` environment variable set or compilation will not be able to find the SDK.
