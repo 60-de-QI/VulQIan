@@ -1,5 +1,9 @@
 # VulQIan: The Epic Intelligence Engine
 
+<p align="center">
+  <img width="800" height="600" src="https://github.com/60-de-QI/VulQIan/blob/develop/.github/VulQIan.gif">
+</p>
+
 This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Code. The engine aims to provide a foundation for creating real-time 3D applications. This is mostly a way for me to explore concepts and techniques used in graphics programming on a lower level of implementation.
 
 ## Features
