@@ -83,7 +83,12 @@ All the ECS code is contained within: `source/VulQIan/ECS` and you can check the
 Ensure you have the `VULKAN_SDK` environment variable set or compilation will not be able to find the SDK.
 The engine uses this path to load both the Lib and the Includes.
 
-[![Requirements](https://skillicons.dev/icons?i=cpp,cmake,git,vscode,v&perline=5)](https://github.com/60-de-QI/VulQIan)
+[![Requirements](https://skillicons.dev/icons?i=cpp,cmake,git,vscode&perline=5)](https://github.com/60-de-QI/VulQIan)
+<img src="https://github.com/60-de-QI/VulQIan/assets/114400741/831bb526-e430-4621-9ccd-e0e03b5cc3ee" data-canonical-src="https://github.com/60-de-QI/VulQIan/assets/114400741/831bb526-e430-4621-9ccd-e0e03b5cc3ee" width="75" />
+- C++ is recommend as its the main language this engine uses
+- CMake is the tooling and generator used in the project
+- VsCode is not required, but recommended for a smooth integration with Conan and the building process with CMake
+- The Vulkan API is required for you to run the engine on your machine.
 
 ## CMake and Options
 Through CMake you can toggle certain options and use the repo at a higher level. You can check these options in the cmake/options.cmake file.
