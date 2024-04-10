@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/60-de-QI/VulQIan/compare/v1.0.1...v1.0.2) (2024-04-10)
+
+
+### Bug Fixes
+
+* readme ([47b7bf1](https://github.com/60-de-QI/VulQIan/commit/47b7bf10ae0f4920fd258e7c9eaa8cc1f88b82ed))
+
 ## [1.0.1](https://github.com/60-de-QI/VulQIan/compare/v1.0.0...v1.0.1) (2023-11-09)
 
 
