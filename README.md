@@ -1,4 +1,5 @@
 # VulQIan: The Epic Intelligence Engine
+[![CMake](https://github.com/60-de-QI/VulQIan/actions/workflows/cmake.yml/badge.svg)](https://github.com/60-de-QI/VulQIan/actions/workflows/cmake.yml)
 
 <p align="center">
   <img width="800" height="600" src="https://github.com/60-de-QI/VulQIan/blob/main/.github/VulQIan.gif">
