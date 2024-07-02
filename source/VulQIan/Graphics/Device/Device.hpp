@@ -28,12 +28,7 @@ struct QueueFamilyIndices {
 
 class Device {
   public:
-#ifdef NDEBUG
-    const bool enableValidationLayers = false;
-#else
-    const bool enableValidationLayers = true;
-#endif
-
+  
     explicit Device(Vulqian::Engine::Window& window);
     ~Device();
 
@@ -62,6 +57,7 @@ class Device {
         VkMemoryPropertyFlags properties,
         VkBuffer&             buffer,
         VkDeviceMemory&       bufferMemory);
+
     VkCommandBuffer beginSingleTimeCommands();
     void            endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void            copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
@@ -101,4 +97,5 @@ class Device {
     const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char*> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };
+
 } // namespace Vulqian::Engine::Graphics
