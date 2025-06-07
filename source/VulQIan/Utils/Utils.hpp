@@ -20,5 +20,6 @@ void hash_combine(std::size_t& seed, const T& v, const Rest&... rest) {
 const std::string colored_cube{"./conan-build/models/colored_cube.obj"};
 const std::string smooth_vase{"./conan-build/models/smooth_vase.obj"};
 const std::string flat_vase{"./conan-build/models/flat_vase.obj"};
+const std::string quad{"./conan-build/models/quad.obj"};
 
 } // namespace Vulqian::Engine::Utils

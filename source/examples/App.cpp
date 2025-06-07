@@ -17,7 +17,9 @@
 
 struct GlobalUbo {
     glm::mat4 projection_view{1.f};
-    glm::vec3 light_direction{glm::normalize(glm::vec3{1.f, -3.f, -1.f})};
+    glm::vec4 ambient_light_colour{1.f, 1.f, 1.f, .02f};  // w is intensity
+    glm::vec3 light_position{-1.f};
+    alignas(16) glm::vec4 light_colour{1.f};  // w is light intensity
 };
 
 App::App() {
@@ -63,6 +65,7 @@ void App::run() {
     auto viewer_entity = this->coordinator.create_entity();
 
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
+    transform.translation.z = -2.5f;
     this->coordinator.add_component(viewer_entity, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
 
     Vulqian::Engine::Input::KeyboardMovementController camera_controller{};
@@ -117,7 +120,7 @@ void App::load_vase(void) {
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
 
     transform.scale = glm::vec3{3.f, 1.5f, 3.f};
-    transform.translation = glm::vec3{-.5f, .5f, 2.5f};
+    transform.translation = glm::vec3{-.5f, .5f, .0f};
 
     Vulqian::Engine::ECS::Components::Mesh mesh{};
     mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, Vulqian::Engine::Utils::smooth_vase);
@@ -131,7 +134,7 @@ void App::load_vase(void) {
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform_flat{};
 
     transform_flat.scale = {3.f, 1.5f, 3.f};
-    transform_flat.translation = {.5f, .5f, 2.5f};
+    transform_flat.translation = {.5f, .5f, .0f};
 
     Vulqian::Engine::ECS::Components::Mesh flat_mesh{};
     flat_mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, Vulqian::Engine::Utils::flat_vase);
@@ -139,6 +142,20 @@ void App::load_vase(void) {
     this->coordinator.add_component(flat_vase, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform_flat});
     this->coordinator.add_component(flat_vase, Vulqian::Engine::ECS::Components::Mesh{flat_mesh});
     this->entities.push_back(flat_vase);
+
+    // flat plane for lights
+    Vulqian::Engine::ECS::Entity                       quad = this->coordinator.create_entity();
+    Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform_quad{};
+
+    transform_quad.scale = {3.f, 1.f, 3.f};
+    transform_quad.translation = {0.f, .5f, 0.f};
+
+    Vulqian::Engine::ECS::Components::Mesh quad_mesh{};
+    quad_mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, Vulqian::Engine::Utils::quad);
+
+    this->coordinator.add_component(quad, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform_quad});
+    this->coordinator.add_component(quad, Vulqian::Engine::ECS::Components::Mesh{quad_mesh});
+    this->entities.emplace_back(quad);
 }
 
 void App::load_systems(void) {
