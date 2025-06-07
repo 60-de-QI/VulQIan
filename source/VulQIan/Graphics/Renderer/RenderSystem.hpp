@@ -20,7 +20,7 @@ namespace Vulqian::Engine::Graphics {
 
 class RenderSystem {
   public:
-    RenderSystem(Vulqian::Engine::Graphics::Device& device, VkRenderPass render_pass);
+    RenderSystem(Vulqian::Engine::Graphics::Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);
     ~RenderSystem();
 
     RenderSystem(const RenderSystem&) = delete;
@@ -29,7 +29,7 @@ class RenderSystem {
     void render_entities(Vulqian::Engine::Graphics::Frames::Info& frame_info, const std::vector<Vulqian::Engine::ECS::Entity>& entities, Vulqian::Engine::ECS::Coordinator& coordinator);
 
   private:
-    void create_pipeline_layout(void);
+    void create_pipeline_layout(VkDescriptorSetLayout global_set_layout);
     void create_pipeline(VkRenderPass render_pass);
 
     Vulqian::Engine::Graphics::Device& device;

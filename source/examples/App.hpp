@@ -36,6 +36,9 @@ class App {
     Vulqian::Engine::Graphics::Device   device{this->window};
     Vulqian::Engine::Graphics::Renderer renderer{this->window, this->device};
 
+    // Descriptor Sets ! order of declaration matters
+    std::unique_ptr<Vulqian::Engine::Graphics::Descriptors::DescriptorPool> global_pool;
+
     // ECS
     Vulqian::Engine::ECS::Coordinator coordinator{};
     Vulqian::Engine::ECS::Signature   signature{};

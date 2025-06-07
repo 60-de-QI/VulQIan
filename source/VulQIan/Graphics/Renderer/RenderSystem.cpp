@@ -5,20 +5,20 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include "RenderSystem.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-
-#include "RenderSystem.hpp"
 
 namespace Vulqian::Engine::Graphics {
 
 struct SimplePushConstantData {
-    glm::mat4 transform{1.f};
+    glm::mat4 model_matrix{1.f};
     glm::mat4 normal_matrix{1.f};
 };
 
-RenderSystem::RenderSystem(Vulqian::Engine::Graphics::Device& device, VkRenderPass render_pass) : device{device} {
-    this->create_pipeline_layout();
+RenderSystem::RenderSystem(Vulqian::Engine::Graphics::Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout) : device{device} {
+    this->create_pipeline_layout(global_set_layout);
     this->create_pipeline(render_pass);
 }
 
@@ -26,16 +26,18 @@ RenderSystem::~RenderSystem() {
     vkDestroyPipelineLayout(this->device.get_device(), this->pipeline_layout, nullptr);
 }
 
-void RenderSystem::create_pipeline_layout() {
+void RenderSystem::create_pipeline_layout(VkDescriptorSetLayout global_set_layout) {
     VkPushConstantRange constant_range{};
     constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
     constant_range.offset = 0;
     constant_range.size = sizeof(SimplePushConstantData);
 
+    std::vector<VkDescriptorSetLayout> descriptor_set_layouts{global_set_layout};
+
     VkPipelineLayoutCreateInfo pipeline_create_info{};
     pipeline_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipeline_create_info.setLayoutCount = 0;
-    pipeline_create_info.pSetLayouts = nullptr;
+    pipeline_create_info.setLayoutCount = static_cast<uint32_t>(descriptor_set_layouts.size());
+    pipeline_create_info.pSetLayouts = descriptor_set_layouts.data();
     pipeline_create_info.pushConstantRangeCount = 1;
     pipeline_create_info.pPushConstantRanges = &constant_range;
 
@@ -61,11 +63,20 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
 
 void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info& frame_info, const std::vector<Vulqian::Engine::ECS::Entity>& entities, Vulqian::Engine::ECS::Coordinator& coordinator) {
     this->pipeline->bind(frame_info.command_buffer);
-    auto                   projection_view = frame_info.camera.get_projection() * frame_info.camera.get_view();
+
+    vkCmdBindDescriptorSets(
+        frame_info.command_buffer,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        this->pipeline_layout,
+        0,
+        1,
+        &frame_info.global_descriptor_set,
+        0,
+        nullptr);
+
     SimplePushConstantData push{};
 
     for (auto const& entity : entities) {
-        push.transform = projection_view;
 
         if (coordinator.has_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity)) {
             auto const& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
@@ -76,7 +87,7 @@ void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info& fram
                 transform.rotation.x = glm::mod(transform.rotation.x + 0.0005f, glm::two_pi<float>());
             }
 
-            push.transform = projection_view * transform.mat4();
+            push.model_matrix = transform.mat4();
             push.normal_matrix = transform.normal_matrix();
         }
 
@@ -96,4 +107,4 @@ void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info& fram
     }
 }
 
-} // namespace Vulqian::Engine::Graphics
+}  // namespace Vulqian::Engine::Graphics

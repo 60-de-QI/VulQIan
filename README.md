@@ -40,8 +40,9 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 19. :heavy_check_mark: Completly delete WorldObjects and replace it with the ECS 
 20. :heavy_check_mark: Uniform Buffers
 21. :heavy_check_mark: Unit Testing support with google tests.
-22. :construction: Descriptor Set
-23. :construction_worker: Point Lights
+22. :heavy_check_mark: Descriptor Set
+23. :construction: Point Lights
+24. :construction_worker: Fragment Lighting
 
 For even later:
 - :construction: Add Quaternion support on Camera (functionnal code commented present but not fully implemented)
