@@ -41,8 +41,10 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 20. :heavy_check_mark: Uniform Buffers
 21. :heavy_check_mark: Unit Testing support with google tests.
 22. :heavy_check_mark: Descriptor Set
-23. :construction: Point Lights
-24. :construction_worker: Fragment Lighting
+23. :heavy_check_mark: Point Lights
+24. :heavy_check_mark: Fragment Lighting
+25. :construction: Billboards
+26. :construction_worker: Multiple Light Systems
 
 For even later:
 - :construction: Add Quaternion support on Camera (functionnal code commented present but not fully implemented)
