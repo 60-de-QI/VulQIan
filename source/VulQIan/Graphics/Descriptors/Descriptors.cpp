@@ -50,7 +50,7 @@ DescriptorSetLayout::DescriptorSetLayout(
             &descriptorSetLayoutInfo,
             nullptr,
             &descriptorSetLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create descriptor set layout!");
+        throw Vulqian::Exception::failed_to_create("descriptor set layout");
     }
 }
 
@@ -97,7 +97,7 @@ DescriptorPool::DescriptorPool(
 
     if (vkCreateDescriptorPool(this->device.get_device(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
         VK_SUCCESS) {
-        throw std::runtime_error("failed to create descriptor pool!");
+        throw Vulqian::Exception::failed_to_create("descriptor set pool");
     }
 }
 
