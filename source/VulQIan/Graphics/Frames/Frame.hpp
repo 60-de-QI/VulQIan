@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "../Camera/Camera.hpp"
-
 #include <vulkan/vulkan.h>
+
+#include "../Camera/Camera.hpp"
 
 namespace Vulqian::Engine::Graphics::Frames {
 
@@ -16,6 +16,7 @@ struct Info {
     float                              frame_time;
     VkCommandBuffer                    command_buffer;
     Vulqian::Engine::Graphics::Camera& camera;
+    VkDescriptorSet                    global_descriptor_set;
 };
 
-} // namespace Vulqian::Engine::Graphics::Frames
+}  // namespace Vulqian::Engine::Graphics::Frames

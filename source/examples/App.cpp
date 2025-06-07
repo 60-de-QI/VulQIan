@@ -21,22 +21,41 @@ struct GlobalUbo {
 };
 
 App::App() {
+    this->global_pool = Vulqian::Engine::Graphics::Descriptors::DescriptorPool::Builder(this->device)
+                            .setMaxSets(Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT)
+                            .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT)
+                            .build();
     this->load_entities();
     this->load_systems();
 }
 
 void App::run() {
-    Vulqian::Engine::Graphics::Buffer global_ubo_buffer{
-        this->device,
-        sizeof(GlobalUbo),
-        Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT,
-        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-        this->device.get_physical_device_properties().limits.minUniformBufferOffsetAlignment,
-    };
-    global_ubo_buffer.map();
+    std::vector<std::unique_ptr<Vulqian::Engine::Graphics::Buffer>> ubo_buffers(Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT);
 
-    Vulqian::Engine::Graphics::RenderSystem render_system{this->device, this->renderer.get_SwapChain_RenderPass()};
+    for (int i{0}; i < ubo_buffers.size(); i++) {
+        ubo_buffers[i] = std::make_unique<Vulqian::Engine::Graphics::Buffer>(
+            this->device,
+            sizeof(GlobalUbo),
+            1,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+            this->device.get_physical_device_properties().limits.minUniformBufferOffsetAlignment);
+        ubo_buffers[i]->map();
+    }
+
+    auto globalSetLayout{Vulqian::Engine::Graphics::Descriptors::DescriptorSetLayout::Builder(this->device)
+                             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+                             .build()};
+
+    std::vector<VkDescriptorSet> globalDescriptorSets(Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT);
+    for (int i = 0; i < globalDescriptorSets.size(); i++) {
+        auto bufferInfo{ubo_buffers[i]->descriptorInfo()};
+        Vulqian::Engine::Graphics::Descriptors::DescriptorWriter(*globalSetLayout, *global_pool)
+            .writeBuffer(0, &bufferInfo)
+            .build(globalDescriptorSets[i]);
+    }
+
+    Vulqian::Engine::Graphics::RenderSystem render_system{this->device, this->renderer.get_SwapChain_RenderPass(), globalSetLayout->getDescriptorSetLayout()};
     Vulqian::Engine::Graphics::Camera       camera{};
 
     camera.set_view_target(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
@@ -65,22 +84,23 @@ void App::run() {
         float aspect = this->renderer.get_aspect_ratio();
         camera.set_perspective_projection(glm::radians(50.f), aspect, .1f, 1000.f);
 
-        Vulqian::Engine::Graphics::Frames::Info frame_info{
-            0,
-            frame_time,
-            nullptr,
-            camera};
-
         if (auto command_buffer = this->renderer.begin_frame()) {
-            int frame_index = this->renderer.get_frame_index();
-            frame_index = this->renderer.get_frame_index();
+            int                                     frame_index{this->renderer.get_frame_index()};
+            Vulqian::Engine::Graphics::Frames::Info frame_info{
+                0,
+                frame_time,
+                nullptr,
+                camera,
+                globalDescriptorSets[frame_index]};
+
             frame_info.command_buffer = command_buffer;
 
             // update objects and memory
             GlobalUbo ubo{};
             ubo.projection_view = camera.get_projection() * camera.get_view();
-            global_ubo_buffer.writeToIndex(&ubo, frame_info.frame_index);
-            global_ubo_buffer.flushIndex(frame_info.frame_index);
+
+            ubo_buffers[frame_index]->writeToBuffer(&ubo);
+            ubo_buffers[frame_index]->flush();
 
             // rendering phase
             this->renderer.begin_SwapChain_RenderPass(command_buffer);

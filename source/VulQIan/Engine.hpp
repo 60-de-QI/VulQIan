@@ -11,6 +11,7 @@
 
 #include "Graphics/Buffer/Buffer.hpp"
 #include "Graphics/Camera/Camera.hpp"
+#include "Graphics/Descriptors/Descriptors.hpp"
 #include "Graphics/Device/Device.hpp"
 #include "Graphics/Frames/Frame.hpp"
 #include "Graphics/Model/Model.hpp"
