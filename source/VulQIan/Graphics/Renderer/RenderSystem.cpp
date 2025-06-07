@@ -54,8 +54,8 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
     pipeline_info.pipeline_layout = this->pipeline_layout;
     this->pipeline = std::make_unique<Vulqian::Engine::Graphics::Pipeline>(
         this->device,
-        "./conan-build/Debug/Shaders/simple_shader.vert.spv",
-        "./conan-build/Debug/Shaders/simple_shader.frag.spv",
+        "./conan-build/Shaders/simple_shader.vert.spv",
+        "./conan-build/Shaders/simple_shader.frag.spv",
         pipeline_info);
 }
 

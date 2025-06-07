@@ -27,8 +27,13 @@ struct QueueFamilyIndices {
 };
 
 class Device {
-  public:
-  
+   public:
+// #ifdef NDEBUG
+//     const bool enableValidationLayers = false;
+// #else
+    const bool enableValidationLayers = false;
+// #endif
+
     explicit Device(Vulqian::Engine::Window& window);
     ~Device();
 
@@ -64,7 +69,7 @@ class Device {
     void            copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount);
     void            createImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 
-  private:
+   private:
     void createInstance();
     void setupDebugMessenger();
     void createSurface();
@@ -98,4 +103,4 @@ class Device {
     const std::vector<const char*> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };
 
-} // namespace Vulqian::Engine::Graphics
+}  // namespace Vulqian::Engine::Graphics
