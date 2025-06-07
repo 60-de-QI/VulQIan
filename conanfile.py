@@ -9,11 +9,11 @@ class CompressorRecipe(ConanFile):
         del self.settings.compiler.libcxx
 
     def requirements(self):
-        self.requires("glfw/3.3.8")
-        self.requires("glm/0.9.9.8")
-        self.requires("vulkan-headers/1.1.101.0")
+        self.requires("glfw/3.4")
+        self.requires("glm/1.0.1")
+        self.requires("vulkan-headers/1.4.313.0")
         self.requires("tinyobjloader/2.0.0-rc10")
-        self.requires("gtest/1.13.0")
+        self.requires("gtest/1.16.0")
 
     def build_requirements(self):
         self.tool_requires("cmake/3.26.4")
