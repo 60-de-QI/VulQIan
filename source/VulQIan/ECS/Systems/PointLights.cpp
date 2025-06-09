@@ -60,8 +60,8 @@ void PointLights::createPipeline(VkRenderPass renderPass) {
     pipelineConfig.pipeline_layout = pipelineLayout;
     this->pipeline = std::make_unique<Vulqian::Engine::Graphics::Pipeline>(
         this->device,
-        "/conan-build/Shaders/point_light.vert.spv",
-        "/conan-build/Shaders/point_light.frag.spv",
+        "./conan-build/Shaders/point_light.vert.spv",
+        "./conan-build/Shaders/point_light.frag.spv",
         pipelineConfig);
 }
 
