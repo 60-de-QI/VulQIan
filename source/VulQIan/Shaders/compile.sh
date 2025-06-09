@@ -13,3 +13,6 @@ echo "glslc found for shader compilation."
 
 "$GLSLC_EXE" ./source/VulQIan/Shaders/simple_shader.vert -o ./source/VulQIan/Shaders/simple_shader.vert.spv
 "$GLSLC_EXE" ./source/VulQIan/Shaders/simple_shader.frag -o ./source/VulQIan/Shaders/simple_shader.frag.spv
+
+"$GLSLC_EXE" ./source/VulQIan/Shaders/point_light.vert -o ./source/VulQIan/Shaders/point_light.vert.spv
+"$GLSLC_EXE" ./source/VulQIan/Shaders/point_light.frag -o ./source/VulQIan/Shaders/point_light.frag.spv
