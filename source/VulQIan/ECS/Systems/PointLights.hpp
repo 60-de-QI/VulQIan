@@ -8,7 +8,6 @@
 #include "../../Graphics/Device/Device.hpp"
 #include "../../Graphics/Frames/Frame.hpp"
 #include "../../Graphics/Pipeline/Pipeline.hpp"
-// #include "lve_game_object.hpp"
 
 // std
 #include <memory>
