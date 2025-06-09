@@ -13,6 +13,7 @@
 #include "Entities/EntityManager.hpp"
 
 #include "Systems/Physics.hpp"
+#include "Systems/PointLights.hpp"
 #include "Systems/System.hpp"
 #include "Systems/SystemManager.hpp"
 

@@ -16,7 +16,8 @@
 #include <glm/gtc/constants.hpp>
 
 struct GlobalUbo {
-    glm::mat4 projection_view{1.f};
+    glm::mat4 projection{1.f};
+    glm::mat4 view{1.f};
     glm::vec4 ambient_light_colour{1.f, 1.f, 1.f, .02f};  // w is intensity
     glm::vec3 light_position{-1.f};
     alignas(16) glm::vec4 light_colour{1.f};  // w is light intensity
@@ -57,8 +58,9 @@ void App::run() {
             .build(globalDescriptorSets[i]);
     }
 
-    Vulqian::Engine::Graphics::RenderSystem render_system{this->device, this->renderer.get_SwapChain_RenderPass(), globalSetLayout->getDescriptorSetLayout()};
-    Vulqian::Engine::Graphics::Camera       camera{};
+    Vulqian::Engine::Graphics::RenderSystem    render_system{this->device, this->renderer.get_SwapChain_RenderPass(), globalSetLayout->getDescriptorSetLayout()};
+    Vulqian::Engine::ECS::Systems::PointLights point_light_system{this->device, this->renderer.get_SwapChain_RenderPass(), globalSetLayout->getDescriptorSetLayout()};
+    Vulqian::Engine::Graphics::Camera          camera{};
 
     camera.set_view_target(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
@@ -100,14 +102,15 @@ void App::run() {
 
             // update objects and memory
             GlobalUbo ubo{};
-            ubo.projection_view = camera.get_projection() * camera.get_view();
-
+            ubo.projection = camera.get_projection();
+            ubo.view = camera.get_view();
             ubo_buffers[frame_index]->writeToBuffer(&ubo);
             ubo_buffers[frame_index]->flush();
 
             // rendering phase
             this->renderer.begin_SwapChain_RenderPass(command_buffer);
             render_system.render_entities(frame_info, this->entities, this->coordinator);
+            point_light_system.render(frame_info);
             this->renderer.end_SwapChain_RenderPass(command_buffer);
             this->renderer.end_frame();
         }
