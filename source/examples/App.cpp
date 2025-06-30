@@ -15,14 +15,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
-struct GlobalUbo {
-    glm::mat4 projection{1.f};
-    glm::mat4 view{1.f};
-    glm::vec4 ambient_light_colour{1.f, 1.f, 1.f, .02f};  // w is intensity
-    glm::vec3 light_position{-1.f};
-    alignas(16) glm::vec4 light_colour{1.f};  // w is light intensity
-};
-
 App::App() {
     this->global_pool = Vulqian::Engine::Graphics::Descriptors::DescriptorPool::Builder(this->device)
                             .setMaxSets(Vulqian::Engine::Graphics::SwapChain::MAX_FRAMES_IN_FLIGHT)
@@ -38,7 +30,7 @@ void App::run() {
     for (int i{0}; i < ubo_buffers.size(); i++) {
         ubo_buffers[i] = std::make_unique<Vulqian::Engine::Graphics::Buffer>(
             this->device,
-            sizeof(GlobalUbo),
+            sizeof(Vulqian::Engine::Graphics::Frames::GlobalUbo),
             1,
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
@@ -101,16 +93,17 @@ void App::run() {
             frame_info.command_buffer = command_buffer;
 
             // update objects and memory
-            GlobalUbo ubo{};
+            Vulqian::Engine::Graphics::Frames::GlobalUbo ubo{};
             ubo.projection = camera.get_projection();
             ubo.view = camera.get_view();
+            point_light_system.update(frame_info, ubo, this->coordinator, this->entities);
             ubo_buffers[frame_index]->writeToBuffer(&ubo);
             ubo_buffers[frame_index]->flush();
 
             // rendering phase
             this->renderer.begin_SwapChain_RenderPass(command_buffer);
             render_system.render_entities(frame_info, this->entities, this->coordinator);
-            point_light_system.render(frame_info);
+            point_light_system.render(frame_info, this->coordinator, this->entities);
             this->renderer.end_SwapChain_RenderPass(command_buffer);
             this->renderer.end_frame();
         }
@@ -163,7 +156,13 @@ void App::load_vase(void) {
 
 void App::load_systems(void) {
     this->physics_system = this->coordinator.register_system<Vulqian::Engine::ECS::Systems::Physics>();
-    this->coordinator.set_system_signature<Vulqian::Engine::ECS::Systems::Physics>(signature);
+
+    Vulqian::Engine::ECS::Signature physics_signature;
+    physics_signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>());
+    physics_signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Mesh>());
+    physics_signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::PointLight>());
+
+    this->coordinator.set_system_signature<Vulqian::Engine::ECS::Systems::Physics>(physics_signature);
 }
 
 void App::load_entities(void) {
@@ -171,9 +170,7 @@ void App::load_entities(void) {
     this->coordinator.init();
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>();
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::Mesh>();
-
-    this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>());
-    this->signature.set(this->coordinator.get_component_type<Vulqian::Engine::ECS::Components::Mesh>());
+    this->coordinator.register_component<Vulqian::Engine::ECS::Components::PointLight>();
 
     std::default_random_engine            generator;
     std::uniform_real_distribution<float> randPosition(-100.0f, 100.0f);
@@ -184,8 +181,9 @@ void App::load_entities(void) {
 
     this->load_vase();
 
+    // Create regular mesh entities (with Transform + Mesh)
     for (int i = 0; i != 400; i++) {
-        float scale = randScale(generator);
+        float scale{randScale(generator)};
 
         Vulqian::Engine::ECS::Entity entity = this->coordinator.create_entity();
 
@@ -200,5 +198,22 @@ void App::load_entities(void) {
         this->coordinator.add_component(entity, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
         this->coordinator.add_component(entity, Vulqian::Engine::ECS::Components::Mesh{mesh});
         this->entities.push_back(entity);
+    }
+
+    // Create light entities (with Transform + PointLight, but NO Mesh)
+    for (int i = 0; i < 3; i++) {  // Create a few lights
+        Vulqian::Engine::ECS::Entity                       light{this->coordinator.create_entity()};
+        Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
+        transform.scale = glm::vec3{0.1f, 0.1f, 0.1f};  // Small scale for lights
+        transform.rotation = glm::vec3{0.0f, 0.0f, 0.0f};
+        transform.translation = glm::vec3{randPosition(generator) * 0.1f, randPosition(generator) * 0.1f, randPosition(generator) * 0.1f};
+
+        Vulqian::Engine::ECS::Components::PointLight pointLight{};
+        pointLight.lightIntensity = 2.0f;
+
+        // Only add Transform and PointLight - NO Mesh component
+        this->coordinator.add_component(light, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
+        this->coordinator.add_component(light, Vulqian::Engine::ECS::Components::PointLight{pointLight});
+        this->entities.push_back(light);
     }
 }

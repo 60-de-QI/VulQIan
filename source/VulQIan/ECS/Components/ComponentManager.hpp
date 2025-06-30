@@ -13,6 +13,7 @@
 #include "ComponentArray.hpp"
 #include "Transform.hpp"
 #include "Mesh.hpp"
+#include "PointLight.hpp"
 
 namespace Vulqian::Engine::ECS {
 

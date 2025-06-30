@@ -49,6 +49,7 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 
 For even later:
 - :construction: Add Quaternion support on Camera (functionnal code commented present but not fully implemented)
+- :construction: Do a single pass for rendering lights instead of using push constants, this will allow to render a great number of lights efficiently
 
 Please note that this roadmap is a general guideline and can be adjusted based of my preferences and project requirements. Each feature builds upon the previous ones, allowing me to incrementally expand the engine's capabilities while deepening my understanding of the underlying concepts and technologies.
 
