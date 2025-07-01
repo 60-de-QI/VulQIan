@@ -11,7 +11,7 @@
 
 namespace Vulqian::Engine::Graphics {
 class Camera {
-  public:
+   public:
     Camera() = default;
     ~Camera() = default;
 
@@ -24,9 +24,11 @@ class Camera {
 
     const glm::mat4& get_projection() const noexcept { return this->projection_matrix; }
     const glm::mat4& get_view() const noexcept { return this->view_matrix; }
+    const glm::mat4& getInverseView() const noexcept { return this->inverse_view_matrix; }
 
-  private:
+   private:
     glm::mat4 projection_matrix{1.f};
     glm::mat4 view_matrix{1.f};
+    glm::mat4 inverse_view_matrix{1.f};
 };
-} // namespace Vulqian::Engine::Graphics
+}  // namespace Vulqian::Engine::Graphics

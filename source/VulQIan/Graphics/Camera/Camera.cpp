@@ -3,10 +3,10 @@
 // This software is provided 'as is' and without any warranty, express or implied.
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
+#include "Camera.hpp"
+
 #include <cassert>
 #include <limits>
-
-#include "Camera.hpp"
 
 namespace Vulqian::Engine::Graphics {
 
@@ -51,21 +51,35 @@ void Camera::set_view_direction(glm::vec3 position, glm::vec3 direction, glm::ve
     this->view_matrix[3][0] = -glm::dot(u, position);
     this->view_matrix[3][1] = -glm::dot(v, position);
     this->view_matrix[3][2] = -glm::dot(w, position);
+
+    this->inverse_view_matrix = glm::mat4{1.f};
+    this->inverse_view_matrix[0][0] = u.x;
+    this->inverse_view_matrix[0][1] = u.y;
+    this->inverse_view_matrix[0][2] = u.z;
+    this->inverse_view_matrix[1][0] = v.x;
+    this->inverse_view_matrix[1][1] = v.y;
+    this->inverse_view_matrix[1][2] = v.z;
+    this->inverse_view_matrix[2][0] = w.x;
+    this->inverse_view_matrix[2][1] = w.y;
+    this->inverse_view_matrix[2][2] = w.z;
+    this->inverse_view_matrix[3][0] = position.x;
+    this->inverse_view_matrix[3][1] = position.y;
+    this->inverse_view_matrix[3][2] = position.z;
 }
 
 void Camera::set_view_target(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
-    assert(glm::length(target) != 0.0f && "set View Target is equal to 0"); // Assertion to check if target is not zero
+    assert(glm::length(target) != 0.0f && "set View Target is equal to 0");  // Assertion to check if target is not zero
 
     this->set_view_direction(position, target - position, up);
 }
 
 void Camera::set_view_YXZ(glm::vec3 position, glm::vec3 rotation) {
-    const float     c3 = glm::cos(rotation.z);
-    const float     s3 = glm::sin(rotation.z);
-    const float     c2 = glm::cos(rotation.x);
-    const float     s2 = glm::sin(rotation.x);
-    const float     c1 = glm::cos(rotation.y);
-    const float     s1 = glm::sin(rotation.y);
+    const float c3 = glm::cos(rotation.z);
+    const float s3 = glm::sin(rotation.z);
+    const float c2 = glm::cos(rotation.x);
+    const float s2 = glm::sin(rotation.x);
+    const float c1 = glm::cos(rotation.y);
+    const float s1 = glm::sin(rotation.y);
 
     const glm::vec3 u{(c1 * c3 + s1 * s2 * s3), (c2 * s3), (c1 * s2 * s3 - c3 * s1)};
     const glm::vec3 v{(c3 * s1 * s2 - c1 * s3), (c2 * c3), (c1 * c3 * s2 + s1 * s3)};
@@ -84,6 +98,20 @@ void Camera::set_view_YXZ(glm::vec3 position, glm::vec3 rotation) {
     this->view_matrix[3][0] = -glm::dot(u, position);
     this->view_matrix[3][1] = -glm::dot(v, position);
     this->view_matrix[3][2] = -glm::dot(w, position);
+
+    this->inverse_view_matrix = glm::mat4{1.f};
+    this->inverse_view_matrix[0][0] = u.x;
+    this->inverse_view_matrix[0][1] = u.y;
+    this->inverse_view_matrix[0][2] = u.z;
+    this->inverse_view_matrix[1][0] = v.x;
+    this->inverse_view_matrix[1][1] = v.y;
+    this->inverse_view_matrix[1][2] = v.z;
+    this->inverse_view_matrix[2][0] = w.x;
+    this->inverse_view_matrix[2][1] = w.y;
+    this->inverse_view_matrix[2][2] = w.z;
+    this->inverse_view_matrix[3][0] = position.x;
+    this->inverse_view_matrix[3][1] = position.y;
+    this->inverse_view_matrix[3][2] = position.z;
 }
 
-} // namespace Vulqian::Engine::Graphics
+}  // namespace Vulqian::Engine::Graphics
