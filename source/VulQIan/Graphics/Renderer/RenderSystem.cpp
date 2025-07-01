@@ -74,33 +74,34 @@ void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info& fram
         0,
         nullptr);
 
-    SimplePushConstantData push{};
-
     for (auto const& entity : entities) {
-
-        if (coordinator.has_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity)) {
+        // Only process entities that have BOTH Transform AND Mesh components
+        if (coordinator.has_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity) &&
+            coordinator.has_component<Vulqian::Engine::ECS::Components::Mesh>(entity)) {
+            // Now it's safe to get both components
             auto const& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
             auto&       transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
 
+            // Update rotation for colored cubes
             if (mesh.model->get_file_name() == Vulqian::Engine::Utils::colored_cube) {
                 transform.rotation.y = glm::mod(transform.rotation.y + 0.001f, glm::two_pi<float>());
                 transform.rotation.x = glm::mod(transform.rotation.x + 0.0005f, glm::two_pi<float>());
             }
 
+            // Prepare push constants
+            SimplePushConstantData push{};
             push.model_matrix = transform.mat4();
             push.normal_matrix = transform.normal_matrix();
-        }
 
-        vkCmdPushConstants(
-            frame_info.command_buffer,
-            this->pipeline_layout,
-            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-            0,
-            sizeof(SimplePushConstantData),
-            &push);
+            // Push constants to shader
+            vkCmdPushConstants(
+                frame_info.command_buffer,
+                this->pipeline_layout,
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                0,
+                sizeof(SimplePushConstantData),
+                &push);
 
-        if (coordinator.has_component<Vulqian::Engine::ECS::Components::Mesh>(entity)) {
-            auto const& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
             mesh.model->bind(frame_info.command_buffer);
             mesh.model->draw(frame_info.command_buffer);
         }

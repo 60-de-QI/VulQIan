@@ -9,6 +9,7 @@
 // libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
@@ -30,10 +31,10 @@ PointLights::~PointLights() {
 }
 
 void PointLights::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
-    // VkPushConstantRange pushConstantRange{};
-    // pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    // pushConstantRange.offset = 0;
-    // pushConstantRange.size = sizeof(SimplePushConstantData);
+    VkPushConstantRange pushConstantRange{};
+    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    pushConstantRange.offset = 0;
+    pushConstantRange.size = sizeof(LightsPushConstants);
 
     std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
 
@@ -41,8 +42,8 @@ void PointLights::createPipelineLayout(VkDescriptorSetLayout globalSetLayout) {
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
     pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
-    pipelineLayoutInfo.pushConstantRangeCount = 0;
-    pipelineLayoutInfo.pPushConstantRanges = nullptr;
+    pipelineLayoutInfo.pushConstantRangeCount = 1;
+    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
     if (vkCreatePipelineLayout(this->device.get_device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
         VK_SUCCESS) {
         throw Vulqian::Exception::failed_to_create("pipeline layout in point lights system");
@@ -65,7 +66,9 @@ void PointLights::createPipeline(VkRenderPass renderPass) {
         pipelineConfig);
 }
 
-void PointLights::render(Vulqian::Engine::Graphics::Frames::Info& frameInfo) {
+void PointLights::render(Vulqian::Engine::Graphics::Frames::Info&         frameInfo,
+                         Vulqian::Engine::ECS::Coordinator&               coordinator,
+                         const std::vector<Vulqian::Engine::ECS::Entity>& entities) {
     this->pipeline->bind(frameInfo.command_buffer);
 
     vkCmdBindDescriptorSets(
@@ -78,7 +81,59 @@ void PointLights::render(Vulqian::Engine::Graphics::Frames::Info& frameInfo) {
         0,
         nullptr);
 
-    vkCmdDraw(frameInfo.command_buffer, 6, 1, 0, 0);
+    for (const auto& entity : entities) {
+        if (coordinator.has_component<Vulqian::Engine::ECS::Components::PointLight>(entity)) {
+            auto const& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+            auto const& pointLight = coordinator.get_component<Vulqian::Engine::ECS::Components::PointLight>(entity);
+
+            LightsPushConstants push{};
+            push.position = glm::vec4(transform.translation, 1.f);
+            push.colour = glm::vec4(pointLight.color, pointLight.lightIntensity);  // Use color from component
+            push.radius = transform.scale.x;
+
+            vkCmdPushConstants(
+                frameInfo.command_buffer,
+                pipelineLayout,
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                0,
+                sizeof(LightsPushConstants),
+                &push);
+
+            vkCmdDraw(frameInfo.command_buffer, 6, 1, 0, 0);
+        }
+    }
+}
+
+void PointLights::update(Vulqian::Engine::Graphics::Frames::Info const&         frameInfo,
+                         Vulqian::Engine::Graphics::Frames::GlobalUbo&    ubo,
+                         Vulqian::Engine::ECS::Coordinator&               coordinator,
+                         const std::vector<Vulqian::Engine::ECS::Entity>& entities) const {
+    // Gentle rotation around the center point
+    auto rotateLight = glm::rotate(
+        glm::mat4(1.f),
+        0.5f * frameInfo.frame_time,  // Adjust speed here (lower = slower)
+        {0.f, -1.f, 0.f}              // Rotate around Y-axis
+    );
+
+    int lightIndex{0};
+
+    for (const auto& entity : entities) {
+        if (coordinator.has_component<Vulqian::Engine::ECS::Components::PointLight>(entity)) {
+            assert(lightIndex < Vulqian::Engine::Graphics::Frames::MAX_LIGHTS && "Point lights exceed maximum specified");
+
+            auto& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+            auto const& pointLight = coordinator.get_component<Vulqian::Engine::ECS::Components::PointLight>(entity);
+
+            transform.translation = glm::vec3(rotateLight * glm::vec4(transform.translation, 1.f));
+
+            ubo.pointLights[lightIndex].position = glm::vec4(transform.translation, 1.f);
+            ubo.pointLights[lightIndex].color = glm::vec4(pointLight.color, pointLight.lightIntensity);
+
+            ++lightIndex;
+        }
+    }
+
+    ubo.numLights = lightIndex;
 }
 
 }  // namespace Vulqian::Engine::ECS::Systems
