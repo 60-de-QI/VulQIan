@@ -97,6 +97,7 @@ void App::run() {
             Vulqian::Engine::Graphics::Frames::GlobalUbo ubo{};
             ubo.projection = camera.get_projection();
             ubo.view = camera.get_view();
+            ubo.inverseView = camera.getInverseView();
             point_light_system.update(frame_info, ubo, this->coordinator, this->entities);
             ubo_buffers[frame_index]->writeToBuffer(&ubo);
             ubo_buffers[frame_index]->flush();
