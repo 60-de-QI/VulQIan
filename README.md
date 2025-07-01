@@ -44,8 +44,9 @@ This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Co
 23. :heavy_check_mark: Point Lights
 24. :heavy_check_mark: Fragment Lighting
 25. :heavy_check_mark: Billboards
-26. :construction: Multiple Light Systems
-27. :construction_worker: Specular Lighting
+26. :heavy_check_mark: Multiple Light Systems
+27. :construction: Specular Lighting
+28. :construction_worker: Alpha Blending & Transparency
 
 For even later:
 - :construction: Add Quaternion support on Camera (functionnal code commented present but not fully implemented)
