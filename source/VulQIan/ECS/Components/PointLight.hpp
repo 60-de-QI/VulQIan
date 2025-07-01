@@ -8,7 +8,8 @@
 namespace Vulqian::Engine::ECS::Components {
 
 struct PointLight {
-    float lightIntensity{1.0f};
+    float     lightIntensity{1.0f};
+    glm::vec3 color{1.0f, 1.0f, 1.0f};
 };
 
 }  // namespace Vulqian::Engine::ECS::Components

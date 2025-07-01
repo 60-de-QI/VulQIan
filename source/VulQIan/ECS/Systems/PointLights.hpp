@@ -31,10 +31,10 @@ class PointLights {
     PointLights(const PointLights&) = delete;
     PointLights& operator=(const PointLights&) = delete;
 
-    void update(Vulqian::Engine::Graphics::Frames::Info&         frameInfo,
+    void update(Vulqian::Engine::Graphics::Frames::Info const&   frameInfo,
                 Vulqian::Engine::Graphics::Frames::GlobalUbo&    ubo,
                 Vulqian::Engine::ECS::Coordinator&               coordinator,
-                const std::vector<Vulqian::Engine::ECS::Entity>& entities);
+                const std::vector<Vulqian::Engine::ECS::Entity>& entities) const;
 
     void render(Vulqian::Engine::Graphics::Frames::Info&         frameInfo,
                 Vulqian::Engine::ECS::Coordinator&               coordinator,

@@ -9,6 +9,7 @@
 #include <array>
 #include <cassert>
 #include <random>
+#include <ranges>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -201,19 +202,37 @@ void App::load_entities(void) {
     }
 
     // Create light entities (with Transform + PointLight, but NO Mesh)
-    for (int i = 0; i < 3; i++) {  // Create a few lights
+
+    std::vector<glm::vec3> lightColors{
+        {1.f, .1f, .1f},  // Red
+        {.1f, .1f, 1.f},  // Blue
+        {.1f, 1.f, .1f},  // Green
+        {1.f, 1.f, .1f},  // Yellow
+        {.1f, 1.f, 1.f},  // Cyan
+        {1.f, 1.f, 1.f}   // White
+    };
+
+    for (size_t i = 0; i < lightColors.size(); ++i) {
+        const auto& color = lightColors[i];
+
         Vulqian::Engine::ECS::Entity                       light{this->coordinator.create_entity()};
         Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
-        transform.scale = glm::vec3{0.1f, 0.1f, 0.1f};  // Small scale for lights
+
+        transform.scale = glm::vec3{0.2f, 0.2f, 0.2f};
         transform.rotation = glm::vec3{0.0f, 0.0f, 0.0f};
-        transform.translation = glm::vec3{randPosition(generator) * 0.1f, randPosition(generator) * 0.1f, randPosition(generator) * 0.1f};
+
+        auto rotateLight = glm::rotate(
+            glm::mat4(1.f),
+            (i * glm::two_pi<float>()) / lightColors.size(),
+            {0.f, -1.f, 0.f});
+        transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
 
         Vulqian::Engine::ECS::Components::PointLight pointLight{};
-        pointLight.lightIntensity = 2.0f;
+        pointLight.lightIntensity = 0.2f;
+        pointLight.color = color;
 
-        // Only add Transform and PointLight - NO Mesh component
-        this->coordinator.add_component(light, Vulqian::Engine::ECS::Components::Transform_TB_YXZ{transform});
-        this->coordinator.add_component(light, Vulqian::Engine::ECS::Components::PointLight{pointLight});
+        this->coordinator.add_component(light, transform);
+        this->coordinator.add_component(light, pointLight);
         this->entities.push_back(light);
     }
 }
