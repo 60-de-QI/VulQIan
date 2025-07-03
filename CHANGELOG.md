@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/60-de-QI/VulQIan/compare/v1.1.0...v1.1.1) (2025-07-03)
+
+
+### Bug Fixes
+
+* 🐛 Updated Conanfile to fix build types (release) ([ad358a1](https://github.com/60-de-QI/VulQIan/commit/ad358a10a68fc75644f427d5f30cd4ee3970da34))
+
 ## [1.1.0](https://github.com/60-de-QI/VulQIan/compare/v1.0.2...v1.1.0) (2025-07-03)
 
 
