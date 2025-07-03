@@ -39,6 +39,9 @@ class PointLights {
     void render(Vulqian::Engine::Graphics::Frames::Info&         frameInfo,
                 Vulqian::Engine::ECS::Coordinator&               coordinator,
                 const std::vector<Vulqian::Engine::ECS::Entity>& entities);
+    void render_single_light(Vulqian::Engine::Graphics::Frames::Info& frameInfo,
+                             Vulqian::Engine::ECS::Entity             entity,
+                             Vulqian::Engine::ECS::Coordinator&       coordinator);
 
    private:
     void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);

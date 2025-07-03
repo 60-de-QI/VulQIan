@@ -44,6 +44,7 @@ class Pipeline {
 
     void        bind(VkCommandBuffer command_buffer);
     static void get_default_config(PipelineConstructInfo& default_conf) noexcept;
+    static void enable_alpha_blending(PipelineConstructInfo& configInfo);
 
    private:
     void create_graphics_pipeline(const std::string& vert_filepath, const std::string& frag_filepath, const PipelineConstructInfo& config);

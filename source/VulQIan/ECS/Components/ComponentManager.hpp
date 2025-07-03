@@ -14,6 +14,7 @@
 #include "Transform.hpp"
 #include "Mesh.hpp"
 #include "PointLight.hpp"
+#include "Transparency.hpp"
 
 namespace Vulqian::Engine::ECS {
 

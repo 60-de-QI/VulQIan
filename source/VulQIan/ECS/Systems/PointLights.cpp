@@ -16,6 +16,7 @@
 // std
 #include <array>
 #include <cassert>
+#include <map>
 #include <stdexcept>
 
 namespace Vulqian::Engine::ECS::Systems {
@@ -55,6 +56,7 @@ void PointLights::createPipeline(VkRenderPass renderPass) {
 
     Vulqian::Engine::Graphics::PipelineConstructInfo pipelineConfig{};
     Vulqian::Engine::Graphics::Pipeline::get_default_config(pipelineConfig);
+    Vulqian::Engine::Graphics::Pipeline::enable_alpha_blending(pipelineConfig);
     pipelineConfig.attribute_descriptions.clear();
     pipelineConfig.binding_descriptions.clear();
     pipelineConfig.render_pass = renderPass;
@@ -69,6 +71,20 @@ void PointLights::createPipeline(VkRenderPass renderPass) {
 void PointLights::render(Vulqian::Engine::Graphics::Frames::Info&         frameInfo,
                          Vulqian::Engine::ECS::Coordinator&               coordinator,
                          const std::vector<Vulqian::Engine::ECS::Entity>& entities) {
+    // Sort lights by distance from camera
+    std::map<float, Vulqian::Engine::ECS::Entity> sorted;
+
+    for (const auto& entity : entities) {
+        if (coordinator.has_component<Vulqian::Engine::ECS::Components::PointLight>(entity)) {
+            auto const& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+
+            // Calculate distance from camera to light
+            auto  offset = frameInfo.camera.get_position() - transform.translation;
+            float disSquared = glm::dot(offset, offset);
+            sorted[disSquared] = entity;
+        }
+    }
+
     this->pipeline->bind(frameInfo.command_buffer);
 
     vkCmdBindDescriptorSets(
@@ -81,30 +97,31 @@ void PointLights::render(Vulqian::Engine::Graphics::Frames::Info&         frameI
         0,
         nullptr);
 
-    for (const auto& entity : entities) {
-        if (coordinator.has_component<Vulqian::Engine::ECS::Components::PointLight>(entity)) {
-            auto const& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
-            auto const& pointLight = coordinator.get_component<Vulqian::Engine::ECS::Components::PointLight>(entity);
+    // Iterate through sorted lights in reverse order (farthest to nearest)
+    for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
+        const auto& entity = it->second;
 
-            LightsPushConstants push{};
-            push.position = glm::vec4(transform.translation, 1.f);
-            push.colour = glm::vec4(pointLight.color, pointLight.lightIntensity);  // Use color from component
-            push.radius = transform.scale.x;
+        auto const& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+        auto const& pointLight = coordinator.get_component<Vulqian::Engine::ECS::Components::PointLight>(entity);
 
-            vkCmdPushConstants(
-                frameInfo.command_buffer,
-                pipelineLayout,
-                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-                0,
-                sizeof(LightsPushConstants),
-                &push);
+        LightsPushConstants push{};
+        push.position = glm::vec4(transform.translation, 1.f);
+        push.colour = glm::vec4(pointLight.color, pointLight.lightIntensity);
+        push.radius = transform.scale.x;
 
-            vkCmdDraw(frameInfo.command_buffer, 6, 1, 0, 0);
-        }
+        vkCmdPushConstants(
+            frameInfo.command_buffer,
+            pipelineLayout,
+            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            0,
+            sizeof(LightsPushConstants),
+            &push);
+
+        vkCmdDraw(frameInfo.command_buffer, 6, 1, 0, 0);
     }
 }
 
-void PointLights::update(Vulqian::Engine::Graphics::Frames::Info const&         frameInfo,
+void PointLights::update(Vulqian::Engine::Graphics::Frames::Info const&   frameInfo,
                          Vulqian::Engine::Graphics::Frames::GlobalUbo&    ubo,
                          Vulqian::Engine::ECS::Coordinator&               coordinator,
                          const std::vector<Vulqian::Engine::ECS::Entity>& entities) const {
@@ -121,7 +138,7 @@ void PointLights::update(Vulqian::Engine::Graphics::Frames::Info const&         
         if (coordinator.has_component<Vulqian::Engine::ECS::Components::PointLight>(entity)) {
             assert(lightIndex < Vulqian::Engine::Graphics::Frames::MAX_LIGHTS && "Point lights exceed maximum specified");
 
-            auto& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+            auto&       transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
             auto const& pointLight = coordinator.get_component<Vulqian::Engine::ECS::Components::PointLight>(entity);
 
             transform.translation = glm::vec3(rotateLight * glm::vec4(transform.translation, 1.f));
@@ -134,6 +151,37 @@ void PointLights::update(Vulqian::Engine::Graphics::Frames::Info const&         
     }
 
     ubo.numLights = lightIndex;
+}
+
+void PointLights::render_single_light(Vulqian::Engine::Graphics::Frames::Info& frameInfo,
+                                      Vulqian::Engine::ECS::Entity             entity,
+                                      Vulqian::Engine::ECS::Coordinator&       coordinator) {
+    this->pipeline->bind(frameInfo.command_buffer);
+    vkCmdBindDescriptorSets(
+        frameInfo.command_buffer,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        pipelineLayout,
+        0, 1,
+        &frameInfo.global_descriptor_set,
+        0, nullptr);
+
+    auto const& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+    auto const& pointLight = coordinator.get_component<Vulqian::Engine::ECS::Components::PointLight>(entity);
+
+    LightsPushConstants push{};
+    push.position = glm::vec4(transform.translation, 1.f);
+    push.colour = glm::vec4(pointLight.color, pointLight.lightIntensity);
+    push.radius = transform.scale.x;
+
+    vkCmdPushConstants(
+        frameInfo.command_buffer,
+        pipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+        0,
+        sizeof(LightsPushConstants),
+        &push);
+
+    vkCmdDraw(frameInfo.command_buffer, 6, 1, 0, 0);
 }
 
 }  // namespace Vulqian::Engine::ECS::Systems

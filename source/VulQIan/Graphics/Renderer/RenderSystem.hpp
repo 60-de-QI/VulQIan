@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include "../../ECS/ECS.hpp"
 #include "../../Utils/Utils.hpp"
 #include "../Camera/Camera.hpp"
@@ -13,13 +16,10 @@
 #include "../Pipeline/Pipeline.hpp"
 #include "Renderer.hpp"
 
-#include <memory>
-#include <vector>
-
 namespace Vulqian::Engine::Graphics {
 
 class RenderSystem {
-  public:
+   public:
     RenderSystem(Vulqian::Engine::Graphics::Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);
     ~RenderSystem();
 
@@ -27,8 +27,11 @@ class RenderSystem {
     RenderSystem& operator=(const RenderSystem&) = delete;
 
     void render_entities(Vulqian::Engine::Graphics::Frames::Info& frame_info, const std::vector<Vulqian::Engine::ECS::Entity>& entities, Vulqian::Engine::ECS::Coordinator& coordinator);
+    void render_single_entity(Vulqian::Engine::Graphics::Frames::Info& frame_info, Vulqian::Engine::ECS::Entity entity, Vulqian::Engine::ECS::Coordinator& coordinator);
+    void render_opaque_entities_only(Vulqian::Engine::Graphics::Frames::Info& frame_info, const std::vector<Vulqian::Engine::ECS::Entity>& entities, Vulqian::Engine::ECS::Coordinator& coordinator);
+    void render_transparent_entity(Vulqian::Engine::Graphics::Frames::Info& frame_info, Vulqian::Engine::ECS::Entity entity, Vulqian::Engine::ECS::Coordinator& coordinator);
 
-  private:
+   private:
     void create_pipeline_layout(VkDescriptorSetLayout global_set_layout);
     void create_pipeline(VkRenderPass render_pass);
 
@@ -39,4 +42,4 @@ class RenderSystem {
     std::unique_ptr<Vulqian::Engine::Graphics::Pipeline> pipeline;
 };
 
-} // namespace Vulqian::Engine::Graphics
+}  // namespace Vulqian::Engine::Graphics
