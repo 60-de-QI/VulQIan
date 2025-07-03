@@ -3,6 +3,8 @@
 // This software is provided 'as is' and without any warranty, express or implied.
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
+#pragma once
+
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -22,13 +24,14 @@ class DescriptorSetLayout {
             VkShaderStageFlags stageFlags,
             uint32_t           count = 1);
         std::unique_ptr<DescriptorSetLayout> build() const;
+        Builder                             &addCombinedImageSamplerBinding(uint32_t binding, VkShaderStageFlags stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT);
 
        private:
         Device                                                    &device;
         std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
     };
 
-    DescriptorSetLayout(Device &Device, const std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding>& bindings);
+    DescriptorSetLayout(Device &Device, const std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> &bindings);
     ~DescriptorSetLayout();
     DescriptorSetLayout(const DescriptorSetLayout &) = delete;
     DescriptorSetLayout &operator=(const DescriptorSetLayout &) = delete;
@@ -99,4 +102,4 @@ class DescriptorWriter {
     DescriptorPool                   &pool;
     std::vector<VkWriteDescriptorSet> writes;
 };
-}  // namespace Vulqian::Engine::Graphics
+}  // namespace Vulqian::Engine::Graphics::Descriptors

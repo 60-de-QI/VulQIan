@@ -28,11 +28,11 @@ struct QueueFamilyIndices {
 
 class Device {
    public:
-// #ifdef NDEBUG
-//     const bool enableValidationLayers = false;
-// #else
+    // #ifdef NDEBUG
+    //     const bool enableValidationLayers = false;
+    // #else
     const bool enableValidationLayers = false;
-// #endif
+    // #endif
 
     explicit Device(Vulqian::Engine::Window& window);
     ~Device();
@@ -45,6 +45,7 @@ class Device {
 
     VkCommandPool              getCommandPool() const noexcept { return this->command_pool; }
     VkDevice                   get_device() const noexcept { return this->device; }
+    VkPhysicalDevice           get_physical_device() const noexcept { return this->physical_device; }
     VkSurfaceKHR               get_surface() const noexcept { return this->surface; }
     VkQueue                    graphicsQueue() const noexcept { return this->graphics_queue; }
     VkQueue                    presentQueue() const noexcept { return this->present_queue; }

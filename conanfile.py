@@ -28,6 +28,7 @@ class VulQIanRecipe(ConanFile):
         self.requires("glm/1.0.1")
         self.requires("vulkan-headers/1.4.313.0")
         self.requires("tinyobjloader/2.0.0-rc10")
+        self.requires("stb/cci.20230920") 
 
         if self.options.build_tests:
             self.requires("gtest/1.16.0")

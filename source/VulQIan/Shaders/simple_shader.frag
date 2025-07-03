@@ -3,12 +3,13 @@
 layout (location = 0) in vec3 fragColor;
 layout (location = 1) in vec3 fragPosWorld;
 layout (location = 2) in vec3 fragNormalWorld;
+layout (location = 3) in vec2 fragUv;
 
 layout (location = 0) out vec4 outColor;
 
 struct PointLight {
   vec4 position; // ignore w
-  vec4 color; // w is intensity
+  vec4 color;    // w is intensity
 };
 
 layout(set = 0, binding = 0) uniform GlobalUbo {
@@ -19,6 +20,8 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
   PointLight pointLights[10];
   int numLights;
 } ubo;
+
+layout(set = 1, binding = 0) uniform sampler2D diffuseSampler;
 
 layout(push_constant) uniform Push {
   mat4 modelMatrix;
@@ -53,6 +56,10 @@ void main() {
     specularLight += intensity * blinnTerm;
   }
 
-  vec3 finalColor = (diffuseLight + specularLight) * fragColor * push.color.rgb;
+  // Sample diffuse texture
+  vec3 textureColor = texture(diffuseSampler, fragUv).rgb;
+  
+  // Combine texture, vertex color, lighting, and push constant color
+  vec3 finalColor = (diffuseLight + specularLight) * textureColor * fragColor * push.color.rgb;
   outColor = vec4(finalColor, push.color.a);
 }

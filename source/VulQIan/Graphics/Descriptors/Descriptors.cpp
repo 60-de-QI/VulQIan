@@ -3,11 +3,12 @@
 // This software is provided 'as is' and without any warranty, express or implied.
 // The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
 
-#include "../../Exception/Exception.hpp"
 #include "Descriptors.hpp"
 
 #include <cassert>
 #include <stdexcept>
+
+#include "../../Exception/Exception.hpp"
 
 namespace Vulqian::Engine::Graphics::Descriptors {
 // *************** Descriptor Set Layout Builder *********************
@@ -31,13 +32,27 @@ std::unique_ptr<DescriptorSetLayout> DescriptorSetLayout::Builder::build() const
     return std::make_unique<DescriptorSetLayout>(this->device, bindings);
 }
 
+DescriptorSetLayout::Builder &DescriptorSetLayout::Builder::addCombinedImageSamplerBinding(uint32_t binding, VkShaderStageFlags stageFlags) {
+    assert(bindings.count(binding) == 0 && "Binding already in use");
+
+    VkDescriptorSetLayoutBinding layoutBinding{};
+    layoutBinding.binding = binding;
+    layoutBinding.descriptorCount = 1;
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    layoutBinding.pImmutableSamplers = nullptr;
+    layoutBinding.stageFlags = stageFlags;
+
+    bindings[binding] = layoutBinding;
+    return *this;
+}
+
 // *************** Descriptor Set Layout *********************
 
 DescriptorSetLayout::DescriptorSetLayout(
-    Device &Device, const std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding>& bindings)
+    Device &Device, const std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> &bindings)
     : device{Device}, bindings{bindings} {
     std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
-    for (auto const& [key, value] : bindings) {
+    for (auto const &[key, value] : bindings) {
         setLayoutBindings.push_back(value);
     }
 
@@ -140,7 +155,7 @@ DescriptorWriter::DescriptorWriter(DescriptorSetLayout &setLayout, DescriptorPoo
     : setLayout{setLayout}, pool{pool} {}
 
 DescriptorWriter &DescriptorWriter::writeBuffer(
-    uint32_t binding, const VkDescriptorBufferInfo* bufferInfo) {
+    uint32_t binding, const VkDescriptorBufferInfo *bufferInfo) {
     assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
     auto const &bindingDescription{setLayout.bindings[binding]};
@@ -158,12 +173,10 @@ DescriptorWriter &DescriptorWriter::writeBuffer(
     return *this;
 }
 
-DescriptorWriter &DescriptorWriter::writeImage(
-    uint32_t binding, const VkDescriptorImageInfo* imageInfo) {
+DescriptorWriter &DescriptorWriter::writeImage(uint32_t binding, const VkDescriptorImageInfo *imageInfo) {
     assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
     auto const &bindingDescription{setLayout.bindings[binding]};
-
     assert(bindingDescription.descriptorCount == 1 && "Binding single descriptor info, but binding expects multiple");
 
     VkWriteDescriptorSet write{};
@@ -191,4 +204,5 @@ void DescriptorWriter::overwrite(VkDescriptorSet &set) {
     }
     vkUpdateDescriptorSets(pool.device.get_device(), writes.size(), writes.data(), 0, nullptr);
 }
+
 }  // namespace Vulqian::Engine::Graphics::Descriptors

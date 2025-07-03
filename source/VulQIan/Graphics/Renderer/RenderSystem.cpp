@@ -1,7 +1,4 @@
-// Vulquian - Custom Vulkan Engine
-// Copyright (C) 60-de-QI - All rights reserved
-// This software is provided 'as is' and without any warranty, express or implied.
-// The author(s) disclaim all liability for damages resulting from the use or misuse of this software.
+// RenderSystem.cpp - Updated constructor and methods
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -20,8 +17,21 @@ struct SimplePushConstantData {
     glm::vec4 color{1.f, 1.f, 1.f, 1.f};  // Add color/alpha for transparency
 };
 
-RenderSystem::RenderSystem(Vulqian::Engine::Graphics::Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout) : device{device} {
-    this->create_pipeline_layout(global_set_layout);
+RenderSystem::RenderSystem(Vulqian::Engine::Graphics::Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout)
+    : device{device} {
+    // Create texture descriptor set layout
+    textureSetLayout = Vulqian::Engine::Graphics::Descriptors::DescriptorSetLayout::Builder(device)
+                           .addCombinedImageSamplerBinding(0, VK_SHADER_STAGE_FRAGMENT_BIT)
+                           .build();
+
+    // Create texture descriptor pool
+    texturePool = Vulqian::Engine::Graphics::Descriptors::DescriptorPool::Builder(device)
+                      .setMaxSets(1000)
+                      .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000)
+                      .build();
+
+    // Pass both layouts to pipeline layout creation
+    this->create_pipeline_layout({global_set_layout, textureSetLayout->getDescriptorSetLayout()});
     this->create_pipeline(render_pass);
 }
 
@@ -29,13 +39,11 @@ RenderSystem::~RenderSystem() {
     vkDestroyPipelineLayout(this->device.get_device(), this->pipeline_layout, nullptr);
 }
 
-void RenderSystem::create_pipeline_layout(VkDescriptorSetLayout global_set_layout) {
+void RenderSystem::create_pipeline_layout(const std::vector<VkDescriptorSetLayout>& descriptor_set_layouts) {
     VkPushConstantRange constant_range{};
     constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
     constant_range.offset = 0;
     constant_range.size = sizeof(SimplePushConstantData);
-
-    std::vector<VkDescriptorSetLayout> descriptor_set_layouts{global_set_layout};
 
     VkPipelineLayoutCreateInfo pipeline_create_info{};
     pipeline_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -65,7 +73,9 @@ void RenderSystem::create_pipeline(VkRenderPass render_pass) {
         pipeline_info);
 }
 
-void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info& frame_info, const std::vector<Vulqian::Engine::ECS::Entity>& entities, Vulqian::Engine::ECS::Coordinator& coordinator) {
+void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info&         frame_info,
+                                   const std::vector<Vulqian::Engine::ECS::Entity>& entities,
+                                   Vulqian::Engine::ECS::Coordinator&               coordinator) {
     // Separate entities into opaque and transparent
     std::vector<Vulqian::Engine::ECS::Entity>     opaque_entities;
     std::map<float, Vulqian::Engine::ECS::Entity> transparent_entities;  // sorted by distance
@@ -86,34 +96,15 @@ void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info& fram
         }
     }
 
-    // Debug output only occasionally to reduce spam
-    if (static int frame_counter = 0; ++frame_counter % 60 == 0) {  // Print every 60 frames (roughly once per second)
-        std::cout << "Opaque entities: " << opaque_entities.size()
-                  << ", Transparent entities: " << transparent_entities.size() << std::endl;
-
-        if (!transparent_entities.empty()) {
-            auto const& entity = transparent_entities.begin()->second;
-            auto const& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
-            auto const& transparency = coordinator.get_component<Vulqian::Engine::ECS::Components::Transparency>(entity);
-            std::cout << "Transparent quad position: ("
-                      << transform.translation.x << ", "
-                      << transform.translation.y << ", "
-                      << transform.translation.z << "), Alpha: "
-                      << transparency.alpha << std::endl;
-        }
-    }
-
     this->pipeline->bind(frame_info.command_buffer);
 
     vkCmdBindDescriptorSets(
         frame_info.command_buffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS,
         this->pipeline_layout,
-        0,
-        1,
+        0, 1,
         &frame_info.global_descriptor_set,
-        0,
-        nullptr);
+        0, nullptr);
 
     // Render opaque objects first
     for (const auto& entity : opaque_entities) {
@@ -126,9 +117,33 @@ void RenderSystem::render_entities(Vulqian::Engine::Graphics::Frames::Info& fram
     }
 }
 
-void RenderSystem::render_single_entity(Vulqian::Engine::Graphics::Frames::Info& frame_info, Vulqian::Engine::ECS::Entity entity, Vulqian::Engine::ECS::Coordinator& coordinator) {
+void RenderSystem::render_single_entity(Vulqian::Engine::Graphics::Frames::Info& frame_info,
+                                        Vulqian::Engine::ECS::Entity             entity,
+                                        Vulqian::Engine::ECS::Coordinator&       coordinator) {
     auto const& mesh = coordinator.get_component<Vulqian::Engine::ECS::Components::Mesh>(entity);
     auto&       transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+
+    // Handle texture binding
+    if (textureManager) {
+        VkDescriptorImageInfo imageInfo;
+        if (mesh.hasTexture()) {
+            imageInfo = mesh.diffuseTexture->getDescriptorInfo();
+        } else {
+            imageInfo = textureManager->getDefaultWhite()->getDescriptorInfo();
+        }
+
+        // Get or create texture descriptor set
+        VkDescriptorSet textureDescriptorSet = getOrCreateTextureDescriptorSet(imageInfo);
+
+        // Bind texture descriptor set
+        vkCmdBindDescriptorSets(
+            frame_info.command_buffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            this->pipeline_layout,
+            1, 1,  // Set 1 for textures
+            &textureDescriptorSet,
+            0, nullptr);
+    }
 
     // Update rotation for colored cubes
     if (mesh.model->get_file_name() == Vulqian::Engine::Utils::colored_cube) {
@@ -160,6 +175,23 @@ void RenderSystem::render_single_entity(Vulqian::Engine::Graphics::Frames::Info&
 
     mesh.model->bind(frame_info.command_buffer);
     mesh.model->draw(frame_info.command_buffer);
+}
+
+VkDescriptorSet RenderSystem::getOrCreateTextureDescriptorSet(const VkDescriptorImageInfo& imageInfo) {
+    // Check cache first
+    auto it = textureDescriptorCache.find(imageInfo);
+    if (it != textureDescriptorCache.end()) {
+        return it->second;
+    }
+
+    // Create new descriptor set
+    VkDescriptorSet descriptorSet;
+    Vulqian::Engine::Graphics::Descriptors::DescriptorWriter(*textureSetLayout, *texturePool)
+        .writeImage(0, const_cast<VkDescriptorImageInfo*>(&imageInfo))
+        .build(descriptorSet);
+
+    textureDescriptorCache[imageInfo] = descriptorSet;
+    return descriptorSet;
 }
 
 void RenderSystem::render_opaque_entities_only(Vulqian::Engine::Graphics::Frames::Info&         frame_info,

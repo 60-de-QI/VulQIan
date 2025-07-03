@@ -19,6 +19,8 @@
 #include "Graphics/Renderer/RenderSystem.hpp"
 #include "Graphics/Renderer/Renderer.hpp"
 #include "Graphics/SwapChain/SwapChain.hpp"
+#include "Graphics/Textures/Texture.hpp"
+#include "Graphics/Textures/Manager.hpp"
 
 #include "Input/Keyboard/Keyboard.hpp"
 #include "Input/Mouse/Mouse.hpp"

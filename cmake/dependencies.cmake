@@ -22,3 +22,8 @@ find_package(tinyobjloader REQUIRED)
 if(NOT tinyobjloader_FOUND)
     message(FATAL_ERROR "tinyobjloader NOT FOUND")
 endif()
+
+find_package(stb REQUIRED)
+if(NOT stb_FOUND)
+    message(FATAL_ERROR "stb NOT FOUND")
+endif()
