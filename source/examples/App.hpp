@@ -6,7 +6,6 @@
 #pragma once
 
 #include <VulQIan/Engine.hpp>
-
 #include <chrono>
 #include <cstdlib>
 #include <iostream>
@@ -15,7 +14,7 @@
 #include <vector>
 
 class App {
-  public:
+   public:
     static constexpr int WIDTH = 800;
     static constexpr int HEIGHT = 600;
 
@@ -27,7 +26,8 @@ class App {
     App(const App&) = delete;
     App& operator=(const App&) = delete;
 
-  private:
+   private:
+    void load_transparent_quad(void);
     void load_entities(void);
     void load_systems(void);
     void load_vase(void);

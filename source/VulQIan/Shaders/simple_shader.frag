@@ -23,6 +23,7 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
 layout(push_constant) uniform Push {
   mat4 modelMatrix;
   mat4 normalMatrix;
+  vec4 color;
 } push;
 
 void main() {
@@ -52,5 +53,6 @@ void main() {
     specularLight += intensity * blinnTerm;
   }
 
-  outColor = vec4(diffuseLight * fragColor + specularLight * fragColor, 1.0);
+  vec3 finalColor = (diffuseLight + specularLight) * fragColor * push.color.rgb;
+  outColor = vec4(finalColor, push.color.a);
 }

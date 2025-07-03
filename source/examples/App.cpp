@@ -10,6 +10,7 @@
 #include <cassert>
 #include <random>
 #include <ranges>
+#include <map>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -57,7 +58,7 @@ void App::run() {
 
     camera.set_view_target(glm::vec3(-1.f, -2.f, 2.f), glm::vec3(0.f, 0.f, 2.5f));
 
-    auto viewer_entity = this->coordinator.create_entity();
+    auto viewer_entity{this->coordinator.create_entity()};
 
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
     transform.translation.z = -2.5f;
@@ -66,13 +67,13 @@ void App::run() {
     Vulqian::Engine::Input::KeyboardMovementController camera_controller{};
     Vulqian::Engine::Input::MouseCameraController      mouse_controller{};
 
-    auto current_time = std::chrono::high_resolution_clock::now();
+    auto current_time{std::chrono::high_resolution_clock::now()};
 
     while (!this->window.should_close()) {
         glfwPollEvents();
 
-        auto  new_time = std::chrono::high_resolution_clock::now();
-        float frame_time = std::chrono::duration<float, std::chrono::seconds::period>(new_time - current_time).count();
+        auto  new_time{std::chrono::high_resolution_clock::now()};
+        float frame_time{std::chrono::duration<float, std::chrono::seconds::period>(new_time - current_time).count()};
         current_time = new_time;
 
         mouse_controller.update_camera_orientation(this->window.get_window(), frame_time, transform);
@@ -97,15 +98,52 @@ void App::run() {
             Vulqian::Engine::Graphics::Frames::GlobalUbo ubo{};
             ubo.projection = camera.get_projection();
             ubo.view = camera.get_view();
-            ubo.inverseView = camera.getInverseView();
+            ubo.inverseView = camera.get_inverse_view();
             point_light_system.update(frame_info, ubo, this->coordinator, this->entities);
             ubo_buffers[frame_index]->writeToBuffer(&ubo);
             ubo_buffers[frame_index]->flush();
 
-            // rendering phase
+            // rendering phase /!\ the order matters
             this->renderer.begin_SwapChain_RenderPass(command_buffer);
-            render_system.render_entities(frame_info, this->entities, this->coordinator);
-            point_light_system.render(frame_info, this->coordinator, this->entities);
+
+            // 1. Render opaque objects first
+            render_system.render_opaque_entities_only(frame_info, this->entities, this->coordinator);
+
+            // 2. Collect and sort all transparent objects (meshes + lights)
+            std::map<float, std::pair<std::string, Vulqian::Engine::ECS::Entity>> transparent_objects;
+            glm::vec3                                                             camera_pos = camera.get_position();
+
+            // Add transparent meshes
+            for (const auto& entity : this->entities) {
+                if (coordinator.has_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity) &&
+                    coordinator.has_component<Vulqian::Engine::ECS::Components::Mesh>(entity) &&
+                    coordinator.has_component<Vulqian::Engine::ECS::Components::Transparency>(entity)) {
+                    auto const& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+                    auto        offset = camera_pos - transform.translation;
+                    float       depth = glm::dot(offset, offset);
+                    transparent_objects[depth] = {"mesh", entity};
+                }
+            }
+
+            // Add lights
+            for (const auto& entity : this->entities) {
+                if (coordinator.has_component<Vulqian::Engine::ECS::Components::PointLight>(entity)) {
+                    auto const& transform = coordinator.get_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>(entity);
+                    auto        offset = camera_pos - transform.translation;
+                    float       depth = glm::dot(offset, offset);
+                    transparent_objects[depth] = {"light", entity};
+                }
+            }
+
+            // 3. Render transparent objects back-to-front
+            for (auto it = transparent_objects.rbegin(); it != transparent_objects.rend(); ++it) {
+                if (it->second.first == "mesh") {
+                    render_system.render_transparent_entity(frame_info, it->second.second, this->coordinator);
+                } else {
+                    point_light_system.render_single_light(frame_info, it->second.second, this->coordinator);
+                }
+            }
+
             this->renderer.end_SwapChain_RenderPass(command_buffer);
             this->renderer.end_frame();
         }
@@ -114,7 +152,7 @@ void App::run() {
 }
 
 void App::load_vase(void) {
-    Vulqian::Engine::ECS::Entity                       smooth_vase = this->coordinator.create_entity();
+    Vulqian::Engine::ECS::Entity                       smooth_vase{this->coordinator.create_entity()};
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
 
     transform.scale = glm::vec3{3.f, 1.5f, 3.f};
@@ -142,7 +180,7 @@ void App::load_vase(void) {
     this->entities.push_back(flat_vase);
 
     // flat plane for lights
-    Vulqian::Engine::ECS::Entity                       quad = this->coordinator.create_entity();
+    Vulqian::Engine::ECS::Entity                       quad{this->coordinator.create_entity()};
     Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform_quad{};
 
     transform_quad.scale = {3.f, 1.f, 3.f};
@@ -167,12 +205,41 @@ void App::load_systems(void) {
     this->coordinator.set_system_signature<Vulqian::Engine::ECS::Systems::Physics>(physics_signature);
 }
 
+void App::load_transparent_quad(void) {
+    // Create transparent quad positioned in front of the vases
+    Vulqian::Engine::ECS::Entity                       transparent_quad{this->coordinator.create_entity()};
+    Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
+
+    // Position and orient the quad properly
+    transform.scale = glm::vec3{3.0f, 3.0f, 1.0f};
+    transform.translation = glm::vec3{0.0f, 0.5f, -0.8f};
+
+    // Rotate the quad to face the camera - assuming your quad is in XY plane by default
+    // transform.rotation = glm::vec3{0.0f, 0.0f, 0.0f};      // Try no rotation first
+    transform.rotation = glm::vec3{glm::radians(90.0f), 0.0f, 0.0f};
+
+    Vulqian::Engine::ECS::Components::Mesh mesh{};
+    mesh.model = Vulqian::Engine::Graphics::Model::create_model_from_file(this->device, Vulqian::Engine::Utils::quad);
+
+    Vulqian::Engine::ECS::Components::Transparency transparency{};
+    transparency.alpha = 0.4f;                         // 40% opacity for nice transparency effect
+    transparency.color = glm::vec3{0.2f, 0.6f, 1.0f};  // Light blue tint
+    transparency.requiresDepthSorting = true;
+
+    this->coordinator.add_component(transparent_quad, transform);
+    this->coordinator.add_component(transparent_quad, mesh);
+    this->coordinator.add_component(transparent_quad, transparency);
+
+    this->entities.push_back(transparent_quad);
+}
+
 void App::load_entities(void) {
     // ECS
     this->coordinator.init();
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::Transform_TB_YXZ>();
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::Mesh>();
     this->coordinator.register_component<Vulqian::Engine::ECS::Components::PointLight>();
+    this->coordinator.register_component<Vulqian::Engine::ECS::Components::Transparency>();  // Add this line
 
     std::default_random_engine            generator;
     std::uniform_real_distribution<float> randPosition(-100.0f, 100.0f);
@@ -183,11 +250,14 @@ void App::load_entities(void) {
 
     this->load_vase();
 
+    // Create transparent quad in front of the vases
+    this->load_transparent_quad();
+
     // Create regular mesh entities (with Transform + Mesh)
     for (int i = 0; i != 400; i++) {
         float scale{randScale(generator)};
 
-        Vulqian::Engine::ECS::Entity entity = this->coordinator.create_entity();
+        Vulqian::Engine::ECS::Entity entity{this->coordinator.create_entity()};
 
         Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
         transform.scale = glm::vec3{scale, scale, scale};
@@ -203,7 +273,6 @@ void App::load_entities(void) {
     }
 
     // Create light entities (with Transform + PointLight, but NO Mesh)
-
     std::vector<glm::vec3> lightColors{
         {1.f, .1f, .1f},  // Red
         {.1f, .1f, 1.f},  // Blue
@@ -214,18 +283,18 @@ void App::load_entities(void) {
     };
 
     for (size_t i = 0; i < lightColors.size(); ++i) {
-        const auto& color = lightColors[i];
+        const auto& color{lightColors[i]};
 
         Vulqian::Engine::ECS::Entity                       light{this->coordinator.create_entity()};
         Vulqian::Engine::ECS::Components::Transform_TB_YXZ transform{};
 
-        transform.scale = glm::vec3{0.2f, 0.2f, 0.2f};
+        transform.scale = glm::vec3{0.1f, 0.1f, 0.1f};
         transform.rotation = glm::vec3{0.0f, 0.0f, 0.0f};
 
-        auto rotateLight = glm::rotate(
+        auto rotateLight{glm::rotate(
             glm::mat4(1.f),
             (i * glm::two_pi<float>()) / lightColors.size(),
-            {0.f, -1.f, 0.f});
+            {0.f, -1.f, 0.f})};
         transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
 
         Vulqian::Engine::ECS::Components::PointLight pointLight{};
