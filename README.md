@@ -2,7 +2,10 @@
 [![CMake](https://github.com/60-de-QI/VulQIan/actions/workflows/cmake.yml/badge.svg)](https://github.com/60-de-QI/VulQIan/actions/workflows/cmake.yml)
 
 <p align="center">
-  <img width="800" height="600" src="https://github.com/60-de-QI/VulQIan/blob/main/.github/VulQIan.gif">
+  <img width="796" height="594" src="https://github.com/60-de-QI/VulQIan/blob/main/.github/VulQIan.gif">
+</p>
+<p align="center">
+  <img width="803" height="641" src="https://github.com/60-de-QI/VulQIan/blob/main/.github/alpa_blending.png">
 </p>
 
 This is a simple 3D engine built using Vulkan, C++20, CMake and Visual Studio Code. The engine aims to provide a foundation for creating real-time 3D applications. This is mostly a way for me to explore concepts and techniques used in graphics programming on a lower level of implementation.
